@@ -4,6 +4,10 @@ User-visible changes, newest first.
 
 ## Unreleased
 
+No change.
+
+## 0.1.3 - 2026-10-15
+
 - A new install lists five projects: Shifts and Nexus join Shopping, Wardrobe and Financial
   calculator. An installed app gets Shifts and Nexus once, at its next start; a project that you
   removed is not added back.
