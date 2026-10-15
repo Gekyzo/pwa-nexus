@@ -1,26 +1,35 @@
 # Nexus
 
-A template for offline Android PWAs. Plain HTML, CSS and ES modules: no build step and no
-dependencies. It gives a new app:
+A phone app to manage the roadmaps of my projects. It reads the `ROADMAP.md` of each GitHub
+repository, and commits each change back from the phone. Plain HTML, CSS and ES modules, built
+from `pwa-template`: no build step and no dependencies.
 
-- an offline service worker, an update check with an update toast, and an install button;
-- an adaptive layout: a bottom bar on a phone, a rail on a tablet, list and detail side by side
-  on a wide screen;
-- a design system with a live catalogue at `/designs/`;
-- English and Spanish text, light and dark themes, a left-hand mode;
-- a release script and a GitHub Pages deploy on a version tag;
-- structural tests that keep the layers, the text, the design system and the specification in step.
+- **Projects:** Shopping (`Gekyzo/shopping-list`), Wardrobe (`Gekyzo/pwa-wardrobe`) and Financial
+  calculator (`Gekyzo/pwa-financial-calculator`) by default. Add, rename or remove projects in
+  Settings.
+- **Roadmap:** the `##` and `###` sections of `ROADMAP.md`, with their `- **Title.** text` items.
+- **Actions:** add an item to a section you pick, edit it, move it to another section, or delete
+  it. Each action is one commit on the default branch, such as `Add roadmap item: <title>`.
+- **Offline:** an action made with no network waits in a queue and commits on the next sync.
+  An action whose item changed on GitHub meanwhile is kept with **Discard**, never applied to
+  another item.
 
-A small notes list shows each part in use. Replace it with the domain of the app.
+The app changes only the lines of the item it acts on: every other byte of `ROADMAP.md` stays.
 
-## Start a new app
+## GitHub token
 
-1. Copy the repository without its history: `cp -r pwa-nexus my-app && rm -rf my-app/.git`.
-2. `cd my-app && npm run init -- my-app "My App" [--short "App"] [--theme "#1f7a4d"]`.
-3. `git init -b main && npm run hooks`.
-4. Replace `icons/source.png` (512×512, art inside the centre 80%), then `npm run icons`.
-5. Replace or delete the notes demo. `docs/spec/07-notes.md` lists its files.
-6. `npm test`.
+The app needs a fine-grained personal access token. It stays on the phone and goes only to
+`api.github.com`. Export never includes it.
+
+1. GitHub → **Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained
+   tokens** → **Generate new token**.
+2. **Repository access:** **Only select repositories**, then pick the repositories of the
+   projects.
+3. **Permissions** → **Repository permissions** → **Contents:** **Read and write**.
+4. Generate the token, then paste it in the app: **Settings** → **GitHub** → **Access token**.
+   **Test the token** reads `ROADMAP.md` of each project and shows the result of each one.
+
+A repository that you add later needs access in the token too: edit the token on GitHub.
 
 ## Develop
 
