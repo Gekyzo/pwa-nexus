@@ -22,6 +22,13 @@ const readItem = (text) => {
 
 const lineOf = ({ title, body }) => (body ? `- **${title}.** ${body}` : `- **${title}.**`);
 
+// The first line of an item with a new title and every other byte as it was. A plain bullet has
+// no bold title to replace: its text is the title, so it is written in the format.
+const retitle = (line, title) => {
+  const bold = line.match(/^([-*]\s+)\*\*.+?\*\*(.*)$/);
+  return bold ? `${bold[1]}**${title}.**${bold[2].replace(/^\./, '')}` : lineOf({ title, body: '' });
+};
+
 export const parse = (md) => {
   const eol = md.includes('\r\n') ? '\r\n' : '\n';
   const lines = md.split(eol);
@@ -68,11 +75,13 @@ export const sectionsOf = (md) =>
     items: items.map(({ title: name, body }) => ({ title: name, body })),
   }));
 
+const oneLine = (body) => String(body ?? '').replace(/\s*[\r\n]+\s*/g, ' ').trim();
+
 export const cleanItem = ({ title, body } = {}) => {
   const name = cleanTitle(String(title ?? ''));
   if (!name) return { error: { key: 'error.titleRequired' } };
   if (name.length > MAX_TITLE) return { error: { key: 'error.titleTooLong', params: { max: MAX_TITLE } } };
-  const text = String(body ?? '').replace(/\s*[\r\n]+\s*/g, ' ').trim();
+  const text = oneLine(body);
   if (text.length > MAX_BODY) return { error: { key: 'error.bodyTooLong', params: { max: MAX_BODY } } };
   return { item: { title: name, body: text } };
 };
@@ -103,26 +112,43 @@ const locate = (model, ref) => {
   return item ? { section, item } : { error: 'error.itemMissing' };
 };
 
-export const addItem = (md, path, input) => {
+export const itemOf = (md, ref) => {
+  const { item } = locate(parse(md), ref);
+  return item ? { title: item.title, body: item.body } : null;
+};
+
+// Puts `lines`, the lines of one item titled `title`, at the end of a section (ROAD-5).
+const insert = (md, path, title, lines) => {
   const model = parse(md);
   const section = sectionAt(model, path);
   if (!section) return fail(md, 'error.sectionMissing');
+  if (section.items.some((other) => sameTitle(other.title, title))) return fail(md, 'error.titleTaken');
+  const last = section.items.at(-1);
+  if (last) return { text: splice(model, last.end, 0, lines) };
+  return { text: splice(model, lastText(model, section) + 1, 0, ['', ...lines]) };
+};
+
+export const addItem = (md, path, input) => {
+  if (!sectionAt(parse(md), path)) return fail(md, 'error.sectionMissing');
   const { item, error } = cleanItem(input);
   if (error) return { text: md, error };
-  if (section.items.some((other) => sameTitle(other.title, item.title))) return fail(md, 'error.titleTaken');
-  const last = section.items.at(-1);
-  if (last) return { text: splice(model, last.end, 0, [lineOf(item)]) };
-  return { text: splice(model, lastText(model, section) + 1, 0, ['', lineOf(item)]) };
+  return insert(md, path, item.title, [lineOf(item)]);
 };
 
 export const editItem = (md, ref, input) => {
   const model = parse(md);
   const { section, item: found, error: missing } = locate(model, ref);
   if (missing) return fail(md, missing);
-  const { item, error } = cleanItem(input);
+  // A body that stays keeps its lines as they are, sub-bullets and length included: only the
+  // first line, which holds the title, is written again.
+  const keepsBody = oneLine(input?.body) === found.body;
+  const { item, error } = cleanItem(keepsBody ? { title: input?.title, body: '' } : input);
   if (error) return { text: md, error };
   if (section.items.some((other) => other !== found && sameTitle(other.title, item.title))) return fail(md, 'error.titleTaken');
-  if (item.title === found.title && item.body === found.body) return { text: md };
+  if (keepsBody) {
+    if (item.title === found.title) return { text: md };
+    return { text: splice(model, found.start, 1, [retitle(model.lines[found.start], item.title)]) };
+  }
   return { text: splice(model, found.start, found.end - found.start, [lineOf(item)]) };
 };
 
@@ -144,6 +170,7 @@ export const moveItem = (md, ref, toPath) => {
   if (error) return fail(md, error);
   if (!sectionAt(model, toPath)) return fail(md, 'error.sectionMissing');
   if (toPath === ref.path) return { text: md };
-  const added = addItem(deleteItem(md, ref).text, toPath, item);
+  // The lines go as they are, sub-bullets included (ROAD-6).
+  const added = insert(deleteItem(md, ref).text, toPath, item.title, model.lines.slice(item.start, item.end));
   return added.error ? { text: md, error: added.error } : added;
 };

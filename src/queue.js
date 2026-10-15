@@ -1,4 +1,4 @@
-import { addItem, editItem, moveItem, deleteItem, sectionsOf } from '#roadmap';
+import { addItem, editItem, moveItem, deleteItem, itemOf, sectionsOf } from '#roadmap';
 
 // Every action is an entry of the queue first (SYNC-1). A sync turns each entry into one commit.
 export const ROADMAP_PATH = 'ROADMAP.md';
@@ -14,6 +14,19 @@ export const makeEntry = (repo, op, args, { id = crypto.randomUUID(), now = Date
   createdAt: now,
 });
 
+const isObject = (value) => typeof value === 'object' && value !== null;
+const isRef = (ref) => isObject(ref) && typeof ref.path === 'string' && typeof ref.title === 'string';
+const isItem = (item) => isObject(item) && typeof item.title === 'string' && typeof item.body === 'string';
+const isBase = (base) => base === undefined || isItem(base);
+
+// The arguments of each action: a stored queue that a screen cannot read must not load (SYNC-1).
+const ARGS = {
+  add: ({ path, item }) => typeof path === 'string' && isItem(item),
+  edit: ({ ref, item, base }) => isRef(ref) && isItem(item) && isBase(base),
+  move: ({ ref, to }) => isRef(ref) && typeof to === 'string',
+  delete: ({ ref, base }) => isRef(ref) && isBase(base),
+};
+
 export const isEntry = (value) =>
   typeof value === 'object' &&
   value !== null &&
@@ -22,17 +35,34 @@ export const isEntry = (value) =>
   typeof value.repo === 'string' &&
   REPO.test(value.repo) &&
   OPS.includes(value.op) &&
-  typeof value.args === 'object' &&
-  value.args !== null &&
+  isObject(value.args) &&
+  ARGS[value.op](value.args) &&
   typeof value.createdAt === 'number' &&
   (value.stale === undefined || typeof value.stale === 'boolean');
 
-export const applyEntry = (md, { op, args }) => {
+// An edit or a delete carries the item as the phone saw it: if GitHub has another version, the
+// action would overwrite text written elsewhere, so it fails and goes stale (SYNC-6).
+const changed = (md, { ref, base }) => {
+  if (!base) return false;
+  const now = itemOf(md, ref);
+  return now !== null && (now.title !== base.title || now.body !== base.body);
+};
+
+const run = (md, op, args) => {
+  if ((op === 'edit' || op === 'delete') && changed(md, args)) return { text: md, error: { key: 'error.itemChanged' } };
   if (op === 'add') return addItem(md, args.path, args.item);
   if (op === 'edit') return editItem(md, args.ref, args.item);
   if (op === 'move') return moveItem(md, args.ref, args.to);
   if (op === 'delete') return deleteItem(md, args.ref);
   return { text: md, error: { key: 'error.unknownAction' } };
+};
+
+export const applyEntry = (md, { op, args }) => {
+  try {
+    return run(md, op, args);
+  } catch {
+    return { text: md, error: { key: 'error.unknownAction' } };
+  }
 };
 
 export const messageOf = ({ op, args }) => {

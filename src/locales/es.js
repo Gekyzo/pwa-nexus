@@ -93,6 +93,7 @@ export default {
   'error.titleTaken': 'Esa sección ya tiene un elemento con ese título.',
   'error.sectionMissing': 'La sección ya no existe.',
   'error.itemMissing': 'El elemento ya no existe.',
+  'error.itemChanged': 'El elemento cambió en GitHub desde que lo leíste.',
   'error.unknownAction': 'Acción desconocida.',
   'error.repoInvalid': 'Escribe el repositorio como propietario/nombre.',
   'error.repoTaken': 'Ese repositorio ya está en la lista.',
@@ -102,5 +103,6 @@ export default {
   'error.githubRateLimit': 'GitHub limita las peticiones. Prueba más tarde.',
   'error.githubConflict': 'El archivo cambió en GitHub. Sincroniza de nuevo.',
   'error.githubNotFound': 'No hay repositorio o ROADMAP.md, o el token no llega.',
+  'error.githubForbidden': 'El token no llega a un proyecto. Revisa sus repositorios en GitHub.',
   'error.offline': 'Sin conexión: los cambios esperan.',
 };

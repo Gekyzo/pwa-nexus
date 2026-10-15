@@ -114,8 +114,8 @@ test('roadmapView has no text for a project with no cache or no ROADMAP.md', () 
   assert.deepEqual(roadmapView({ text: MD, sha: 's', fetchedAt: 1 }, [add('C')]).sections[0].items.map((i) => i.title), ['A', 'B', 'C']);
 });
 
-test('stopsSync is true for auth, rateLimit and network only (SYNC-7)', () => {
-  assert.deepEqual(['auth', 'rateLimit', 'network', 'notFound', 'conflict'].map(stopsSync), [true, true, true, false, false]);
+test('stopsSync is true for auth, rateLimit and network only: a repository the token cannot reach does not stop the others (SYNC-7)', () => {
+  assert.deepEqual(['auth', 'rateLimit', 'network', 'notFound', 'conflict', 'forbidden'].map(stopsSync), [true, true, true, false, false, false]);
 });
 
 test('syncRepo commits each action in order, one commit for each (SYNC-3, SYNC-4)', async () => {
@@ -185,4 +185,55 @@ test('syncRepo with no ROADMAP.md returns no file and does nothing', async () =>
   const client = fakeClient(MD, { get: [new GitHubError('notFound', 404)] });
   const result = await syncRepo({ client, repo: 'o/r', entries: [add('C', '1')] });
   assert.deepEqual(result, { file: null, done: [], stale: [], error: { type: 'notFound' } });
+});
+
+test('syncRepo marks an edit stale when the item changed on GitHub since it was read (SYNC-6)', async () => {
+  const client = fakeClient(MD.replace('**A.** one', '**A.** one, extended on the computer'));
+  const edit = entry('edit', { ref: { path: 'Planned', title: 'A' }, base: { title: 'A', body: 'one' }, item: { title: 'A2', body: 'one' } }, '1');
+  const result = await syncRepo({ client, repo: 'o/r', entries: [edit] });
+  assert.deepEqual(result.stale, ['1']);
+  assert.match(client.remote.text, /extended on the computer/);
+});
+
+test('syncRepo marks a delete stale when the item changed on GitHub since it was read (SYNC-6)', async () => {
+  const client = fakeClient(MD.replace('**A.** one', '**A.** one, extended'));
+  const del = entry('delete', { ref: { path: 'Planned', title: 'A' }, base: { title: 'A', body: 'one' } }, '1');
+  const result = await syncRepo({ client, repo: 'o/r', entries: [del] });
+  assert.deepEqual(result.stale, ['1']);
+  assert.match(client.remote.text, /one, extended/);
+});
+
+test('an edit whose base matches the remote item applies', () => {
+  const edit = entry('edit', { ref: { path: 'Planned', title: 'A' }, base: { title: 'A', body: 'one' }, item: { title: 'A2', body: 'one' } });
+  assert.match(applyEntry(MD, edit).text, /\*\*A2\.\*\* one/);
+  assert.deepEqual(applyEntry(MD.replace('one', 'uno'), edit), { text: MD.replace('one', 'uno'), error: { key: 'error.itemChanged' } });
+});
+
+test('isEntry checks the arguments of each action, so a broken import cannot reach the screen', () => {
+  const ref = { path: 'P', title: 'T' };
+  const item = { title: 'T', body: '' };
+  const good = [
+    ['add', { path: 'P', item }],
+    ['edit', { ref, item }],
+    ['edit', { ref, item, base: item }],
+    ['move', { ref, to: 'Q' }],
+    ['delete', { ref }],
+    ['delete', { ref, base: item }],
+  ];
+  const bad = [
+    ['add', { path: 'P' }],
+    ['add', { item }],
+    ['edit', {}],
+    ['edit', { ref, item: { title: 'T' } }],
+    ['edit', { ref, item, base: 'x' }],
+    ['move', { ref }],
+    ['delete', { ref: { path: 'P' } }],
+  ];
+  for (const [op, args] of good) assert.equal(isEntry(entry(op, args)), true, `${op} ${JSON.stringify(args)}`);
+  for (const [op, args] of bad) assert.equal(isEntry(entry(op, args)), false, `${op} ${JSON.stringify(args)}`);
+});
+
+test('applyEntry never throws on broken arguments: the entry fails instead', () => {
+  assert.deepEqual(applyEntry(MD, { op: 'edit', args: {} }), { text: MD, error: { key: 'error.unknownAction' } });
+  assert.deepEqual(viewOf(MD, [{ ...add('C', '1'), args: {} }]).failed, ['1']);
 });

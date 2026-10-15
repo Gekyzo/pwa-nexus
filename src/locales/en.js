@@ -93,6 +93,7 @@ export default {
   'error.titleTaken': 'That section already has an item with that title.',
   'error.sectionMissing': 'The section no longer exists.',
   'error.itemMissing': 'The item no longer exists.',
+  'error.itemChanged': 'The item changed on GitHub since you read it.',
   'error.unknownAction': 'Unknown action.',
   'error.repoInvalid': 'Write the repository as owner/name.',
   'error.repoTaken': 'That repository is already in the list.',
@@ -102,5 +103,6 @@ export default {
   'error.githubRateLimit': 'GitHub limits the requests. Try again later.',
   'error.githubConflict': 'The file changed on GitHub. Sync again.',
   'error.githubNotFound': 'No repository or ROADMAP.md, or the token cannot reach it.',
+  'error.githubForbidden': 'The token cannot reach a project. Check its repositories on GitHub.',
   'error.offline': 'Offline: the changes wait.',
 };

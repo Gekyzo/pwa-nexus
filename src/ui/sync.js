@@ -8,6 +8,7 @@ const ERROR_KEYS = {
   rateLimit: 'error.githubRateLimit',
   conflict: 'error.githubConflict',
   notFound: 'error.githubNotFound',
+  forbidden: 'error.githubForbidden',
   network: 'error.offline',
 };
 export const errorKey = (type) => ERROR_KEYS[type] ?? 'error.offline';

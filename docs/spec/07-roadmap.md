@@ -19,8 +19,10 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   then still applies after the file changes on GitHub.
 - **ROAD-5** `addItem(md, path, { title, body })` puts `- **Title.** body` after the last item of
   the section. A section with no item gets it after its intro lines, after one blank line.
-- **ROAD-6** `editItem(md, ref, { title, body })` rewrites the lines of that item only.
-  `moveItem(md, ref, toPath)` is a delete plus an add at the end of the target section.
+- **ROAD-6** `editItem(md, ref, { title, body })` rewrites the lines of that item only. An edit
+  that keeps the body changes only the bold title of the first line: sub-bullets, continuation
+  lines and a body of any length stay as they are. `moveItem(md, ref, toPath)` deletes the lines
+  of the item and puts them, unchanged, at the end of the target section.
   `deleteItem(md, ref)` removes the lines of that item only, and leaves no double blank line.
 - **ROAD-7** The title is trimmed and required (`error.titleRequired`), at most 80 characters
   (`error.titleTooLong`). Asterisks and trailing periods are dropped: the format adds the period.

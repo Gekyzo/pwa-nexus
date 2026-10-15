@@ -11,9 +11,10 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   ignores the line breaks of the content.
 - **GH-3** `putFile(repo, path, { text, sha, message })` calls `PUT` on the same URL and returns
   the new `sha`.
-- **GH-4** The errors are a `GitHubError` with a type: `auth` (401, or 403 with requests left),
-  `notFound` (404), `conflict` (409, or 422 for a stale sha), `rateLimit` (403 with
-  `x-ratelimit-remaining: 0`), and `network` (fetch throws, any other status, or a body that is
+- **GH-4** The errors are a `GitHubError` with a type: `auth` (401), `forbidden` (403 for a
+  repository that the token cannot reach or write), `notFound` (404), `conflict` (409, or 422
+  for a stale sha), `rateLimit` (403 with `x-ratelimit-remaining: 0` or `retry-after`), and
+  `network` (fetch throws, any other status, or a body that is
   not JSON).
 - **GH-5** The token goes only to `https://api.github.com`, in the `Authorization` header. The
   client sends no other header that identifies the user.
@@ -22,7 +23,8 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
 
 - **SYNC-1** Every action is first an entry of the queue, `{ id, repo, op, args, createdAt }`, in
   the doc (PROJ-1). `op` is `add`, `edit`, `move` or `delete`. An entry that a sync could not apply has
-  `stale: true`.
+  `stale: true`. A stored entry whose arguments do not fit its `op` makes the doc not valid, and
+  an action that throws fails like a missing item.
 - **SYNC-2** The screen shows the cached text of a repository with its queued actions applied on
   top, in their order. An action shows at once, online or offline.
 - **SYNC-3** `syncRepo` of `src/queue.js` gets the file, then for each queued action in order:
@@ -35,12 +37,15 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   second conflict stops the sync of that repository and keeps the action.
 - **SYNC-6** An action whose item or section no longer exists on GitHub is marked stale. It stays
   in the queue until the user discards it, and the sync goes on with the next action. A sync
-  never drops an action silently, and never sends a stale one again.
+  never drops an action silently, and never sends a stale one again. An `edit` or a `delete`
+  carries the item as the phone saw it (`base`); if the item on GitHub has another title or body,
+  the action is stale (`error.itemChanged`), so text written elsewhere is never overwritten.
 - **SYNC-7** A `network` error stops the sync and keeps the queue as it is; the header says
   `sync.offline` or `sync.offlinePending`. An `auth` or `rateLimit` error stops the sync of all
   repositories, and the toast names the cause (`error.githubAuth`, `error.githubRateLimit`). A
-  `notFound` marks the repository as having no `ROADMAP.md`, and a second `conflict` shows
-  `error.githubConflict`; the sync goes on with the next repository in both cases.
+  `notFound` marks the repository as having no `ROADMAP.md`, a `forbidden` shows
+  `error.githubForbidden`, and a second `conflict` shows `error.githubConflict`; in these cases
+  the sync goes on with the next repository.
 - **SYNC-8** A sync runs when the app opens, on the `online` event and on the **Sync** button.
   The repositories sync one after the other, never two at a time. A sync asked for while one
   runs runs once more at its end. With no token or no network, no sync runs.

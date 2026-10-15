@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { MAX_TITLE, MAX_BODY, parse, sectionsOf, cleanItem, addItem, editItem, moveItem, deleteItem } from '#roadmap';
+import { MAX_TITLE, MAX_BODY, parse, sectionsOf, cleanItem, itemOf, addItem, editItem, moveItem, deleteItem } from '#roadmap';
 
 const SAMPLE = [
   '# Roadmap',
@@ -169,3 +169,31 @@ for (const [file, md] of fixtures) {
     }
   });
 }
+
+const NESTED = '## A\n\n- **Parent.** body\n  - child one\n  - child two\n- **Next.** x\n\n## B\n';
+
+test('an edit that keeps the body rewrites only the first line, so sub-bullets stay (ROAD-6)', () => {
+  const [parent] = sectionsOf(NESTED)[0].items;
+  assert.equal(parent.body, 'body - child one - child two');
+  const { text } = editItem(NESTED, { path: 'A', title: 'Parent' }, { title: 'Mother', body: parent.body });
+  assert.equal(text, NESTED.replace('- **Parent.** body\n', '- **Mother.** body\n'));
+});
+
+test('an edit that keeps a long hand-written body is not refused for its length', () => {
+  const md = `## A\n\n- **Long.** ${'w '.repeat(400)}\n`;
+  const [item] = sectionsOf(md)[0].items;
+  const { text, error } = editItem(md, { path: 'A', title: 'Long' }, { title: 'Longer', body: item.body });
+  assert.equal(error, undefined);
+  assert.equal(text, md.replace('- **Long.**', '- **Longer.**'));
+});
+
+test('a move takes the lines of the item as they are, sub-bullets included (ROAD-6)', () => {
+  const { text } = moveItem(NESTED, { path: 'A', title: 'Parent' }, 'B');
+  assert.equal(text, '## A\n\n- **Next.** x\n\n## B\n\n- **Parent.** body\n  - child one\n  - child two\n');
+});
+
+test('itemOf gives the title and the body of an item, or null', () => {
+  assert.deepEqual(itemOf(NESTED, { path: 'A', title: 'Next' }), { title: 'Next', body: 'x' });
+  assert.equal(itemOf(NESTED, { path: 'A', title: 'Nope' }), null);
+  assert.equal(itemOf(NESTED, { path: 'Nope', title: 'Next' }), null);
+});

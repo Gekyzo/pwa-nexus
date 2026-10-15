@@ -25,7 +25,11 @@ export const decodeBase64 = (base64) => {
 
 const typeOf = (response) => {
   if (response.status === 401) return 'auth';
-  if (response.status === 403) return response.headers.get('x-ratelimit-remaining') === '0' ? 'rateLimit' : 'auth';
+  // A 403 is a rate limit (primary or secondary), or a repository that the token cannot write.
+  if (response.status === 403) {
+    const limited = response.headers.get('x-ratelimit-remaining') === '0' || response.headers.has('retry-after');
+    return limited ? 'rateLimit' : 'forbidden';
+  }
   if (response.status === 404) return 'notFound';
   if (response.status === 409 || response.status === 422) return 'conflict';
   return 'network';

@@ -67,8 +67,10 @@ const save = () => {
     return;
   }
   const ref = ui.editing;
+  // The item as the phone shows it: the sync refuses the edit if GitHub has another version (SYNC-6).
+  const base = ref ? findItem(viewText(ui.repo).sections, ref) : null;
   const actions = ref
-    ? [['edit', { ref, item }], ...(path === ref.path ? [] : [['move', { ref: { path: ref.path, title: item.title }, to: path }]])]
+    ? [['edit', { ref, base, item }], ...(path === ref.path ? [] : [['move', { ref: { path: ref.path, title: item.title }, to: path }]])]
     : [['add', { path, item }]];
   if (queueAll(ui.repo, actions)) closeItemSheet();
 };
@@ -84,7 +86,7 @@ const remove = () => {
   const ref = ui.editing;
   const repo = ui.repo;
   const item = findItem(viewText(repo).sections, ref);
-  const entries = queueAll(repo, [['delete', { ref }]]);
+  const entries = queueAll(repo, [['delete', { ref, base: item }]]);
   if (!entries) return;
   closeItemSheet();
   const [entry] = entries;

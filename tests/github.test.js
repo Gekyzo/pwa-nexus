@@ -46,8 +46,9 @@ test('putFile sends the message, the base64 text and the sha, and returns the ne
 test('the errors of GitHub are typed (GH-4)', async () => {
   const cases = [
     [reply(401), 'auth'],
-    [reply(403, {}, { 'x-ratelimit-remaining': '10' }), 'auth'],
+    [reply(403, {}, { 'x-ratelimit-remaining': '10' }), 'forbidden'],
     [reply(403, {}, { 'x-ratelimit-remaining': '0' }), 'rateLimit'],
+    [reply(403, {}, { 'x-ratelimit-remaining': '10', 'retry-after': '60' }), 'rateLimit'],
     [reply(404), 'notFound'],
     [reply(409), 'conflict'],
     [reply(422), 'conflict'],
