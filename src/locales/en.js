@@ -68,4 +68,5 @@ export default {
   'error.titleTaken': 'That section already has an item with that title.',
   'error.sectionMissing': 'The section no longer exists.',
   'error.itemMissing': 'The item no longer exists.',
+  'error.unknownAction': 'Unknown action.',
 };

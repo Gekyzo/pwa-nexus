@@ -68,4 +68,5 @@ export default {
   'error.titleTaken': 'Esa sección ya tiene un elemento con ese título.',
   'error.sectionMissing': 'La sección ya no existe.',
   'error.itemMissing': 'El elemento ya no existe.',
+  'error.unknownAction': 'Acción desconocida.',
 };
