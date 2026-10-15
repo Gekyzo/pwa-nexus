@@ -14,6 +14,7 @@ const SHELL = [
   './src/ui/nav.js',
   './src/ui/projects.js',
   './src/ui/sync.js',
+  './src/ui/item.js',
   './src/ui/settings.js',
   './src/ui/update.js',
   './src/ui/dust.js',

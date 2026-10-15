@@ -34,6 +34,7 @@ export default {
   'sync.staleTitle': 'Could not apply',
   'sync.discard': 'Discard',
   'toast.discarded': 'Change discarded.',
+  'toast.itemDeleted': 'Item deleted.',
   'onboarding.label': 'Introduction',
   'onboarding.skip': 'Skip',
   'onboarding.next': 'Next',

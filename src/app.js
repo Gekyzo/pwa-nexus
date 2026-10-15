@@ -3,6 +3,7 @@ import { findProject } from '#projects';
 import { bind as bindNav, renderNav } from '#ui/nav';
 import { bind as bindProjects, renderProjects } from '#ui/projects';
 import { bind as bindSync, renderSync, syncAll } from '#ui/sync';
+import { bind as bindItem, renderItemSheet, closeItemSheet } from '#ui/item';
 import { bind as bindSettings, applyLanguage } from '#ui/settings';
 import { bind as bindInstall, renderInstall } from '#ui/install';
 import { readVersion, renderVersion, offerUpdate } from '#ui/update';
@@ -14,6 +15,7 @@ const renderAll = () => {
   $('title').textContent = project?.label ?? t(`nav.${ui.view}`);
   renderProjects();
   renderSync();
+  renderItemSheet();
   $('settings').hidden = ui.view !== 'settings';
   renderVersion();
   renderInstall();
@@ -23,6 +25,7 @@ setRender(renderAll);
 bindNav();
 bindProjects();
 bindSync();
+bindItem();
 bindSettings();
 bindInstall();
 bindOnboarding();
@@ -45,7 +48,8 @@ document.addEventListener('keydown', (event) => {
     return;
   }
   if (event.key !== 'Escape') return;
-  if (ui.repo !== null) {
+  if (ui.sheetOpen) closeItemSheet();
+  else if (ui.repo !== null) {
     ui.repo = null;
     render();
   }

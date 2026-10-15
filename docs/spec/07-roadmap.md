@@ -42,6 +42,17 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
 - **UI-2** The roadmap shows the sections in file order, each as a head with its path and its
   item count. A tap on a head folds the section. The items are rows with their title and body.
   With no cache the detail says `roadmap.notLoaded`; with no `ROADMAP.md`, `roadmap.missing`.
+  A tap on an item row opens the item sheet with its section, title and body, and **Delete**.
 - **UI-5** An action that the sync marked stale, or that no longer applies to the cached text,
   shows above the roadmap as a banner (`sync.staleTitle`) with its commit message and
   **Discard**. Discard removes it from the queue; the toast `toast.discarded` offers **Undo**.
+- **UI-3** With a roadmap open, **+** opens the sheet of a new item: a section picker with no
+  default (`item.pickSection`), a title and a body. Save queues an `add` action and starts a sync.
+  An action that fails its check against the roadmap on the screen (ROAD-7, ROAD-8) shows its
+  message, and nothing is queued.
+- **UI-4** **Delete** queues a `delete` action; the toast `toast.itemDeleted` offers **Undo** for 5
+  seconds. While the action waits and no sync runs, Undo removes it from the queue. Once it may
+  have reached GitHub, Undo queues an `add` of the item at the end of its section.
+- **UI-7** The item sheet edits title, body and section together. Save with a changed title or
+  body queues an `edit`; a changed section queues a `move` after it: two actions, two commits.
+  A save that changes nothing queues nothing.

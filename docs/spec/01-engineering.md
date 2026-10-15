@@ -24,6 +24,7 @@
 | `src/ui/install.js` | The Install button | `install`, `ui/context` |
 | `src/ui/nav.js` | The navigation, the change and the slide of a section | `sections`, `modules`, `ui/context`, `ui/update`, `ui/dust` |
 | `src/ui/projects.js` | The Projects section: the project list and the roadmap of one project | `projects`, `queue`, `i18n`, `ui/context` |
+| `src/ui/item.js` | The item sheet: add, edit, move and delete, and the undo of a delete | `roadmap`, `queue`, `ui/context`, `ui/projects`, `ui/sync` |
 | `src/ui/sync.js` | The sync of all projects, its button and its state in the header | `github`, `queue`, `cache`, `ui/context` |
 | `src/ui/settings.js` | Settings, and the text of the page in its language | `projects`, `storage`, `i18n`, `modules`, `ui/context`, `ui/update`, `ui/onboarding` |
 | `src/ui/dust.js` | The dust of a navigation item (optional) | `particles`, `ui/context`, `ui/controls` |
