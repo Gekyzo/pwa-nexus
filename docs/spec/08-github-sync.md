@@ -56,7 +56,7 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   `{ missing: true, fetchedAt }` for a repository with no `ROADMAP.md`. The app reads a roadmap
   offline from it, and a sync replaces the entry. A stored cache that is not valid is kept under
   `pwa-nexus.cache.corrupt`.
-- **PROJ-1** The doc `pwa-nexus.doc` is `{ version: 1, projects: [{ repo, label }], queue }`. A
+- **PROJ-1** The doc `pwa-nexus.doc` is `{ version: 1, projects: [{ repo, label }], queue, defaults }`. A
   new install gets the five default projects: `Gekyzo/shopping-list`, `Gekyzo/pwa-wardrobe`,
   `Gekyzo/pwa-financial-calculator`, `Gekyzo/pwa-shifts` and `Gekyzo/pwa-nexus`. A stored doc
   keeps its own list. `repo` is `owner/name`, also when pasted as a GitHub URL or
@@ -67,6 +67,10 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
 - **PROJ-2** Removing a project drops its queued actions and its cache entry. If it has queued
   actions, the screen asks first, because they are lost. A project that is gone is
   `error.projectMissing`.
+- **PROJ-4** `defaults` lists the default projects that the doc was offered; a doc saved before
+  it existed was offered the first three. At each start, a default project that the doc was never
+  offered joins the end of the list, once. A default that the user removed is not added again,
+  and a repository already in the list, in any case, is not added twice.
 - **PROJ-3** Export and import carry the doc: the projects and the queue. They never carry the
   token or the cache.
 - **TOK-1** The token is a fine-grained personal access token with **Contents: read and write**

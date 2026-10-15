@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { APP_SLUG } from '#config';
 import { makeEntry } from '#queue';
-import { DOC_KEY, MAX_LABEL, DEFAULT_PROJECTS, emptyDoc, normalizeDoc, findProject, addProject, renameProject, removeProject } from '#projects';
+import { DOC_KEY, MAX_LABEL, DEFAULT_PROJECTS, emptyDoc, normalizeDoc, offerDefaults, findProject, addProject, renameProject, removeProject } from '#projects';
 
 const entry = (repo, id) => makeEntry(repo, 'delete', { ref: { path: 'P', title: 'T' } }, { id, now: 1 });
 
@@ -11,7 +11,7 @@ test('the doc key has the slug (PROJ-1)', () => {
 });
 
 test('a new doc has the five default projects and no queue (PROJ-1)', () => {
-  assert.deepEqual(emptyDoc(), { version: 1, projects: DEFAULT_PROJECTS, queue: [] });
+  assert.deepEqual(emptyDoc(), { version: 1, projects: DEFAULT_PROJECTS, queue: [], defaults: DEFAULT_PROJECTS.map((p) => p.repo) });
   assert.deepEqual(DEFAULT_PROJECTS.map((p) => p.repo), [
     'Gekyzo/shopping-list',
     'Gekyzo/pwa-wardrobe',
@@ -72,4 +72,42 @@ test('normalizeDoc refuses a doc that is not valid', () => {
     { ...ok, queue: [{ id: 'x' }] },
   ];
   for (const data of bad) assert.equal(normalizeDoc(data), null, JSON.stringify(data));
+});
+
+const ALL = DEFAULT_PROJECTS.map((p) => p.repo);
+const FIRST = ['Gekyzo/shopping-list', 'Gekyzo/pwa-wardrobe', 'Gekyzo/pwa-financial-calculator'];
+const docOf = (repos, defaults) => ({
+  version: 1,
+  projects: repos.map((repo) => ({ repo, label: repo.split('/')[1] })),
+  queue: [],
+  ...(defaults ? { defaults } : {}),
+});
+
+test('offerDefaults adds the new default projects once to a stored list (PROJ-4)', () => {
+  const next = offerDefaults(docOf(FIRST));
+  assert.deepEqual(next.projects.map((p) => p.repo), ALL);
+  assert.deepEqual(next.defaults, ALL);
+  assert.deepEqual(offerDefaults(next), next);
+});
+
+test('offerDefaults never adds back a default project that the user removed (PROJ-4)', () => {
+  const removedFirst = offerDefaults(docOf(['Gekyzo/shopping-list', 'Gekyzo/pwa-financial-calculator']));
+  assert.equal(findProject(removedFirst, 'Gekyzo/pwa-wardrobe'), null);
+  assert.ok(findProject(removedFirst, 'Gekyzo/pwa-shifts'));
+  const removedNew = offerDefaults(docOf(FIRST, ALL));
+  assert.deepEqual(removedNew.projects.map((p) => p.repo), FIRST);
+});
+
+test('offerDefaults keeps a project the user added already, in any case, and changes no input', () => {
+  const state = docOf([...FIRST, 'gekyzo/PWA-SHIFTS']);
+  const next = offerDefaults(state);
+  assert.deepEqual(next.projects.map((p) => p.repo), [...FIRST, 'gekyzo/PWA-SHIFTS', 'Gekyzo/pwa-nexus']);
+  assert.equal(state.defaults, undefined);
+  assert.equal(state.projects.length, 4);
+});
+
+test('normalizeDoc keeps the offered defaults, and refuses a list that is not of repositories', () => {
+  assert.deepEqual(normalizeDoc(docOf(FIRST, ALL)).defaults, ALL);
+  assert.equal(normalizeDoc(docOf(FIRST)).defaults, undefined);
+  for (const defaults of ['x', [1], ['nope']]) assert.equal(normalizeDoc({ ...docOf(FIRST), defaults }), null, JSON.stringify(defaults));
 });

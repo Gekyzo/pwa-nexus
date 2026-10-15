@@ -1,4 +1,4 @@
-import { DOC_KEY, emptyDoc, normalizeDoc } from '#projects';
+import { DOC_KEY, emptyDoc, normalizeDoc, offerDefaults } from '#projects';
 import { CACHE_KEY, emptyCache, normalizeCache } from '#cache';
 import {
   loadDoc,
@@ -71,7 +71,12 @@ export const textOf = ({ key, params }) => t(key, params);
 // Read before the doc. A stored doc, valid or not, means that the install is not new.
 const firstStart = storage ? shouldShow({ seen: loadOnboarded(storage), hasState: hasStoredDoc(storage, DOC_KEY) }) : false;
 
-const DOC = { key: DOC_KEY, normalize: normalizeDoc, empty: emptyDoc };
+// A stored doc gets the default projects that it was never offered (PROJ-4).
+const withDefaults = (data) => {
+  const doc = normalizeDoc(data);
+  return doc && offerDefaults(doc);
+};
+const DOC = { key: DOC_KEY, normalize: withDefaults, empty: emptyDoc };
 export let state = storage ? loadDoc(storage, DOC) : emptyDoc();
 
 // The last roadmap of each repository (CACHE-1).

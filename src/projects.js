@@ -14,7 +14,15 @@ export const DEFAULT_PROJECTS = [
   { repo: 'Gekyzo/pwa-nexus', label: 'Nexus' },
 ];
 
-export const emptyDoc = () => ({ version: 1, projects: DEFAULT_PROJECTS.map((project) => ({ ...project })), queue: [] });
+// The default projects that a doc saved before `defaults` existed was offered (PROJ-4).
+const FIRST_DEFAULTS = ['Gekyzo/shopping-list', 'Gekyzo/pwa-wardrobe', 'Gekyzo/pwa-financial-calculator'];
+
+export const emptyDoc = () => ({
+  version: 1,
+  projects: DEFAULT_PROJECTS.map((project) => ({ ...project })),
+  queue: [],
+  defaults: DEFAULT_PROJECTS.map((project) => project.repo),
+});
 
 export const findProject = (state, repo) => state.projects.find((project) => project.repo === repo) ?? null;
 
@@ -64,6 +72,20 @@ export const removeProject = (state, repo) => {
   };
 };
 
+// Adds each default project that the doc was never offered, once: a default that the user removed
+// stays removed, and a repository already in the list is not added twice (PROJ-4).
+export const offerDefaults = (state) => {
+  const offered = state.defaults ?? FIRST_DEFAULTS;
+  const fresh = DEFAULT_PROJECTS.filter(
+    ({ repo }) => !offered.some((other) => sameRepo(other, repo)) && !state.projects.some((project) => sameRepo(project.repo, repo)),
+  );
+  return {
+    ...state,
+    projects: [...state.projects, ...fresh.map((project) => ({ ...project }))],
+    defaults: DEFAULT_PROJECTS.map((project) => project.repo),
+  };
+};
+
 const validProject = (project) =>
   typeof project === 'object' &&
   project !== null &&
@@ -77,8 +99,10 @@ export const normalizeDoc = (data) => {
   if (typeof data !== 'object' || data === null || data.version !== 1) return null;
   if (!Array.isArray(data.projects) || !Array.isArray(data.queue)) return null;
   if (!data.projects.every(validProject) || !data.queue.every(isEntry)) return null;
+  const { defaults } = data;
+  if (defaults !== undefined && !(Array.isArray(defaults) && defaults.every((repo) => typeof repo === 'string' && REPO.test(repo)))) return null;
   const projects = data.projects.map(({ repo, label }) => ({ repo, label: label.trim() }));
   if (new Set(projects.map((project) => project.repo.toLowerCase())).size !== projects.length) return null;
   const queue = data.queue.map(({ id, repo, op, args, createdAt, stale }) => ({ id, repo, op, args, createdAt, ...(stale ? { stale } : {}) }));
-  return { version: 1, projects, queue };
+  return { version: 1, projects, queue, ...(defaults ? { defaults: [...defaults] } : {}) };
 };
