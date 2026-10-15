@@ -4,8 +4,9 @@ A phone app to manage the roadmaps of my projects. It reads the `ROADMAP.md` of 
 repository, and commits each change back from the phone. Plain HTML, CSS and ES modules, built
 from `pwa-template`: no build step and no dependencies.
 
-- **Projects:** Shopping (`Gekyzo/shopping-list`), Wardrobe (`Gekyzo/pwa-wardrobe`) and Financial
-  calculator (`Gekyzo/pwa-financial-calculator`) by default. Add, rename or remove projects in
+- **Projects:** Shopping (`Gekyzo/shopping-list`), Wardrobe (`Gekyzo/pwa-wardrobe`), Financial
+  calculator (`Gekyzo/pwa-financial-calculator`), Shifts (`Gekyzo/pwa-shifts`) and Nexus
+  (`Gekyzo/pwa-nexus`) by default. Add, rename or remove projects in
   Settings.
 - **Roadmap:** the `##` and `###` sections of `ROADMAP.md`, with their `- **Title.** text` items.
 - **Actions:** add an item to a section you pick, edit it, move it to another section, or delete

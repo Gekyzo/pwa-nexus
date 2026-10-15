@@ -4,7 +4,8 @@ User-visible changes, newest first.
 
 ## Unreleased
 
-No change.
+- A new install lists five projects: Shifts and Nexus join Shopping, Wardrobe and Financial
+  calculator.
 
 ## 0.1.2 - 2026-10-15
 

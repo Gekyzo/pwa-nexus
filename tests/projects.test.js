@@ -10,11 +10,17 @@ test('the doc key has the slug (PROJ-1)', () => {
   assert.equal(DOC_KEY, `${APP_SLUG}.doc`);
 });
 
-test('a new doc has the three default projects and no queue (PROJ-1)', () => {
+test('a new doc has the five default projects and no queue (PROJ-1)', () => {
   assert.deepEqual(emptyDoc(), { version: 1, projects: DEFAULT_PROJECTS, queue: [] });
-  assert.deepEqual(DEFAULT_PROJECTS.map((p) => p.repo), ['Gekyzo/shopping-list', 'Gekyzo/pwa-wardrobe', 'Gekyzo/pwa-financial-calculator']);
+  assert.deepEqual(DEFAULT_PROJECTS.map((p) => p.repo), [
+    'Gekyzo/shopping-list',
+    'Gekyzo/pwa-wardrobe',
+    'Gekyzo/pwa-financial-calculator',
+    'Gekyzo/pwa-shifts',
+    'Gekyzo/pwa-nexus',
+  ]);
   emptyDoc().projects.push({ repo: 'x/y', label: 'x' });
-  assert.equal(emptyDoc().projects.length, 3);
+  assert.equal(emptyDoc().projects.length, 5);
 });
 
 test('addProject takes owner/name, a URL or a .git name, and labels it with the name by default', () => {

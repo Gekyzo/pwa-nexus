@@ -10,6 +10,8 @@ export const DEFAULT_PROJECTS = [
   { repo: 'Gekyzo/shopping-list', label: 'Shopping' },
   { repo: 'Gekyzo/pwa-wardrobe', label: 'Wardrobe' },
   { repo: 'Gekyzo/pwa-financial-calculator', label: 'Financial calculator' },
+  { repo: 'Gekyzo/pwa-shifts', label: 'Shifts' },
+  { repo: 'Gekyzo/pwa-nexus', label: 'Nexus' },
 ];
 
 export const emptyDoc = () => ({ version: 1, projects: DEFAULT_PROJECTS.map((project) => ({ ...project })), queue: [] });
