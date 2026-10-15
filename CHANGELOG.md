@@ -4,7 +4,8 @@ User-visible changes, newest first.
 
 ## Unreleased
 
-No change.
+- A roadmap shows each H3 section inside its H2 section, one level in, as a folder. The H2
+  count includes the items of its H3 sections, and folding an H2 also hides them.
 
 ## 0.1.3 - 2026-10-15
 

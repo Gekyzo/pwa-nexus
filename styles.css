@@ -1056,6 +1056,7 @@
      @summary The row that opens and closes a part of a list, such as the done entries.
      @part section-head-button  The full-width button, with aria-expanded.
      @part chevron              The open or closed sign at its end.
+     @variant nested            On section-head and item-row: one level in, below a parent head.
      @example <ul class="item-list" style="width: 100%"><li class="section-head"><button class="section-head-button" type="button" aria-expanded="false"><span>2 done</span><span class="chevron">▸</span></button></li></ul> */
   .section-head-button {
     display: flex;
@@ -1075,6 +1076,14 @@
 
   .chevron {
     font-size: var(--text-m);
+  }
+
+  .section-head.nested .section-head-button {
+    padding-inline-start: calc(var(--space-4) * 2);
+  }
+
+  .item-row.nested .item-row-body {
+    padding-inline-start: calc(var(--space-2) + var(--space-4));
   }
 
   /* @component group-head

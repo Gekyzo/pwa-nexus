@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { MAX_TITLE, MAX_BODY, parse, sectionsOf, cleanItem, itemOf, addItem, editItem, moveItem, deleteItem } from '#roadmap';
+import { MAX_TITLE, MAX_BODY, parse, sectionsOf, cleanItem, itemOf, addItem, editItem, moveItem, deleteItem, treeOf } from '#roadmap';
 
 const SAMPLE = [
   '# Roadmap',
@@ -56,6 +56,26 @@ test('intro prose is not an item, and an H4 is not a section (ROAD-3)', () => {
   assert.deepEqual(sectionsOf(SAMPLE)[1].items.map((item) => item.title), ['Database']);
   assert.deepEqual(sectionsOf(SAMPLE)[2].items, []);
   assert.deepEqual(sectionsOf('## A\n\n#### Note\n\n- x\n').map((section) => section.path), ['A']);
+});
+
+test('treeOf nests each H3 under its H2 and totals the items of the H2 (ROAD-10)', () => {
+  const tree = treeOf(sectionsOf(SAMPLE));
+  assert.deepEqual(
+    tree.map(({ path, total, children }) => [path, total, children.map((child) => [child.path, child.total])]),
+    [
+      ['Planned', 4, [['Planned / Deferred', 1]]],
+      ['Pro', 0, [['Pro / Cloud', 0]]],
+      ['Empty', 0, []],
+    ],
+  );
+});
+
+test('treeOf keeps an H3 before the first H2 at the top, with no children (ROAD-10)', () => {
+  const tree = treeOf(sectionsOf('### Loose\n\n- **One.**\n\n## Main\n\n### Sub\n'));
+  assert.deepEqual(tree.map(({ path, total, children }) => [path, total, children.length]), [
+    ['Loose', 1, 0],
+    ['Main', 0, 1],
+  ]);
 });
 
 test('a bold title written as **Title**. reads the same', () => {

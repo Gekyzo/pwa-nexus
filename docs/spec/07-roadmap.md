@@ -34,6 +34,9 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
 - **ROAD-9** The functions keep the line ending and the final newline of the file. A test proves
   that each real `ROADMAP.md` of the default projects (`tests/fixtures/roadmaps/`) comes back byte
   for byte after an add and a delete in each section, and after an edit with the same values.
+- **ROAD-10** `treeOf(sections)` nests each H3 section under the H2 before it, as `children`.
+  `total` is the item count of a section plus that of its children. An H3 before the first H2
+  stays at the top level.
 
 ## Screen
 
@@ -41,8 +44,9 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   one line: its item count, its waiting actions (`projects.pending`) and the time of its last
   sync, or `projects.notLoaded` / `projects.noRoadmap`. A tap opens its roadmap in the pane
   (LAY-3), and the header shows the label of the project.
-- **UI-2** The roadmap shows the sections in file order, each as a head with its path and its
-  item count. A tap on a head folds the section. The items are rows with their title and body.
+- **UI-2** The roadmap shows the sections as a tree in file order (ROAD-10): an H2 head with its
+  path and its `total`, its items, then each H3 head, one level in, with its title and its item
+  count. A tap on a head folds the section; a folded H2 also hides its H3 sections. The items are rows with their title and body.
   With no cache the detail says `roadmap.notLoaded`; with no `ROADMAP.md`, `roadmap.missing`.
   A tap on an item row opens the item sheet with its section, title and body, and **Delete**.
 - **UI-5** An action that the sync marked stale, or that no longer applies to the cached text,

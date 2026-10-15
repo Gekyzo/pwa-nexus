@@ -1,4 +1,5 @@
 import { findProject } from '#projects';
+import { treeOf } from '#roadmap';
 import { roadmapView, pendingOf, discardEntry, messageOf } from '#queue';
 import { intlTag } from '#i18n';
 import { $, el, ui, state, cache, t, lang, render, apply } from '#ui/context';
@@ -55,16 +56,20 @@ const itemRow = (path, item) => {
   return el('li', { className: 'item-row' }, [el('div', { className: 'item-row-body' }, [name])]);
 };
 
-// A section is a head that folds, then its rows (UI-2).
-const sectionNodes = (repo, section) => {
+// A section is a head that folds, then its rows and its H3 sections, nested one level (UI-2).
+const sectionNodes = (repo, section, nested = false) => {
   const key = keyOf(repo, section.path);
   const open = !ui.folded.includes(key);
   const button = el('button', { className: 'section-head-button', type: 'button', onclick: () => fold(key) }, [
-    el('span', { textContent: `${section.path} · ${section.items.length}` }),
+    el('span', { textContent: `${nested ? section.title : section.path} · ${section.total}` }),
     el('span', { className: 'chevron', textContent: open ? '▾' : '▸' }),
   ]);
   button.setAttribute('aria-expanded', String(open));
-  return [el('li', { className: 'section-head' }, [button]), ...(open ? section.items.map((item) => itemRow(section.path, item)) : [])];
+  const head = el('li', { className: nested ? 'section-head nested' : 'section-head' }, [button]);
+  if (!open) return [head];
+  const rows = section.items.map((item) => itemRow(section.path, item));
+  if (nested) rows.forEach((row) => row.classList.add('nested'));
+  return [head, ...rows, ...section.children.flatMap((child) => sectionNodes(repo, child, true))];
 };
 
 // An action that no longer applies stays until the user discards it (SYNC-6, UI-5).
@@ -105,7 +110,7 @@ export const renderProjects = () => {
   const failed = project ? roadmap.failed : [];
   const stale = project ? pendingOf(state, project.repo).filter((entry) => entry.stale || failed.includes(entry.id)) : [];
   $('roadmap-stale').replaceChildren(...stale.map(staleBanner));
-  $('roadmap-list').replaceChildren(...roadmap.sections.flatMap((section) => sectionNodes(project.repo, section)));
+  $('roadmap-list').replaceChildren(...treeOf(roadmap.sections).flatMap((section) => sectionNodes(project.repo, section)));
   $('fab').hidden = !visible || !project || roadmap.sections.length === 0 || ui.sheetOpen;
 };
 

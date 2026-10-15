@@ -23,7 +23,7 @@
 | `src/ui/update.js` | The version line, the check, the refresh and the update toast | `version`, `i18n`, `ui/context` |
 | `src/ui/install.js` | The Install button | `install`, `ui/context` |
 | `src/ui/nav.js` | The navigation, the change and the slide of a section | `sections`, `modules`, `ui/context`, `ui/update`, `ui/dust` |
-| `src/ui/projects.js` | The Projects section: the project list and the roadmap of one project | `projects`, `queue`, `i18n`, `ui/context` |
+| `src/ui/projects.js` | The Projects section: the project list and the roadmap of one project | `projects`, `roadmap`, `queue`, `i18n`, `ui/context` |
 | `src/ui/item.js` | The item sheet: add, edit, move and delete, and the undo of a delete | `roadmap`, `queue`, `ui/context`, `ui/projects`, `ui/sync` |
 | `src/ui/sync.js` | The sync of all projects, its button and its state in the header | `github`, `queue`, `cache`, `ui/context` |
 | `src/ui/settings.js` | Settings, the token and the project editor, and the text of the page in its language | `projects`, `cache`, `github`, `queue`, `storage`, `i18n`, `modules`, `ui/context`, `ui/controls`, `ui/sync`, `ui/update`, `ui/onboarding` |

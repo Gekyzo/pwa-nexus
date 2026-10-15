@@ -75,6 +75,17 @@ export const sectionsOf = (md) =>
     items: items.map(({ title: name, body }) => ({ title: name, body })),
   }));
 
+// The sections as a tree: each H2 with its H3 sections as `children`, and `total`, its items plus
+// those of its children. An H3 before the first H2 has no parent and stays at the top (ROAD-10).
+export const treeOf = (sections) =>
+  sections.reduce((tree, section) => {
+    const parent = tree.at(-1);
+    const nested = section.level === 3 && section.path !== section.title && parent;
+    const node = { ...section, total: section.items.length, children: [] };
+    if (!nested) return [...tree, node];
+    return [...tree.slice(0, -1), { ...parent, total: parent.total + node.total, children: [...parent.children, node] }];
+  }, []);
+
 const oneLine = (body) => String(body ?? '').replace(/\s*[\r\n]+\s*/g, ' ').trim();
 
 export const cleanItem = ({ title, body } = {}) => {
