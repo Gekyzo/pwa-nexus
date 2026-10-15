@@ -21,7 +21,7 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
 ## Queue and sync
 
 - **SYNC-1** Every action is first an entry of the queue, `{ id, repo, op, args, createdAt }`, in
-  the doc. `op` is `add`, `edit`, `move` or `delete`. An entry that a sync could not apply has
+  the doc (PROJ-1). `op` is `add`, `edit`, `move` or `delete`. An entry that a sync could not apply has
   `stale: true`.
 - **SYNC-2** The screen shows the cached text of a repository with its queued actions applied on
   top, in their order. An action shows at once, online or offline.
@@ -36,3 +36,27 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
 - **SYNC-6** An action whose item or section no longer exists on GitHub is marked stale. It stays
   in the queue until the user discards it, and the sync goes on with the next action. A sync
   never drops an action silently, and never sends a stale one again.
+
+## Cache, projects and token
+
+- **CACHE-1** `pwa-nexus.cache` holds `{ [repo]: { text, sha, fetchedAt } }`, or
+  `{ missing: true, fetchedAt }` for a repository with no `ROADMAP.md`. The app reads a roadmap
+  offline from it, and a sync replaces the entry. A stored cache that is not valid is kept under
+  `pwa-nexus.cache.corrupt`.
+- **PROJ-1** The doc `pwa-nexus.doc` is `{ version: 1, projects: [{ repo, label }], queue }`. A
+  new install gets the three default projects: `Gekyzo/shopping-list`, `Gekyzo/pwa-wardrobe` and
+  `Gekyzo/pwa-financial-calculator`. `repo` is `owner/name`, also when pasted as a GitHub URL or
+  with `.git` (`error.repoInvalid`); one repository two times, in any case, is `error.repoTaken`.
+  A blank label is the name of the repository, and a label has at most 40 characters
+  (`error.labelTooLong`). A stored doc that is not valid is kept under `pwa-nexus.doc.corrupt`,
+  and the app starts with the defaults.
+- **PROJ-2** Removing a project drops its queued actions and its cache entry. If it has queued
+  actions, the screen asks first, because they are lost. A project that is gone is
+  `error.projectMissing`.
+- **PROJ-3** Export and import carry the doc: the projects and the queue. They never carry the
+  token or the cache.
+- **TOK-1** The token is a fine-grained personal access token with **Contents: read and write**
+  on the listed repositories only. Settings and the README tell the user how to make it.
+- **TOK-2** The token is a preference of the device under `pwa-nexus.token`, not part of the doc.
+  A blank token is no token.
+- **TOK-3** With no token, the app shows the cache read-only.

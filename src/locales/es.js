@@ -69,4 +69,8 @@ export default {
   'error.sectionMissing': 'La sección ya no existe.',
   'error.itemMissing': 'El elemento ya no existe.',
   'error.unknownAction': 'Acción desconocida.',
+  'error.repoInvalid': 'Escribe el repositorio como propietario/nombre.',
+  'error.repoTaken': 'Ese repositorio ya está en la lista.',
+  'error.labelTooLong': 'El nombre tiene como máximo {max} caracteres.',
+  'error.projectMissing': 'El proyecto ya no existe.',
 };

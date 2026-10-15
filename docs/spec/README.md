@@ -36,7 +36,7 @@ the identifier in a commit body or in a test name to point at a rule.
 | `I18N` | 06-i18n |
 | `NOTE` | 07-notes |
 | `ROAD` | 07-roadmap |
-| `GH`, `SYNC` | 08-github-sync |
+| `GH`, `SYNC`, `CACHE`, `PROJ`, `TOK` | 08-github-sync |
 
 ## Words
 

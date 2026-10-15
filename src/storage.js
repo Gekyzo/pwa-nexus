@@ -183,3 +183,26 @@ export const saveOnboarded = (storage) => {
     return false;
   }
 };
+
+// The GitHub token: a preference of this device, never part of the doc or of an export (TOK-2).
+export const TOKEN_KEY = keyOf('token');
+
+export const loadToken = (storage) => {
+  try {
+    const token = storage.getItem(TOKEN_KEY);
+    return typeof token === 'string' && token.trim() ? token.trim() : null;
+  } catch {
+    return null;
+  }
+};
+
+// `null` removes the token.
+export const saveToken = (storage, token) => {
+  try {
+    if (token) storage.setItem(TOKEN_KEY, token);
+    else storage.removeItem(TOKEN_KEY);
+    return true;
+  } catch {
+    return false;
+  }
+};

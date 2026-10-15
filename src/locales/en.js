@@ -69,4 +69,8 @@ export default {
   'error.sectionMissing': 'The section no longer exists.',
   'error.itemMissing': 'The item no longer exists.',
   'error.unknownAction': 'Unknown action.',
+  'error.repoInvalid': 'Write the repository as owner/name.',
+  'error.repoTaken': 'That repository is already in the list.',
+  'error.labelTooLong': 'The name has at most {max} characters.',
+  'error.projectMissing': 'The project no longer exists.',
 };

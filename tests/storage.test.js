@@ -24,6 +24,9 @@ import {
   ONBOARDED_KEY,
   loadOnboarded,
   saveOnboarded,
+  TOKEN_KEY,
+  loadToken,
+  saveToken,
 } from '#storage';
 
 const fakeStorage = (initial = {}) => {
@@ -248,4 +251,20 @@ test('saveOnboarded stores the flag, and is false for a storage that throws', ()
   assert.equal(saveOnboarded(storage), true);
   assert.equal(storage.getItem(ONBOARDED_KEY), '1');
   assert.equal(saveOnboarded(brokenStorage()), false);
+});
+
+test('the token is a device preference under its own key (TOK-2)', () => {
+  const storage = fakeStorage();
+  assert.equal(loadToken(storage), null);
+  assert.equal(saveToken(storage, 'github_pat_x'), true);
+  assert.equal(storage.getItem(TOKEN_KEY), 'github_pat_x');
+  assert.equal(loadToken(storage), 'github_pat_x');
+  assert.equal(saveToken(storage, null), true);
+  assert.equal(storage.getItem(TOKEN_KEY), null);
+});
+
+test('a blank stored token reads as no token, and broken storage gives null and false', () => {
+  assert.equal(loadToken(fakeStorage({ [TOKEN_KEY]: '  ' })), null);
+  assert.equal(loadToken(brokenStorage()), null);
+  assert.equal(saveToken(brokenStorage(), 'x'), false);
 });

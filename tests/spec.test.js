@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { APP_SLUG } from '#config';
 import { NOTES_KEY } from '#notes';
-import { LANGUAGE_KEY, HAND_KEY, THEME_KEY, MODULES_KEY, ONBOARDED_KEY } from '#storage';
+import { LANGUAGE_KEY, HAND_KEY, THEME_KEY, MODULES_KEY, ONBOARDED_KEY, TOKEN_KEY } from '#storage';
+import { DOC_KEY } from '#projects';
+import { CACHE_KEY } from '#cache';
 import { CATALOGS, FALLBACK, LANGUAGES } from '#i18n';
 
 // The facts of docs/spec/ that the code can prove. A rule of behaviour has no check here.
@@ -60,7 +62,8 @@ test('the specification has the storage keys and the names of the caches', () =>
   const [, cache] = read('sw.js').match(/const CACHE = '([^']+)'/);
   const [, manifest] = read('sw.js').match(/const MANIFEST = '([^']+)'/);
   for (const key of [NOTES_KEY, `${NOTES_KEY}.corrupt`]) assert.ok(docs['07-notes.md'].includes(`\`${key}\``), key);
-  for (const key of [LANGUAGE_KEY, HAND_KEY, THEME_KEY, MODULES_KEY, ONBOARDED_KEY]) assert.ok(docs['01-engineering.md'].includes(`\`${key}\``), key);
+  for (const key of [DOC_KEY, `${DOC_KEY}.corrupt`, CACHE_KEY]) assert.ok(docs['08-github-sync.md'].includes(`\`${key}\``), key);
+  for (const key of [LANGUAGE_KEY, HAND_KEY, THEME_KEY, MODULES_KEY, ONBOARDED_KEY, TOKEN_KEY]) assert.ok(docs['01-engineering.md'].includes(`\`${key}\``), key);
   for (const name of [cache, manifest]) assert.ok(docs['02-offline-version.md'].includes(`\`${name}\``), name);
 });
 

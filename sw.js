@@ -27,6 +27,8 @@ const SHELL = [
   './src/roadmap.js',
   './src/github.js',
   './src/queue.js',
+  './src/projects.js',
+  './src/cache.js',
   './src/install.js',
   './src/sections.js',
   './src/modules.js',
