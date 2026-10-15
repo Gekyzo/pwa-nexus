@@ -26,7 +26,7 @@
 | `src/ui/projects.js` | The Projects section: the project list and the roadmap of one project | `projects`, `queue`, `i18n`, `ui/context` |
 | `src/ui/item.js` | The item sheet: add, edit, move and delete, and the undo of a delete | `roadmap`, `queue`, `ui/context`, `ui/projects`, `ui/sync` |
 | `src/ui/sync.js` | The sync of all projects, its button and its state in the header | `github`, `queue`, `cache`, `ui/context` |
-| `src/ui/settings.js` | Settings, and the text of the page in its language | `projects`, `storage`, `i18n`, `modules`, `ui/context`, `ui/update`, `ui/onboarding` |
+| `src/ui/settings.js` | Settings, the token and the project editor, and the text of the page in its language | `projects`, `cache`, `github`, `queue`, `storage`, `i18n`, `modules`, `ui/context`, `ui/controls`, `ui/sync`, `ui/update`, `ui/onboarding` |
 | `src/ui/dust.js` | The dust of a navigation item (optional) | `particles`, `ui/context`, `ui/controls` |
 | `src/ui/onboarding.js` | The walkthrough (optional) | `onboarding`, `sections`, `storage`, `ui/context`, `ui/controls` |
 | `src/app.js` | Wires the views, the global keys, the service worker and the update check | all of the above |

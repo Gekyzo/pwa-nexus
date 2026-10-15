@@ -44,6 +44,18 @@
       </section>
 
       <section id="settings" class="settings" hidden>
+        <h2 class="settings-title" data-i18n="settings.github"></h2>
+        <div class="list-group">
+          <label class="field"><input id="token" class="input field-input" type="password" autocomplete="off" spellcheck="false" data-i18n-attr="placeholder:settings.token"><span class="field-label" data-i18n="settings.token"></span></label>
+          <button id="token-test" class="list-row" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#check-circle"/></svg><span data-i18n="settings.tokenTest"></span></button>
+          <p class="list-row-meta" data-i18n="settings.tokenHelp"></p>
+        </div>
+        <h2 class="settings-title" data-i18n="settings.projects"></h2>
+        <ul id="project-editor" class="list-group plain"></ul>
+        <div class="input-row">
+          <input id="project-repo" class="input" type="text" autocomplete="off" spellcheck="false" data-i18n-attr="placeholder:settings.repo,aria-label:settings.repo">
+          <button id="project-add" class="button primary" type="button" data-i18n="settings.add"></button>
+        </div>
         <h2 class="settings-title" data-i18n="settings.backup"></h2>
         <div class="list-group pair">
           <button id="export" class="list-row" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#export"/></svg><span data-i18n="settings.export"></span></button>

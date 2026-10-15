@@ -66,5 +66,7 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
 - **TOK-1** The token is a fine-grained personal access token with **Contents: read and write**
   on the listed repositories only. Settings and the README tell the user how to make it.
 - **TOK-2** The token is a preference of the device under `pwa-nexus.token`, not part of the doc.
-  A blank token is no token.
-- **TOK-3** With no token, the app shows the cache read-only.
+  A blank token is no token. The field of Settings shows it masked. **Test the token**
+  (`settings.tokenTest`) reads `ROADMAP.md` of each project and names the result of each one.
+- **TOK-3** With no token, the app shows the cache read-only, the header says `sync.noToken`,
+  and **Sync** is off.

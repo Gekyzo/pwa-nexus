@@ -56,3 +56,7 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
 - **UI-7** The item sheet edits title, body and section together. Save with a changed title or
   body queues an `edit`; a changed section queues a `move` after it: two actions, two commits.
   A save that changes nothing queues nothing.
+- **UI-6** Settings starts with the GitHub group: the token field, **Test the token** and the
+  help text of TOK-1. The Projects group lists each project as a field with its label, its
+  repository below it and **Remove** (PROJ-2); a changed field renames the project. The field
+  below the list adds a project and starts a sync. The template's settings follow.

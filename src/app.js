@@ -4,7 +4,7 @@ import { bind as bindNav, renderNav } from '#ui/nav';
 import { bind as bindProjects, renderProjects } from '#ui/projects';
 import { bind as bindSync, renderSync, syncAll } from '#ui/sync';
 import { bind as bindItem, renderItemSheet, closeItemSheet } from '#ui/item';
-import { bind as bindSettings, applyLanguage } from '#ui/settings';
+import { bind as bindSettings, applyLanguage, renderSettings } from '#ui/settings';
 import { bind as bindInstall, renderInstall } from '#ui/install';
 import { readVersion, renderVersion, offerUpdate } from '#ui/update';
 import { bind as bindOnboarding, closeOnboarding, turnOnboarding } from '#ui/onboarding';
@@ -17,6 +17,7 @@ const renderAll = () => {
   renderSync();
   renderItemSheet();
   $('settings').hidden = ui.view !== 'settings';
+  renderSettings();
   renderVersion();
   renderInstall();
 };

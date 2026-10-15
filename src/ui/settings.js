@@ -1,4 +1,7 @@
-import { normalizeDoc } from '#projects';
+import { normalizeDoc, addProject, renameProject, removeProject } from '#projects';
+import { dropEntry } from '#cache';
+import { createClient } from '#github';
+import { ROADMAP_PATH, pendingOf } from '#queue';
 import { exportJson, exportFilename, importJson } from '#storage';
 import { LANGUAGES, LANGUAGE_NAMES } from '#i18n';
 import { switchModule } from '#modules';
@@ -6,6 +9,8 @@ import {
   $,
   el,
   state,
+  cache,
+  token,
   t,
   lang,
   chosen,
@@ -22,7 +27,11 @@ import {
   setTheme,
   setModules,
   setNavMotion,
+  setToken,
+  setCache,
 } from '#ui/context';
+import { icon } from '#ui/controls';
+import { syncAll, errorKey } from '#ui/sync';
 import { runUpdate } from '#ui/update';
 import { renderOnboarding } from '#ui/onboarding';
 
@@ -62,6 +71,47 @@ export const applyLanguage = () => {
   renderOnboarding();
 };
 
+// One row of the project editor: its name as a field, its repository, and Remove (UI-6).
+const editorRow = (project) => {
+  const label = el('input', { className: 'input', type: 'text', value: project.label, maxLength: 40 });
+  label.setAttribute('aria-label', t('settings.label', { repo: project.repo }));
+  label.addEventListener('change', () => apply(renameProject(state, project.repo, label.value)));
+  const remove = el('button', { className: 'button icon danger', type: 'button', onclick: () => removeRepo(project.repo) }, [icon('trash')]);
+  remove.setAttribute('aria-label', t('settings.remove', { repo: project.repo }));
+  return el('li', {}, [el('div', { className: 'input-row' }, [label, remove]), el('small', { className: 'list-row-meta', textContent: project.repo })]);
+};
+
+// The actions that wait for this project go with it, so the app asks first (PROJ-2).
+const removeRepo = (repo) => {
+  const waiting = pendingOf(state, repo).length;
+  if (waiting && !window.confirm(t('settings.removeQueued', { count: waiting }))) return;
+  if (apply(removeProject(state, repo), { undoText: t('toast.projectRemoved') })) setCache(dropEntry(cache, repo));
+};
+
+export const renderSettings = () => {
+  $('project-editor').replaceChildren(...state.projects.map(editorRow));
+};
+
+// Each project gets one read with the token, and the toast names the result of each one (TOK-2).
+const testToken = async () => {
+  if (!token) {
+    showToast(t('error.githubAuth'));
+    return;
+  }
+  const client = createClient({ token, fetch: (...args) => fetch(...args) });
+  const lines = await Promise.all(
+    state.projects.map(async ({ repo, label }) => {
+      try {
+        await client.getFile(repo, ROADMAP_PATH);
+        return `${label} ✓`;
+      } catch (error) {
+        return `${label}: ${t(errorKey(error.type))}`;
+      }
+    }),
+  );
+  showToast(lines.join(' · '), { ms: 8000 });
+};
+
 const download = (filename, text) => {
   const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
   el('a', { href: url, download: filename }).click();
@@ -69,6 +119,18 @@ const download = (filename, text) => {
 };
 
 export const bind = () => {
+  $('token').value = token ?? '';
+  $('token').addEventListener('change', (event) => {
+    setToken(event.target.value);
+    event.target.value = token ?? '';
+    syncAll();
+  });
+  $('token-test').addEventListener('click', testToken);
+  $('project-add').addEventListener('click', () => {
+    if (!apply(addProject(state, $('project-repo').value))) return;
+    $('project-repo').value = '';
+    syncAll();
+  });
   $('export').addEventListener('click', () => {
     download(exportFilename(new Date()), exportJson(state));
   });
