@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { MAX_TITLE, MAX_BODY, parse, sectionsOf, cleanItem, itemOf, addItem, editItem, moveItem, deleteItem, treeOf } from '#roadmap';
+import { MAX_TITLE, MAX_BODY, parse, sectionsOf, cleanItem, itemOf, addItem, editItem, moveItem, deleteItem, treeOf, outlineOf } from '#roadmap';
 
 const SAMPLE = [
   '# Roadmap',
@@ -76,6 +76,17 @@ test('treeOf keeps an H3 before the first H2 at the top, with no children (ROAD-
     ['Loose', 1, 0],
     ['Main', 0, 1],
   ]);
+});
+
+test('outlineOf lists the sections in tree order with their depth, an H3 by its title (ROAD-10)', () => {
+  assert.deepEqual(outlineOf(sectionsOf(SAMPLE)), [
+    { path: 'Planned', title: 'Planned', depth: 0 },
+    { path: 'Planned / Deferred', title: 'Deferred', depth: 1 },
+    { path: 'Pro', title: 'Pro', depth: 0 },
+    { path: 'Pro / Cloud', title: 'Cloud', depth: 1 },
+    { path: 'Empty', title: 'Empty', depth: 0 },
+  ]);
+  assert.deepEqual(outlineOf(sectionsOf('### Loose\n')), [{ path: 'Loose', title: 'Loose', depth: 0 }]);
 });
 
 test('a bold title written as **Title**. reads the same', () => {

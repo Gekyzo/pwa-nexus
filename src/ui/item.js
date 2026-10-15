@@ -1,8 +1,10 @@
-import { cleanItem } from '#roadmap';
+import { cleanItem, outlineOf } from '#roadmap';
 import { makeEntry, applyEntry, enqueue, discardEntry, pendingOf, roadmapView } from '#queue';
 import { $, el, ui, state, cache, syncing, t, textOf, apply, render, showToast } from '#ui/context';
 import { onItem } from '#ui/projects';
 import { syncAll } from '#ui/sync';
+
+const INDENT = '\u00a0'.repeat(4);
 
 const viewText = (repo) => roadmapView(cache[repo], pendingOf(state, repo));
 
@@ -39,7 +41,10 @@ export const openItemSheet = (ref = null) => {
   $('item-sheet-title').textContent = t(ref ? 'item.editTitle' : 'item.new');
   $('item-section').replaceChildren(
     el('option', { value: '', textContent: t('item.pickSection'), disabled: true, selected: !ref }),
-    ...sections.map((section) => el('option', { value: section.path, textContent: section.path, selected: section.path === ref?.path })),
+    // A native option drops CSS padding on Android, so the indent of an H3 is text (UI-3).
+    ...outlineOf(sections).map(({ path, title, depth }) =>
+      el('option', { value: path, textContent: `${INDENT.repeat(depth)}${title}`, selected: path === ref?.path }),
+    ),
   );
   $('item-title').value = item?.title ?? '';
   $('item-body').value = item?.body ?? '';

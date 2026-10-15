@@ -6,6 +6,8 @@ User-visible changes, newest first.
 
 - A roadmap shows each H3 section inside its H2 section, one level in, as a folder. The H2
   count includes the items of its H3 sections, and folding an H2 also hides them.
+- The section picker of the item sheet shows the same tree: each H3 section by its title,
+  indented below its H2 section.
 
 ## 0.1.3 - 2026-10-15
 

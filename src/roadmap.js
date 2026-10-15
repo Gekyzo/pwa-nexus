@@ -86,6 +86,14 @@ export const treeOf = (sections) =>
     return [...tree.slice(0, -1), { ...parent, total: parent.total + node.total, children: [...parent.children, node] }];
   }, []);
 
+// The sections of the tree in its order, flat, each with its depth: 0 for a top-level section,
+// 1 for a nested H3, which goes by its title (ROAD-10).
+export const outlineOf = (sections) =>
+  treeOf(sections).flatMap(({ path, title, children }) => [
+    { path, title: path, depth: 0 },
+    ...children.map((child) => ({ path: child.path, title: child.title, depth: 1 })),
+  ]);
+
 const oneLine = (body) => String(body ?? '').replace(/\s*[\r\n]+\s*/g, ' ').trim();
 
 export const cleanItem = ({ title, body } = {}) => {

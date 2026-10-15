@@ -36,7 +36,8 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   for byte after an add and a delete in each section, and after an edit with the same values.
 - **ROAD-10** `treeOf(sections)` nests each H3 section under the H2 before it, as `children`.
   `total` is the item count of a section plus that of its children. An H3 before the first H2
-  stays at the top level.
+  stays at the top level. `outlineOf(sections)` lists the tree flat, in its order, as
+  `{ path, title, depth }`: depth 0 with the path, depth 1 for a nested H3 with its title.
 
 ## Screen
 
@@ -53,7 +54,8 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   shows above the roadmap as a banner (`sync.staleTitle`) with its commit message and
   **Discard**. Discard removes it from the queue; the toast `toast.discarded` offers **Undo**.
 - **UI-3** With a roadmap open, **+** opens the sheet of a new item: a section picker with no
-  default (`item.pickSection`), a title and a body. Save queues an `add` action and starts a sync.
+  default (`item.pickSection`), a title and a body. The picker lists the sections as the tree of
+  `outlineOf` (ROAD-10): a nested H3 by its title, indented with spaces; its value is the path. Save queues an `add` action and starts a sync.
   An action that fails its check against the roadmap on the screen (ROAD-7, ROAD-8) shows its
   message, and nothing is queued.
 - **UI-4** **Delete** queues a `delete` action; the toast `toast.itemDeleted` offers **Undo** for 5
