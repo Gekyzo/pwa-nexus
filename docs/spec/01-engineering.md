@@ -11,25 +11,20 @@
 | `src/modules.js` | The modules that Settings turns off, and the visible sections | `sections` |
 | `src/storage.js` | Load, save, validation hook, export, import, device preferences | `config`, `modules` |
 | `src/install.js` | The install offer state machine | nothing |
-| `src/notes.js` | Pure note operations, the doc and its validation (demo) | `config` |
 | `src/roadmap.js` | The lossless model of a ROADMAP.md and its item operations | nothing |
 | `src/github.js` | The GitHub Contents API client: get and put a file, typed errors | nothing |
 | `src/queue.js` | The action queue, the roadmap as the screen shows it, and the sync of one repository | `roadmap` |
 | `src/projects.js` | The doc: the projects, the queue, their operations and validation | `config`, `queue` |
 | `src/cache.js` | The last roadmap read from each repository | `config` |
-| `src/swipe.js` | The rule that settles the slide of a row (optional) | nothing |
-| `src/reorder.js` | The geometry of a row move (optional) | nothing |
 | `src/particles.js` | The particles of a picture and their place in time (optional) | nothing |
 | `src/onboarding.js` | The show rule and the page steps of the walkthrough (optional) | nothing |
-| `src/ui/context.js` | The values that the views share, the toast, `render`, `commit` and `apply` | `notes`, `storage`, `i18n`, `onboarding` |
+| `src/ui/context.js` | The values that the views share, the toast, `render`, `commit` and `apply` | `projects`, `cache`, `storage`, `i18n`, `onboarding` |
 | `src/ui/controls.js` | The icon builder and the side-action button | `ui/context` |
-| `src/ui/motion.js` | Row collapse, expand and slide animations | `ui/context` |
 | `src/ui/update.js` | The version line, the check, the refresh and the update toast | `version`, `i18n`, `ui/context` |
 | `src/ui/install.js` | The Install button | `install`, `ui/context` |
-| `src/ui/nav.js` | The navigation, the change and the slide of a section | `sections`, `modules`, `ui/context`, `ui/drag`, `ui/update`, `ui/dust` |
-| `src/ui/notes.js` | The Notes section, its rows and its sheet (demo) | `notes`, `swipe`, `ui/context`, `ui/controls`, `ui/drag` |
-| `src/ui/settings.js` | Settings, and the text of the page in its language | `notes`, `storage`, `i18n`, `modules`, `ui/context`, `ui/update`, `ui/onboarding` |
-| `src/ui/drag.js` | The hold and move of a row (optional) | `notes`, `reorder`, `ui/context`, `ui/motion` |
+| `src/ui/nav.js` | The navigation, the change and the slide of a section | `sections`, `modules`, `ui/context`, `ui/update`, `ui/dust` |
+| `src/ui/projects.js` | The Projects section: the project list and the roadmap of one project | `projects`, `queue`, `i18n`, `ui/context` |
+| `src/ui/settings.js` | Settings, and the text of the page in its language | `projects`, `storage`, `i18n`, `modules`, `ui/context`, `ui/update`, `ui/onboarding` |
 | `src/ui/dust.js` | The dust of a navigation item (optional) | `particles`, `ui/context`, `ui/controls` |
 | `src/ui/onboarding.js` | The walkthrough (optional) | `onboarding`, `sections`, `storage`, `ui/context`, `ui/controls` |
 | `src/app.js` | Wires the views, the global keys, the service worker and the update check | all of the above |
@@ -45,7 +40,7 @@
   storage object), so that a test passes a fake.
 - **ENG-5** No module imports `src/app.js`. A view of `src/ui/` renders the screen through
   `render` of `src/ui/context.js`.
-- **ENG-6** A module of `src/` is imported by its alias, `from '#notes'`, never by a relative
+- **ENG-6** A module of `src/` is imported by its alias, `from '#roadmap'`, never by a relative
   path. Node resolves `#name` through `imports` of `package.json`; the browser resolves it through
   the import map of `index.html`. `tests/aliases.test.js` checks that the two agree.
 - **ENG-7** A new id comes from `crypto.randomUUID()`. An operation that creates a record takes
@@ -62,7 +57,7 @@
 
 ## Storage keys
 
-The doc keys are in [07-notes.md](07-notes.md). The device preferences are `pwa-nexus.lang`,
+The doc keys are in [08-github-sync.md](08-github-sync.md). The device preferences are `pwa-nexus.lang`,
 `pwa-nexus.hand`, `pwa-nexus.theme`, `pwa-nexus.modules`, `pwa-nexus.onboarded` and
 `pwa-nexus.token` (TOK-2).
 
@@ -85,7 +80,6 @@ The doc keys are in [07-notes.md](07-notes.md). The device preferences are `pwa-
 
 | Test file | Covers |
 |---|---|
-| `tests/notes.test.js` | The note operations and the validation of the doc (demo) |
 | `tests/roadmap.test.js` | The ROADMAP model, its operations and the fixtures of the real roadmaps (ROAD-1 … ROAD-9) |
 | `tests/github.test.js` | The GitHub client with a fake fetch: base64, requests, typed errors (GH-1 … GH-5) |
 | `tests/queue.test.js` | The queue entries, the view text and the sync of a repository with a fake client (SYNC-1 … SYNC-6) |
@@ -93,13 +87,11 @@ The doc keys are in [07-notes.md](07-notes.md). The device preferences are `pwa-
 | `tests/cache.test.js` | The cache of the roadmaps and its validation (CACHE-1) |
 | `tests/storage.test.js` | Load, save, the corrupt copy, export, import and the device preferences |
 | `tests/install.test.js` | The install offer states (INS-1) |
-| `tests/swipe.test.js` | The settle rule of a row slide |
 | `tests/sw.test.js` | The manifest text that the worker puts in place (SW-13) |
 | `tests/sections.test.js` | The slide between sections |
 | `tests/modules.test.js` | The visible sections and the switch of a module |
 | `tests/particles.test.js` | The particles of a picture and their place in time |
 | `tests/onboarding.test.js` | The show rule and the page steps of the walkthrough |
-| `tests/reorder.test.js` | The geometry of a row move |
 | `tests/version.test.js` | Version rules and the update offer rule |
 | `tests/i18n.test.js` | The language choice, the translator, the parity of the catalogs |
 | `tests/markup.test.js` | `index.html` holds no text of its own; the sheet and the walkthrough markup |

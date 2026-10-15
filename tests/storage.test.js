@@ -146,7 +146,7 @@ test('a preference is not part of the stored doc', () => {
   saveLanguage(storage, 'en');
   saveHand(storage, 'left');
   saveTheme(storage, 'dark');
-  saveModules(storage, ['notes']);
+  saveModules(storage, ['projects']);
   saveOnboarded(storage);
   assert.deepEqual(loadDoc(storage, opts), empty());
   assert.equal(hasStoredDoc(storage, KEY), false);
@@ -211,28 +211,28 @@ test('the theme functions do not throw when the storage does', () => {
 });
 
 test('loadModules returns the stored ids that are modules', () => {
-  assert.deepEqual(loadModules(fakeStorage({ [MODULES_KEY]: '["notes"]' })), ['notes']);
+  assert.deepEqual(loadModules(fakeStorage({ [MODULES_KEY]: '["projects"]' })), ['projects']);
 });
 
 test('loadModules returns no module off for no value, bad JSON, a value that is not a list and unknown ids', () => {
   assert.deepEqual(loadModules(fakeStorage()), []);
   assert.deepEqual(loadModules(fakeStorage({ [MODULES_KEY]: '{' })), []);
-  assert.deepEqual(loadModules(fakeStorage({ [MODULES_KEY]: '"notes"' })), []);
-  assert.deepEqual(loadModules(fakeStorage({ [MODULES_KEY]: '{"notes":true}' })), []);
+  assert.deepEqual(loadModules(fakeStorage({ [MODULES_KEY]: '"projects"' })), []);
+  assert.deepEqual(loadModules(fakeStorage({ [MODULES_KEY]: '{"projects":true}' })), []);
   assert.deepEqual(loadModules(fakeStorage({ [MODULES_KEY]: '["shops",1,null]' })), []);
 });
 
 test('saveModules stores the known ids and an empty list removes the key', () => {
   const storage = fakeStorage();
-  assert.equal(saveModules(storage, ['shops', 'notes']), true);
-  assert.equal(storage.getItem(MODULES_KEY), '["notes"]');
+  assert.equal(saveModules(storage, ['shops', 'projects']), true);
+  assert.equal(storage.getItem(MODULES_KEY), '["projects"]');
   assert.equal(saveModules(storage, []), true);
   assert.equal(storage.getItem(MODULES_KEY), null);
 });
 
 test('the module functions do not throw when the storage does', () => {
   assert.deepEqual(loadModules(brokenStorage()), []);
-  assert.equal(saveModules(brokenStorage(), ['notes']), false);
+  assert.equal(saveModules(brokenStorage(), ['projects']), false);
   assert.equal(saveModules(brokenStorage(), []), false);
 });
 

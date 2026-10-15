@@ -33,13 +33,6 @@ test('the markup has no text of its own', () => {
   assert.doesNotMatch(body, /\s(aria-label|placeholder|title)="/);
 });
 
-test('the note sheet has a veil, a dialog and a text field with the maximum length', () => {
-  const [layer = ''] = body.match(/<div id="note-sheet" class="sheet-layer"[\s\S]*?<\/form>\s*<\/div>/) ?? [];
-  assert.match(layer, /<div id="note-veil" class="sheet-veil">/);
-  assert.match(layer, /<form id="note-form" class="sheet" role="dialog"/);
-  assert.match(layer, /<textarea id="note-text"[^>]*maxlength="200"/);
-});
-
 test('the walkthrough has one drawing for each page, in the order of the pages', () => {
   const [layer = ''] = body.match(/<div id="onboarding"[\s\S]*?<input id="import-file"/) ?? [];
   const drawings = [...layer.matchAll(/<svg data-page="([^"]+)"/g)].map(([, page]) => page);
@@ -56,4 +49,14 @@ test('the walkthrough has Saltar and the next button in one bar at the bottom, S
   const buttons = [...bar.matchAll(/<button id="([^"]+)"/g)].map(([, id]) => id);
   assert.deepEqual(buttons, ['onboarding-skip', 'onboarding-next']);
   assert.doesNotMatch(body, /onboarding-top/);
+});
+
+test('the item sheet has a veil, a dialog, a section picker and text fields with their maximum lengths (UI-3, UI-7)', () => {
+  const [layer = ''] = body.match(/<div id="item-sheet" class="sheet-layer"[\s\S]*?<\/form>\s*<\/div>/) ?? [];
+  assert.match(layer, /<div id="item-veil" class="sheet-veil">/);
+  assert.match(layer, /<form id="item-form" class="sheet" role="dialog"/);
+  assert.match(layer, /<select id="item-section" class="select"[^>]*required/);
+  assert.match(layer, /<input id="item-title"[^>]*maxlength="80"[^>]*required/);
+  assert.match(layer, /<textarea id="item-body"[^>]*maxlength="500"/);
+  assert.match(layer, /<button id="item-delete" class="button danger"/);
 });

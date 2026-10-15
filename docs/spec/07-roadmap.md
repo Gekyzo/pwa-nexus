@@ -34,3 +34,11 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   for byte after an add and a delete in each section, and after an edit with the same values.
 
 ## Screen
+
+- **UI-1** Projects is the first section. It lists one row for each project, with its label and
+  one line: its item count, its waiting actions (`projects.pending`) and the time of its last
+  sync, or `projects.notLoaded` / `projects.noRoadmap`. A tap opens its roadmap in the pane
+  (LAY-3), and the header shows the label of the project.
+- **UI-2** The roadmap shows the sections in file order, each as a head with its path and its
+  item count. A tap on a head folds the section. The items are rows with their title and body.
+  With no cache the detail says `roadmap.notLoaded`; with no `ROADMAP.md`, `roadmap.missing`.

@@ -25,21 +25,17 @@
     </div>
 
     <main>
-      <section id="notes" class="pane">
+      <section id="projects" class="pane">
         <div class="pane-list">
-          <ul id="note-list" class="item-list"></ul>
-          <div id="notes-empty" class="empty-state" hidden>
-            <p data-i18n="notes.empty"></p>
+          <ul id="project-list" class="item-list"></ul>
+          <div id="projects-empty" class="empty-state" hidden>
+            <p data-i18n="projects.empty"></p>
           </div>
         </div>
-        <article id="note-detail" class="pane-detail">
-          <button id="note-back" class="button quiet pane-back" type="button" data-i18n="notes.back"></button>
-          <p id="note-detail-empty" class="empty-state" data-i18n="notes.pick"></p>
-          <p id="note-detail-text"></p>
-          <div id="note-actions" class="cluster">
-            <button id="note-edit" class="button outline" type="button" data-i18n="notes.edit"></button>
-            <button id="note-delete" class="button danger" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg><span data-i18n="notes.delete"></span></button>
-          </div>
+        <article id="roadmap" class="pane-detail">
+          <button id="roadmap-back" class="button quiet pane-back" type="button" data-i18n="roadmap.back"></button>
+          <p id="roadmap-empty" class="empty-state"></p>
+          <ul id="roadmap-list" class="item-list"></ul>
         </article>
       </section>
 
@@ -63,7 +59,7 @@
         </div>
         <h2 class="settings-title" data-i18n="settings.modules"></h2>
         <div class="list-group">
-          <label class="switch"><span data-i18n="nav.notes"></span><input class="switch-input" type="checkbox" role="switch" data-module="notes"></label>
+          <label class="switch"><span data-i18n="nav.projects"></span><input class="switch-input" type="checkbox" role="switch" data-module="projects"></label>
         </div>
         <h2 class="settings-title" data-i18n="settings.app"></h2>
         <div class="list-group">
@@ -80,12 +76,12 @@
       </section>
     </main>
 
-    <button id="fab" class="fab" type="button" data-i18n-attr="aria-label:notes.add">+</button>
+    <button id="fab" class="fab" type="button" data-i18n-attr="aria-label:item.add">+</button>
 
     <nav class="nav-bar" data-i18n-attr="aria-label:nav.label">
-      <button class="nav-item" type="button" data-view="notes">
+      <button class="nav-item" type="button" data-view="projects">
         <svg class="icon" aria-hidden="true"><use href="icons.svg#note"/></svg>
-        <span data-i18n="nav.notes"></span>
+        <span data-i18n="nav.projects"></span>
       </button>
       <button class="nav-item" type="button" data-view="settings">
         <svg class="icon" aria-hidden="true"><use href="icons.svg#settings"/></svg>
@@ -93,13 +89,18 @@
       </button>
     </nav>
 
-    <div id="note-sheet" class="sheet-layer" hidden>
-      <div id="note-veil" class="sheet-veil"></div>
-      <form id="note-form" class="sheet" role="dialog" aria-modal="true" aria-labelledby="note-sheet-title" autocomplete="off">
+    <div id="item-sheet" class="sheet-layer" hidden>
+      <div id="item-veil" class="sheet-veil"></div>
+      <form id="item-form" class="sheet" role="dialog" aria-modal="true" aria-labelledby="item-sheet-title" autocomplete="off">
         <div class="sheet-grab"></div>
-        <h2 id="note-sheet-title" class="sheet-title"></h2>
-        <label class="field"><textarea id="note-text" class="input" maxlength="200" rows="3" required></textarea><span class="field-label" data-i18n="notes.text"></span></label>
-        <button class="button primary wide" type="submit" data-i18n="notes.save"></button>
+        <h2 id="item-sheet-title" class="sheet-title"></h2>
+        <select id="item-section" class="select" required data-i18n-attr="aria-label:item.section"></select>
+        <label class="field"><input id="item-title" class="input field-input" type="text" maxlength="80" required data-i18n-attr="placeholder:item.title"><span class="field-label" data-i18n="item.title"></span></label>
+        <label class="field"><textarea id="item-body" class="input field-input" maxlength="500" rows="3" data-i18n-attr="placeholder:item.body"></textarea><span class="field-label" data-i18n="item.body"></span></label>
+        <div class="cluster">
+          <button id="item-delete" class="button danger" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg><span data-i18n="item.delete"></span></button>
+          <button class="button primary" type="submit" data-i18n="item.save"></button>
+        </div>
       </form>
     </div>
 
@@ -143,8 +144,8 @@
           "#github": "./src/github.js",
           "#queue": "./src/queue.js",
           "#projects": "./src/projects.js",
+          "#ui/projects": "./src/ui/projects.js",
           "#cache": "./src/cache.js",
-          "#notes": "./src/notes.js",
           "#install": "./src/install.js",
           "#sections": "./src/sections.js",
           "#modules": "./src/modules.js",
@@ -156,15 +157,10 @@
           "#ui/context": "./src/ui/context.js",
           "#ui/controls": "./src/ui/controls.js",
           "#ui/install": "./src/ui/install.js",
-          "#ui/motion": "./src/ui/motion.js",
           "#ui/nav": "./src/ui/nav.js",
-          "#ui/notes": "./src/ui/notes.js",
           "#ui/settings": "./src/ui/settings.js",
-          "#swipe": "./src/swipe.js",
-          "#reorder": "./src/reorder.js",
           "#particles": "./src/particles.js",
           "#onboarding": "./src/onboarding.js",
-          "#ui/drag": "./src/ui/drag.js",
           "#ui/dust": "./src/ui/dust.js",
           "#ui/onboarding": "./src/ui/onboarding.js",
           "#ui/update": "./src/ui/update.js"

@@ -1,16 +1,17 @@
-import { $, ui, storage, t, setRender, render, showToast, hideToast, toastAction, clickGuardUntil } from '#ui/context';
+import { $, ui, state, storage, t, setRender, render, showToast, hideToast, toastAction, clickGuardUntil } from '#ui/context';
+import { findProject } from '#projects';
 import { bind as bindNav, renderNav } from '#ui/nav';
-import { bind as bindNotes, renderNotes, closeNoteSheet } from '#ui/notes';
+import { bind as bindProjects, renderProjects } from '#ui/projects';
 import { bind as bindSettings, applyLanguage } from '#ui/settings';
 import { bind as bindInstall, renderInstall } from '#ui/install';
 import { readVersion, renderVersion, offerUpdate } from '#ui/update';
-import { bind as bindDrag, endReorder } from '#ui/drag';
 import { bind as bindOnboarding, closeOnboarding, turnOnboarding } from '#ui/onboarding';
 
 const renderAll = () => {
   renderNav();
-  $('title').textContent = t(`nav.${ui.view}`);
-  renderNotes();
+  const project = ui.view === 'projects' && ui.repo !== null ? findProject(state, ui.repo) : null;
+  $('title').textContent = project?.label ?? t(`nav.${ui.view}`);
+  renderProjects();
   $('settings').hidden = ui.view !== 'settings';
   renderVersion();
   renderInstall();
@@ -18,10 +19,9 @@ const renderAll = () => {
 setRender(renderAll);
 
 bindNav();
-bindNotes();
+bindProjects();
 bindSettings();
 bindInstall();
-bindDrag();
 bindOnboarding();
 
 document.addEventListener(
@@ -42,10 +42,8 @@ document.addEventListener('keydown', (event) => {
     return;
   }
   if (event.key !== 'Escape') return;
-  endReorder(false);
-  if (ui.sheetOpen) closeNoteSheet();
-  else if (ui.noteId !== null) {
-    ui.noteId = null;
+  if (ui.repo !== null) {
+    ui.repo = null;
     render();
   }
 });
