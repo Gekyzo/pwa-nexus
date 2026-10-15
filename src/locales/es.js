@@ -62,4 +62,10 @@ export default {
   'error.textRequired': 'Escribe un texto.',
   'error.textTooLong': 'Máximo {max} caracteres.',
   'error.noteMissing': 'La nota ya no existe.',
+  'error.titleRequired': 'Escribe un título.',
+  'error.titleTooLong': 'El título tiene como máximo {max} caracteres.',
+  'error.bodyTooLong': 'La descripción tiene como máximo {max} caracteres.',
+  'error.titleTaken': 'Esa sección ya tiene un elemento con ese título.',
+  'error.sectionMissing': 'La sección ya no existe.',
+  'error.itemMissing': 'El elemento ya no existe.',
 };

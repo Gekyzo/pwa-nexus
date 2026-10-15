@@ -62,4 +62,10 @@ export default {
   'error.textRequired': 'Write a text.',
   'error.textTooLong': 'At most {max} characters.',
   'error.noteMissing': 'The note no longer exists.',
+  'error.titleRequired': 'Write a title.',
+  'error.titleTooLong': 'The title has at most {max} characters.',
+  'error.bodyTooLong': 'The description has at most {max} characters.',
+  'error.titleTaken': 'That section already has an item with that title.',
+  'error.sectionMissing': 'The section no longer exists.',
+  'error.itemMissing': 'The item no longer exists.',
 };

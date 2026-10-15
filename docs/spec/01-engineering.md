@@ -12,6 +12,7 @@
 | `src/storage.js` | Load, save, validation hook, export, import, device preferences | `config`, `modules` |
 | `src/install.js` | The install offer state machine | nothing |
 | `src/notes.js` | Pure note operations, the doc and its validation (demo) | `config` |
+| `src/roadmap.js` | The lossless model of a ROADMAP.md and its item operations | nothing |
 | `src/swipe.js` | The rule that settles the slide of a row (optional) | nothing |
 | `src/reorder.js` | The geometry of a row move (optional) | nothing |
 | `src/particles.js` | The particles of a picture and their place in time (optional) | nothing |
@@ -80,6 +81,7 @@ The doc keys are in [07-notes.md](07-notes.md). The device preferences are `pwa-
 | Test file | Covers |
 |---|---|
 | `tests/notes.test.js` | The note operations and the validation of the doc (demo) |
+| `tests/roadmap.test.js` | The ROADMAP model, its operations and the fixtures of the real roadmaps (ROAD-1 … ROAD-9) |
 | `tests/storage.test.js` | Load, save, the corrupt copy, export, import and the device preferences |
 | `tests/install.test.js` | The install offer states (INS-1) |
 | `tests/swipe.test.js` | The settle rule of a row slide |
