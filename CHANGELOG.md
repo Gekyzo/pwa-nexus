@@ -8,6 +8,8 @@ User-visible changes, newest first.
   still shows that the section is inside another one.
 - The description field of the item sheet grows with its text, and its label no longer covers
   the first line.
+- A row of the roadmap keeps a margin above and below its text, so a long description no
+  longer touches the lines between the rows.
 
 ## 0.1.4 - 2026-10-15
 
