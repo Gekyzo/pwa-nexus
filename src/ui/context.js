@@ -99,6 +99,8 @@ export const ui = {
   editing: null,
   // The folded sections, as `<repo>\n<path>`.
   folded: [],
+  // The text of the roadmap search; it is not saved, and a new project starts with none (UI-8).
+  query: '',
   // The type of the error of the last sync, or null (SYNC-7).
   syncError: null,
   // The page of the walkthrough in view, or null while the walkthrough is closed.

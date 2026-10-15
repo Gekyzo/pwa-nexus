@@ -38,6 +38,9 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   `total` is the item count of a section plus that of its children. An H3 before the first H2
   stays at the top level. `outlineOf(sections)` lists the tree flat, in its order, as
   `{ path, title, depth }`: depth 0 with the path, depth 1 for a nested H3 with its title.
+- **ROAD-11** `filterTree(tree, query)` keeps the items whose title or body holds each word of
+  the query, in any case and with no accents (`menu` finds `Menú`), and the sections that keep an
+  item or a child. `total` counts the matches. A blank query gives the tree as it is.
 
 ## Screen
 
@@ -65,6 +68,10 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
 - **UI-7** The item sheet edits title, body and section together. Save with a changed title or
   body queues an `edit`; a changed section queues a `move` after it: two actions, two commits.
   A save that changes nothing queues nothing.
+- **UI-8** With a roadmap that has sections, a search field (`roadmap.search`) shows above it. Each
+  key filters the roadmap with ROAD-11. While the search has text, each section is open and a tap
+  on a head does nothing; the folds come back when the field is empty. No match shows
+  `roadmap.noMatch`. The text is not saved, and opening a project empties it.
 - **UI-6** Settings starts with the GitHub group: the token field, **Test the token** and the
   help text of TOK-1. The Projects group lists each project as a field with its label, its
   repository below it and **Remove** (PROJ-2); a changed field renames the project. The field

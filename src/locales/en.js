@@ -16,6 +16,8 @@ export default {
   'roadmap.notLoaded': 'Sync to load this roadmap.',
   'roadmap.missing': 'This repository has no ROADMAP.md.',
   'roadmap.noSections': 'ROADMAP.md has no ## or ### section.',
+  'roadmap.search': 'Search items',
+  'roadmap.noMatch': 'No item matches.',
   'item.add': 'Add item',
   'item.new': 'New item',
   'item.editTitle': 'Edit item',

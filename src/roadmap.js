@@ -94,6 +94,28 @@ export const outlineOf = (sections) =>
     ...children.map((child) => ({ path: child.path, title: child.title, depth: 1 })),
   ]);
 
+// Lower case with no accents, so `menu` finds `Menú`.
+const fold = (text) => text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+
+// The tree with only the items whose title or body holds each word of `query`, and only the
+// sections that keep an item or a child. `total` counts the matches. A blank query gives the
+// tree as it is (ROAD-11).
+export const filterTree = (tree, query) => {
+  const words = fold(query).split(/\s+/).filter(Boolean);
+  if (words.length === 0) return tree;
+  const matches = ({ title, body }) => {
+    const text = fold(`${title} ${body}`);
+    return words.every((word) => text.includes(word));
+  };
+  const keep = (section) => {
+    const items = section.items.filter(matches);
+    const children = section.children.map(keep).filter(Boolean);
+    const total = items.length + children.reduce((sum, child) => sum + child.total, 0);
+    return total ? { ...section, items, children, total } : null;
+  };
+  return tree.map(keep).filter(Boolean);
+};
+
 const oneLine = (body) => String(body ?? '').replace(/\s*[\r\n]+\s*/g, ' ').trim();
 
 export const cleanItem = ({ title, body } = {}) => {

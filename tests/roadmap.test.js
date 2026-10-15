@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { MAX_TITLE, MAX_BODY, parse, sectionsOf, cleanItem, itemOf, addItem, editItem, moveItem, deleteItem, treeOf, outlineOf } from '#roadmap';
+import { MAX_TITLE, MAX_BODY, parse, sectionsOf, cleanItem, itemOf, addItem, editItem, moveItem, deleteItem, treeOf, outlineOf, filterTree } from '#roadmap';
 
 const SAMPLE = [
   '# Roadmap',
@@ -87,6 +87,50 @@ test('outlineOf lists the sections in tree order with their depth, an H3 by its 
     { path: 'Empty', title: 'Empty', depth: 0 },
   ]);
   assert.deepEqual(outlineOf(sectionsOf('### Loose\n')), [{ path: 'Loose', title: 'Loose', depth: 0 }]);
+});
+
+const SEARCH = [
+  '## Planned',
+  '',
+  '- **Menú semanal.** Plan the week.',
+  '- **Responsive.** Fit wide screens.',
+  '',
+  '### Deferred',
+  '',
+  '- **Database.** When the PRICE history grows.',
+  '',
+  '## Pro',
+  '',
+  '### Cloud',
+  '',
+  '- **Sync.** Keep devices the same.',
+  '',
+].join('\n');
+
+const shape = (tree) =>
+  tree.map(({ path, total, items, children }) => [path, total, items.map((item) => item.title), shape(children)]);
+
+test('filterTree with an empty or blank query gives the tree as it is (ROAD-11)', () => {
+  const tree = treeOf(sectionsOf(SEARCH));
+  assert.equal(filterTree(tree, ''), tree);
+  assert.equal(filterTree(tree, '   '), tree);
+});
+
+test('filterTree matches the title or the body, in any case and with no accents (ROAD-11)', () => {
+  const tree = treeOf(sectionsOf(SEARCH));
+  assert.deepEqual(shape(filterTree(tree, 'menu')), [['Planned', 1, ['Menú semanal'], []]]);
+  assert.deepEqual(shape(filterTree(tree, 'WIDE')), [['Planned', 1, ['Responsive'], []]]);
+});
+
+test('filterTree needs each word of the query in the title or the body (ROAD-11)', () => {
+  const tree = treeOf(sectionsOf(SEARCH));
+  assert.deepEqual(shape(filterTree(tree, 'price history')), [['Planned', 1, [], [['Planned / Deferred', 1, ['Database'], []]]]]);
+  assert.deepEqual(shape(filterTree(tree, 'price menu')), []);
+});
+
+test('filterTree keeps an H2 with no match of its own when an H3 of it matches (ROAD-11)', () => {
+  const tree = treeOf(sectionsOf(SEARCH));
+  assert.deepEqual(shape(filterTree(tree, 'devices')), [['Pro', 1, [], [['Pro / Cloud', 1, ['Sync'], []]]]]);
 });
 
 test('a bold title written as **Title**. reads the same', () => {

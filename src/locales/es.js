@@ -16,6 +16,8 @@ export default {
   'roadmap.notLoaded': 'Sincroniza para cargar esta hoja de ruta.',
   'roadmap.missing': 'Este repositorio no tiene ROADMAP.md.',
   'roadmap.noSections': 'ROADMAP.md no tiene ninguna sección ## o ###.',
+  'roadmap.search': 'Buscar elementos',
+  'roadmap.noMatch': 'Ningún elemento coincide.',
   'item.add': 'Añadir elemento',
   'item.new': 'Nuevo elemento',
   'item.editTitle': 'Editar elemento',

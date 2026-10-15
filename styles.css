@@ -428,6 +428,7 @@
      @summary A one-line text box. Height --tap, on --bg.
      @variant raised  On a --bg page: the box takes --surface.
      @variant strong  The main box of a sheet, with an accent border.
+     @variant filter  A search box above a list, with a gap below it.
      @example <input class="input" type="text" placeholder="New tag">
      @example <input class="input raised" type="search" placeholder="Search">
      @example <input class="input strong" type="text" placeholder="Añadir artículo a la lista"> */
@@ -447,6 +448,10 @@
 
   .input.strong {
     border: 2px solid var(--accent);
+  }
+
+  .input.filter {
+    margin-bottom: var(--space-3);
   }
 
   /* @component field

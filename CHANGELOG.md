@@ -10,6 +10,8 @@ User-visible changes, newest first.
   the first line.
 - A row of the roadmap keeps a margin above and below its text, so a long description no
   longer touches the lines between the rows.
+- A search field above the roadmap shows only the items whose title or description holds each
+  word you type, in any case and with or without accents.
 
 ## 0.1.4 - 2026-10-15
 

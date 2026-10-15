@@ -1,5 +1,5 @@
 import { findProject } from '#projects';
-import { treeOf } from '#roadmap';
+import { treeOf, filterTree } from '#roadmap';
 import { roadmapView, pendingOf, discardEntry, messageOf } from '#queue';
 import { intlTag } from '#i18n';
 import { $, el, ui, state, cache, t, lang, render, apply } from '#ui/context';
@@ -12,6 +12,7 @@ export const onItem = (fn) => {
 
 export const openProject = (repo) => {
   ui.repo = repo;
+  ui.query = '';
   render();
 };
 
@@ -57,10 +58,13 @@ const itemRow = (path, item) => {
 };
 
 // A section is a head that folds, then its rows and its H3 sections, nested one level (UI-2).
+// While a search runs, each section is open and a tap on its head does nothing (UI-8).
 const sectionNodes = (repo, section, nested = false) => {
   const key = keyOf(repo, section.path);
-  const open = !ui.folded.includes(key);
-  const button = el('button', { className: 'section-head-button', type: 'button', onclick: () => fold(key) }, [
+  const searching = ui.query.trim() !== '';
+  const open = searching || !ui.folded.includes(key);
+  const onclick = searching ? null : () => fold(key);
+  const button = el('button', { className: 'section-head-button', type: 'button', onclick }, [
     el('span', { textContent: `${nested ? section.title : section.path} · ${section.total}` }),
     el('span', { className: 'chevron', textContent: open ? '▾' : '▸' }),
   ]);
@@ -85,12 +89,13 @@ const staleBanner = (entry) =>
     }),
   ]);
 
-const emptyText = (project, roadmap) => {
+const emptyText = (project, roadmap, tree) => {
   if (!project) return t('projects.pick');
   const entry = cache[project.repo];
   if (!entry) return t('roadmap.notLoaded');
   if (entry.missing) return t('roadmap.missing');
-  return roadmap.sections.length ? '' : t('roadmap.noSections');
+  if (!roadmap.sections.length) return t('roadmap.noSections');
+  return tree.length ? '' : t('roadmap.noMatch');
 };
 
 export const renderProjects = () => {
@@ -104,16 +109,24 @@ export const renderProjects = () => {
   // The pane shows the roadmap alone below 840px, and beside the list from 840px (LAY-3).
   if (project) $('projects').dataset.detail = '';
   else delete $('projects').dataset.detail;
-  const empty = emptyText(project, roadmap);
+  const tree = filterTree(treeOf(roadmap.sections), ui.query);
+  const search = $('roadmap-search');
+  search.hidden = !project || roadmap.sections.length === 0;
+  if (search.value !== ui.query) search.value = ui.query;
+  const empty = emptyText(project, roadmap, tree);
   $('roadmap-empty').textContent = empty;
   $('roadmap-empty').hidden = !empty;
   const failed = project ? roadmap.failed : [];
   const stale = project ? pendingOf(state, project.repo).filter((entry) => entry.stale || failed.includes(entry.id)) : [];
   $('roadmap-stale').replaceChildren(...stale.map(staleBanner));
-  $('roadmap-list').replaceChildren(...treeOf(roadmap.sections).flatMap((section) => sectionNodes(project.repo, section)));
+  $('roadmap-list').replaceChildren(...tree.flatMap((section) => sectionNodes(project.repo, section)));
   $('fab').hidden = !visible || !project || roadmap.sections.length === 0 || ui.sheetOpen;
 };
 
 export const bind = () => {
   $('roadmap-back').addEventListener('click', () => openProject(null));
+  $('roadmap-search').addEventListener('input', (event) => {
+    ui.query = event.target.value;
+    render();
+  });
 };
