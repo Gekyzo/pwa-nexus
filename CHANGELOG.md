@@ -4,6 +4,10 @@ User-visible changes, newest first.
 
 ## Unreleased
 
+No change.
+
+## 0.1.2 - 2026-10-15
+
 - A project that the token cannot reach no longer stops the sync of the others.
 - Editing an item's title keeps its sub-bullets and its text as written; moving an item keeps them too.
 - An edit or a delete made on the phone no longer overwrites an item changed on the computer: it
