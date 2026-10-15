@@ -4,7 +4,8 @@ User-visible changes, newest first.
 
 ## Unreleased
 
-No change.
+- The section picker marks each H3 section with `└` instead of an indent, so the closed field
+  still shows that the section is inside another one.
 
 ## 0.1.4 - 2026-10-15
 

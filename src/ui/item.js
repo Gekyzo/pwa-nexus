@@ -4,7 +4,7 @@ import { $, el, ui, state, cache, syncing, t, textOf, apply, render, showToast }
 import { onItem } from '#ui/projects';
 import { syncAll } from '#ui/sync';
 
-const INDENT = '\u00a0'.repeat(4);
+const BRANCH = '└\u00a0';
 
 const viewText = (repo) => roadmapView(cache[repo], pendingOf(state, repo));
 
@@ -41,9 +41,10 @@ export const openItemSheet = (ref = null) => {
   $('item-sheet-title').textContent = t(ref ? 'item.editTitle' : 'item.new');
   $('item-section').replaceChildren(
     el('option', { value: '', textContent: t('item.pickSection'), disabled: true, selected: !ref }),
-    // A native option drops CSS padding on Android, so the indent of an H3 is text (UI-3).
+    // A closed select shows the text of its option, so a nested H3 carries a branch mark, not an
+    // indent: the mark still reads as a child there (UI-3).
     ...outlineOf(sections).map(({ path, title, depth }) =>
-      el('option', { value: path, textContent: `${INDENT.repeat(depth)}${title}`, selected: path === ref?.path }),
+      el('option', { value: path, textContent: `${depth ? BRANCH : ''}${title}`, selected: path === ref?.path }),
     ),
   );
   $('item-title').value = item?.title ?? '';
