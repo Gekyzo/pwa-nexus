@@ -4,6 +4,10 @@ User-visible changes, newest first.
 
 ## Unreleased
 
+No change.
+
+## 0.1.1 - 2026-10-15
+
 - The Projects list, with the item count, the waiting changes and the last sync of each project.
 - The roadmap of a project: its sections, which fold, and their items.
 - Add, edit, move and delete an item. Each change is one commit on GitHub.
