@@ -32,7 +32,9 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   action is one commit. An action that changes no byte leaves the queue with no commit.
 - **SYNC-4** The commit messages are `Add roadmap item: <title>`, `Edit roadmap item: <title>`,
   `Move roadmap item to <path>: <title>` and `Delete roadmap item: <title>`. An edit or a move
-  names the title before the action.
+  names the title before the action. The commit puts ` [pwa-nexus]` after this subject, and a
+  body with the trailer `Via: pwa-nexus <version>`; with no known version, `Via: pwa-nexus`. The
+  banner of UI-5 shows the subject with no tag.
 - **SYNC-5** On a `conflict`, the sync gets the file again and retries that action once. A
   second conflict stops the sync of that repository and keeps the action.
 - **SYNC-6** An action whose item or section no longer exists on GitHub is marked stale. It stays
@@ -46,7 +48,8 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   `notFound` marks the repository as having no `ROADMAP.md`, a `forbidden` shows
   `error.githubForbidden`, and a second `conflict` shows `error.githubConflict`; in these cases
   the sync goes on with the next repository.
-- **SYNC-8** A sync runs when the app opens, on the `online` event and on the **Sync** button.
+- **SYNC-8** A sync runs when the app opens, once it has read its version (SYNC-4), on the
+  `online` event and on the **Sync** button.
   The repositories sync one after the other, never two at a time. A sync asked for while one
   runs runs once more at its end. With no token or no network, no sync runs.
 

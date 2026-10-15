@@ -12,6 +12,8 @@ User-visible changes, newest first.
   longer touches the lines between the rows.
 - A search field above the roadmap shows only the items whose title or description holds each
   word you type, in any case and with or without accents.
+- A commit of the app ends its subject with `[pwa-nexus]` and carries the trailer
+  `Via: pwa-nexus <version>`, so the history of a repository shows which changes came from it.
 
 ## 0.1.4 - 2026-10-15
 

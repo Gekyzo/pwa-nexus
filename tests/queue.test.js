@@ -7,6 +7,7 @@ import {
   isEntry,
   applyEntry,
   messageOf,
+  commitMessageOf,
   enqueue,
   discardEntry,
   pendingOf,
@@ -36,7 +37,7 @@ const fakeClient = (text, fails = {}) => {
       return { text: remote.text, sha: remote.sha };
     },
     putFile: async (repo, path, { text: next, sha, message }) => {
-      remote.calls.push(['put', message]);
+      remote.calls.push(['put', message.split('\n')[0]]);
       const error = queue.put.shift();
       if (error) throw error;
       if (sha !== remote.sha) throw new GitHubError('conflict', 409);
@@ -118,6 +119,23 @@ test('stopsSync is true for auth, rateLimit and network only: a repository the t
   assert.deepEqual(['auth', 'rateLimit', 'network', 'notFound', 'conflict', 'forbidden'].map(stopsSync), [true, true, true, false, false, false]);
 });
 
+test('commitMessageOf tags the subject and names the app and its version in a trailer (SYNC-4)', () => {
+  assert.equal(commitMessageOf(add('C')), 'Add roadmap item: C [pwa-nexus]\n\nVia: pwa-nexus');
+  assert.equal(commitMessageOf(add('C'), '0.1.5'), 'Add roadmap item: C [pwa-nexus]\n\nVia: pwa-nexus 0.1.5');
+});
+
+test('syncRepo puts the commit message with the version it gets (SYNC-4)', async () => {
+  const client = fakeClient(MD);
+  const messages = [];
+  const put = client.putFile;
+  client.putFile = (repo, path, args) => {
+    messages.push(args.message);
+    return put(repo, path, args);
+  };
+  await syncRepo({ client, repo: 'o/r', entries: [add('C', '1')], version: '0.1.5' });
+  assert.deepEqual(messages, ['Add roadmap item: C [pwa-nexus]\n\nVia: pwa-nexus 0.1.5']);
+});
+
 test('syncRepo commits each action in order, one commit for each (SYNC-3, SYNC-4)', async () => {
   const client = fakeClient(MD);
   const entries = [add('C', '1'), entry('delete', { ref: { path: 'Planned', title: 'A' } }, '2')];
@@ -127,8 +145,8 @@ test('syncRepo commits each action in order, one commit for each (SYNC-3, SYNC-4
   assert.equal(result.error, null);
   assert.deepEqual(client.remote.calls, [
     ['get', 'o/r', ROADMAP_PATH],
-    ['put', 'Add roadmap item: C'],
-    ['put', 'Delete roadmap item: A'],
+    ['put', 'Add roadmap item: C [pwa-nexus]'],
+    ['put', 'Delete roadmap item: A [pwa-nexus]'],
   ]);
   assert.deepEqual(result.file, { text: client.remote.text, sha: 's2' });
   assert.equal(client.remote.text, '## Planned\n\n- **B.** two\n- **C.**\n\n## Deferred\n');

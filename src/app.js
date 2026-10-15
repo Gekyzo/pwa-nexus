@@ -63,14 +63,15 @@ $('toast-action').addEventListener('click', () => {
 });
 
 applyLanguage();
-syncAll();
 if (ui.onboarding !== null) $('onboarding-next').focus();
 if (!storage) showToast(t('error.noStorage'));
 navigator.storage?.persist?.().catch(() => {});
 navigator.serviceWorker?.register('./sw.js').catch(() => {});
 // Read once at the start: the worker answers from the cache, then stores the file of the next deploy.
+// The first sync waits for it, so its commits name the version (SYNC-4, SYNC-8).
 readVersion('./version.json').then((running) => {
   ui.version.running = running;
   renderVersion();
+  syncAll();
   navigator.serviceWorker?.ready.then(offerUpdate).catch(() => {});
 });

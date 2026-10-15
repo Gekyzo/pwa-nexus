@@ -72,6 +72,11 @@ export const messageOf = ({ op, args }) => {
   return `Delete roadmap item: ${args.ref.title}`;
 };
 
+// The commit of an action: its subject tagged `[pwa-nexus]`, and a `Via:` trailer with the
+// version of the app, when it is known (SYNC-4).
+export const commitMessageOf = (entry, version = null) =>
+  `${messageOf(entry)} [pwa-nexus]\n\nVia: ${version ? `pwa-nexus ${version}` : 'pwa-nexus'}`;
+
 export const enqueue = (state, entry) => ({ state: { ...state, queue: [...state.queue, entry] } });
 
 export const discardEntry = (state, id) => ({ state: { ...state, queue: state.queue.filter((entry) => entry.id !== id) } });
@@ -108,7 +113,7 @@ export const stopsSync = (type) => STOPS.includes(type);
 const failure = (error) => ({ type: error?.type ?? 'network' });
 
 // Gets the file, then commits each waiting entry in order (SYNC-3 … SYNC-6).
-export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH }) => {
+export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH, version = null }) => {
   const done = [];
   const stale = [];
   const result = (file, error = null) => ({ file, done, stale, error });
@@ -130,7 +135,7 @@ export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH }) =
         break;
       }
       try {
-        const sha = await client.putFile(repo, path, { text: applied.text, sha: file.sha, message: messageOf(entry) });
+        const sha = await client.putFile(repo, path, { text: applied.text, sha: file.sha, message: commitMessageOf(entry, version) });
         file = { text: applied.text, sha };
         done.push(entry.id);
         break;

@@ -32,7 +32,7 @@ export const syncAll = async () => {
   const client = createClient({ token, fetch: (...args) => fetch(...args) });
   try {
     for (const { repo } of state.projects) {
-      const result = await syncRepo({ client, repo, entries: pendingOf(state, repo) });
+      const result = await syncRepo({ client, repo, entries: pendingOf(state, repo), version: ui.version.running?.version });
       if (result.file) setCache(putEntry(cache, repo, { ...result.file, fetchedAt: Date.now() }));
       else if (result.error?.type === 'notFound') setCache(putEntry(cache, repo, { missing: true, fetchedAt: Date.now() }));
       commit(settleQueue(state, result));
