@@ -54,7 +54,8 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   shows above the roadmap as a banner (`sync.staleTitle`) with its commit message and
   **Discard**. Discard removes it from the queue; the toast `toast.discarded` offers **Undo**.
 - **UI-3** With a roadmap open, **+** opens the sheet of a new item: a section picker with no
-  default (`item.pickSection`), a title and a body. The picker lists the sections as the tree of
+  default (`item.pickSection`), a title and a body. The body field starts three lines high and
+  grows with its text up to 40% of the screen, then scrolls. The picker lists the sections as the tree of
   `outlineOf` (ROAD-10): a nested H3 by its title after the mark `└`; its value is the path. Save queues an `add` action and starts a sync.
   An action that fails its check against the roadmap on the screen (ROAD-7, ROAD-8) shows its
   message, and nothing is queued.

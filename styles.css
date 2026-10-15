@@ -107,7 +107,8 @@
   }
 
   button,
-  input {
+  input,
+  textarea {
     font: inherit;
     color: inherit;
   }
@@ -453,8 +454,11 @@
        once it has a value or the focus. The placeholder only marks the empty box.
      @part field-input  The input, with the classes input field-input and a placeholder.
      @part field-label  The name, after the input.
+     @variant multiline  On a textarea: three lines at first, grows with its text up to 40% of the
+       screen, then scrolls.
      @example <label class="field"><input class="input field-input" type="text" placeholder="Text" value="Call Ana"><span class="field-label">Name</span></label>
-     @example <label class="field"><input class="input field-input" type="text" placeholder="Cantidad"><span class="field-label">Amount</span></label> */
+     @example <label class="field"><input class="input field-input" type="text" placeholder="Cantidad"><span class="field-label">Amount</span></label>
+     @example <label class="field"><textarea class="input field-input multiline" rows="3" placeholder="Notes">Call Ana on Monday about the plan for the week, and send her the notes after the call.</textarea><span class="field-label">Notes</span></label> */
   .field {
     position: relative;
     display: block;
@@ -473,6 +477,17 @@
     color: transparent;
   }
 
+  /* The .input height is one line: a multiline field sizes to its text, with room for the label. */
+  .field-input.multiline {
+    display: block;
+    height: auto;
+    min-height: calc(3lh + var(--space-3) * 2);
+    max-height: 40dvh;
+    padding: var(--space-3);
+    field-sizing: content;
+    resize: none;
+  }
+
   .field-label {
     position: absolute;
     top: 50%;
@@ -485,6 +500,10 @@
     pointer-events: none;
     transform: translateY(-50%);
     transition: top var(--motion-fast) ease-out, font-size var(--motion-fast) ease-out, color var(--motion-fast) ease-out;
+  }
+
+  .field-input.multiline:placeholder-shown:not(:focus) + .field-label {
+    top: calc(var(--space-3) * 2);
   }
 
   .field-input:focus + .field-label,

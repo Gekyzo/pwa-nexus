@@ -6,6 +6,8 @@ User-visible changes, newest first.
 
 - The section picker marks each H3 section with `└` instead of an indent, so the closed field
   still shows that the section is inside another one.
+- The description field of the item sheet grows with its text, and its label no longer covers
+  the first line.
 
 ## 0.1.4 - 2026-10-15
 
