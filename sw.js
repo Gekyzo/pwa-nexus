@@ -13,6 +13,7 @@ const SHELL = [
   './src/ui/install.js',
   './src/ui/nav.js',
   './src/ui/projects.js',
+  './src/ui/sync.js',
   './src/ui/settings.js',
   './src/ui/update.js',
   './src/ui/dust.js',

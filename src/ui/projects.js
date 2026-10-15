@@ -1,7 +1,7 @@
 import { findProject } from '#projects';
-import { roadmapView, pendingOf } from '#queue';
+import { roadmapView, pendingOf, discardEntry, messageOf } from '#queue';
 import { intlTag } from '#i18n';
-import { $, el, ui, state, cache, t, lang, render } from '#ui/context';
+import { $, el, ui, state, cache, t, lang, render, apply } from '#ui/context';
 
 // The handler of a tap on an item row: the item sheet sets it (UI-2).
 let itemHandler = () => {};
@@ -67,6 +67,19 @@ const sectionNodes = (repo, section) => {
   return [el('li', { className: 'section-head' }, [button]), ...(open ? section.items.map((item) => itemRow(section.path, item)) : [])];
 };
 
+// An action that no longer applies stays until the user discards it (SYNC-6, UI-5).
+const staleBanner = (entry) =>
+  el('section', { className: 'banner' }, [
+    el('strong', { textContent: t('sync.staleTitle') }),
+    el('p', { className: 'banner-text', textContent: messageOf(entry) }),
+    el('button', {
+      className: 'button outline',
+      type: 'button',
+      textContent: t('sync.discard'),
+      onclick: () => apply(discardEntry(state, entry.id), { undoText: t('toast.discarded') }),
+    }),
+  ]);
+
 const emptyText = (project, roadmap) => {
   if (!project) return t('projects.pick');
   const entry = cache[project.repo];
@@ -89,6 +102,9 @@ export const renderProjects = () => {
   const empty = emptyText(project, roadmap);
   $('roadmap-empty').textContent = empty;
   $('roadmap-empty').hidden = !empty;
+  const failed = project ? roadmap.failed : [];
+  const stale = project ? pendingOf(state, project.repo).filter((entry) => entry.stale || failed.includes(entry.id)) : [];
+  $('roadmap-stale').replaceChildren(...stale.map(staleBanner));
   $('roadmap-list').replaceChildren(...roadmap.sections.flatMap((section) => sectionNodes(project.repo, section)));
   $('fab').hidden = !visible || !project || roadmap.sections.length === 0 || ui.sheetOpen;
 };

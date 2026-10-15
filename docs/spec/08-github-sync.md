@@ -36,6 +36,14 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
 - **SYNC-6** An action whose item or section no longer exists on GitHub is marked stale. It stays
   in the queue until the user discards it, and the sync goes on with the next action. A sync
   never drops an action silently, and never sends a stale one again.
+- **SYNC-7** A `network` error stops the sync and keeps the queue as it is; the header says
+  `sync.offline` or `sync.offlinePending`. An `auth` or `rateLimit` error stops the sync of all
+  repositories, and the toast names the cause (`error.githubAuth`, `error.githubRateLimit`). A
+  `notFound` marks the repository as having no `ROADMAP.md`, and a second `conflict` shows
+  `error.githubConflict`; the sync goes on with the next repository in both cases.
+- **SYNC-8** A sync runs when the app opens, on the `online` event and on the **Sync** button.
+  The repositories sync one after the other, never two at a time. A sync asked for while one
+  runs runs once more at its end. With no token or no network, no sync runs.
 
 ## Cache, projects and token
 

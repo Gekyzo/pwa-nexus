@@ -24,6 +24,7 @@
 | `src/ui/install.js` | The Install button | `install`, `ui/context` |
 | `src/ui/nav.js` | The navigation, the change and the slide of a section | `sections`, `modules`, `ui/context`, `ui/update`, `ui/dust` |
 | `src/ui/projects.js` | The Projects section: the project list and the roadmap of one project | `projects`, `queue`, `i18n`, `ui/context` |
+| `src/ui/sync.js` | The sync of all projects, its button and its state in the header | `github`, `queue`, `cache`, `ui/context` |
 | `src/ui/settings.js` | Settings, and the text of the page in its language | `projects`, `storage`, `i18n`, `modules`, `ui/context`, `ui/update`, `ui/onboarding` |
 | `src/ui/dust.js` | The dust of a navigation item (optional) | `particles`, `ui/context`, `ui/controls` |
 | `src/ui/onboarding.js` | The walkthrough (optional) | `onboarding`, `sections`, `storage`, `ui/context`, `ui/controls` |
@@ -82,7 +83,7 @@ The doc keys are in [08-github-sync.md](08-github-sync.md). The device preferenc
 |---|---|
 | `tests/roadmap.test.js` | The ROADMAP model, its operations and the fixtures of the real roadmaps (ROAD-1 … ROAD-9) |
 | `tests/github.test.js` | The GitHub client with a fake fetch: base64, requests, typed errors (GH-1 … GH-5) |
-| `tests/queue.test.js` | The queue entries, the view text and the sync of a repository with a fake client (SYNC-1 … SYNC-6) |
+| `tests/queue.test.js` | The queue entries, the view text and the sync of a repository with a fake client (SYNC-1 … SYNC-7) |
 | `tests/projects.test.js` | The projects of the doc, their operations and the validation of the doc (PROJ-1, PROJ-2) |
 | `tests/cache.test.js` | The cache of the roadmaps and its validation (CACHE-1) |
 | `tests/storage.test.js` | Load, save, the corrupt copy, export, import and the device preferences |

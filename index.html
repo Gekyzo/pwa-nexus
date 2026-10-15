@@ -27,6 +27,9 @@
     <main>
       <section id="projects" class="pane">
         <div class="pane-list">
+          <div class="cluster">
+            <button id="sync" class="button outline" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg><span data-i18n="sync.run"></span></button>
+          </div>
           <ul id="project-list" class="item-list"></ul>
           <div id="projects-empty" class="empty-state" hidden>
             <p data-i18n="projects.empty"></p>
@@ -35,6 +38,7 @@
         <article id="roadmap" class="pane-detail">
           <button id="roadmap-back" class="button quiet pane-back" type="button" data-i18n="roadmap.back"></button>
           <p id="roadmap-empty" class="empty-state"></p>
+          <div id="roadmap-stale"></div>
           <ul id="roadmap-list" class="item-list"></ul>
         </article>
       </section>
@@ -145,6 +149,7 @@
           "#queue": "./src/queue.js",
           "#projects": "./src/projects.js",
           "#ui/projects": "./src/ui/projects.js",
+          "#ui/sync": "./src/ui/sync.js",
           "#cache": "./src/cache.js",
           "#install": "./src/install.js",
           "#sections": "./src/sections.js",

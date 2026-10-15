@@ -2,6 +2,7 @@ import { $, ui, state, storage, t, setRender, render, showToast, hideToast, toas
 import { findProject } from '#projects';
 import { bind as bindNav, renderNav } from '#ui/nav';
 import { bind as bindProjects, renderProjects } from '#ui/projects';
+import { bind as bindSync, renderSync, syncAll } from '#ui/sync';
 import { bind as bindSettings, applyLanguage } from '#ui/settings';
 import { bind as bindInstall, renderInstall } from '#ui/install';
 import { readVersion, renderVersion, offerUpdate } from '#ui/update';
@@ -12,6 +13,7 @@ const renderAll = () => {
   const project = ui.view === 'projects' && ui.repo !== null ? findProject(state, ui.repo) : null;
   $('title').textContent = project?.label ?? t(`nav.${ui.view}`);
   renderProjects();
+  renderSync();
   $('settings').hidden = ui.view !== 'settings';
   renderVersion();
   renderInstall();
@@ -20,6 +22,7 @@ setRender(renderAll);
 
 bindNav();
 bindProjects();
+bindSync();
 bindSettings();
 bindInstall();
 bindOnboarding();
@@ -55,6 +58,7 @@ $('toast-action').addEventListener('click', () => {
 });
 
 applyLanguage();
+syncAll();
 if (ui.onboarding !== null) $('onboarding-next').focus();
 if (!storage) showToast(t('error.noStorage'));
 navigator.storage?.persist?.().catch(() => {});
