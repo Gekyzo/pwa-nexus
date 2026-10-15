@@ -22,6 +22,8 @@ Rules of `sw.js`, `src/version.js`, `version.json`, `scripts/bump-version.mjs`,
 - **SW-7** A request with no cached copy goes to the network. If a navigation fails, the worker
   answers with the cached `index.html`.
 - **SW-8** A request with the `latest` parameter goes to the network only (VER-5).
+- **SW-14** The worker answers only the requests of its own origin. A request to `api.github.com`
+  always goes to the network and is never cached (GH-5).
 - **SW-9** The message `{ type: 'refresh' }` downloads the full shell again and answers `{ ok }`
   on the message port.
 - **SW-10** A change of the stored state that an old module cannot read needs a new cache name, so
