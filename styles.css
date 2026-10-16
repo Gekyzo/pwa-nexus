@@ -40,7 +40,8 @@
 
   /* @extends field
      @variant multiline  On a textarea: three lines at first, grows with its text up to 40% of the
-     screen, then scrolls. */
+     screen, then scrolls.
+     @example <label class="field"><textarea class="input field-input multiline" rows="3" placeholder="Notes">Call Ana on Monday about the plan for the week, and send her the notes after the call.</textarea><span class="field-label">Notes</span></label> */
 
   /* The .input height is one line: a multiline field sizes to its text, with room for the label. */
   .field-input.multiline {
