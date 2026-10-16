@@ -7,10 +7,10 @@ export const MAX_LABEL = 40;
 export const REPO = /^[\w.-]+\/[\w.-]+$/;
 
 export const DEFAULT_PROJECTS = [
-  { repo: 'Gekyzo/shopping-list', label: 'Shopping' },
-  { repo: 'Gekyzo/pwa-wardrobe', label: 'Wardrobe' },
-  { repo: 'Gekyzo/pwa-financial-calculator', label: 'Financial calculator' },
-  { repo: 'Gekyzo/pwa-shifts', label: 'Shifts' },
+  { repo: 'Gekyzo/shopping-list', label: 'Bodega' },
+  { repo: 'Gekyzo/pwa-wardrobe', label: 'Attire' },
+  { repo: 'Gekyzo/pwa-financial-calculator', label: 'Compound' },
+  { repo: 'Gekyzo/pwa-shifts', label: 'Rota' },
   { repo: 'Gekyzo/pwa-nexus', label: 'Nexus' },
 ];
 
