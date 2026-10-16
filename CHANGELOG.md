@@ -4,7 +4,7 @@ User-visible changes, newest first.
 
 ## Unreleased
 
-No change.
+- A new app icon, drawn in the style that the family of apps shares.
 
 ## 0.1.5 - 2026-10-16
 
