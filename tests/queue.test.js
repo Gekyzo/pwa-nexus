@@ -16,6 +16,8 @@ import {
   roadmapView,
   stopsSync,
   syncRepo,
+  hasSection,
+  checkEach,
 } from '#queue';
 
 const MD = '## Planned\n\n- **A.** one\n- **B.** two\n\n## Deferred\n';
@@ -254,4 +256,36 @@ test('isEntry checks the arguments of each action, so a broken import cannot rea
 test('applyEntry never throws on broken arguments: the entry fails instead', () => {
   assert.deepEqual(applyEntry(MD, { op: 'edit', args: {} }), { text: MD, error: { key: 'error.unknownAction' } });
   assert.deepEqual(viewOf(MD, [{ ...add('C', '1'), args: {} }]).failed, ['1']);
+});
+
+test('hasSection matches the exact path of a section only (UI-3)', () => {
+  const { sections } = roadmapView({ text: '## Now\n\n### Planned\n\n## Deferred\n' }, []);
+  assert.equal(hasSection(sections, 'Now'), true);
+  assert.equal(hasSection(sections, 'Now / Planned'), true);
+  assert.equal(hasSection(sections, 'Planned'), false);
+  assert.equal(hasSection(sections, 'deferred'), false);
+  assert.equal(hasSection([], 'Now'), false);
+});
+
+const addTo = (repo, title, id = `${repo}-${title}`) => makeEntry(repo, 'add', { path: 'Planned', item: { title, body: '' } }, { id, now: 1 });
+
+test('checkEach returns the entries of every repository, without a no-op action (UI-3)', () => {
+  const plans = [
+    { repo: 'o/a', text: MD, entries: [addTo('o/a', 'C')] },
+    { repo: 'o/b', text: MD, entries: [addTo('o/b', 'C'), entry('move', { ref: { path: 'Planned', title: 'A' }, to: 'Planned' })] },
+  ];
+  assert.deepEqual(checkEach(plans).entries.map((one) => one.id), ['o/a-C', 'o/b-C']);
+});
+
+test('checkEach stops at the first repository where an action fails, also the second one (UI-3)', () => {
+  const plans = [
+    { repo: 'o/a', text: MD, entries: [addTo('o/a', 'C')] },
+    { repo: 'o/b', text: MD, entries: [addTo('o/b', 'A')] },
+    { repo: 'o/c', text: '## Deferred\n', entries: [addTo('o/c', 'C')] },
+  ];
+  const before = structuredClone(plans);
+  assert.deepEqual(checkEach(plans), { repo: 'o/b', error: { key: 'error.titleTaken' } });
+  assert.equal(checkEach([plans[0], plans[2]]).repo, 'o/c');
+  assert.equal(checkEach([{ repo: 'o/d', text: null, entries: [addTo('o/d', 'C')] }]).repo, 'o/d');
+  assert.deepEqual(plans, before);
 });

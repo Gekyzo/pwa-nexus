@@ -107,6 +107,26 @@ export const roadmapView = (cached, entries) => {
   return { text, sections: sectionsOf(text), failed };
 };
 
+export const hasSection = (sections, path) => sections.some((section) => section.path === path);
+
+// Checks the entries of each repository against its text, in order. Either every entry that
+// changes a text, or the first repository whose entry fails: one item added to several
+// repositories is queued in all of them or in none (UI-3).
+export const checkEach = (plans) => {
+  const entries = [];
+  for (const { repo, text: start, entries: planned } of plans) {
+    let text = start ?? '';
+    for (const entry of planned) {
+      const result = applyEntry(text, entry);
+      if (result.error) return { repo, error: result.error };
+      if (result.text === text) continue;
+      text = result.text;
+      entries.push(entry);
+    }
+  }
+  return { entries };
+};
+
 // An error of one repository that stops the sync of all of them (SYNC-7).
 export const stopsSync = (type) => STOPS.includes(type);
 

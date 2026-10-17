@@ -61,7 +61,8 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   grows with its text up to 40% of the screen, then scrolls. The picker lists the sections as the tree of
   `outlineOf` (ROAD-10): a nested H3 by its title after the mark `└`; its value is the path. Save queues an `add` action and starts a sync.
   An action that fails its check against the roadmap on the screen (ROAD-7, ROAD-8) shows its
-  message, and nothing is queued.
+  message, and nothing is queued. `checkEach` checks the actions of several repositories in one
+  save: if one fails in any of them, nothing is queued in any.
 - **UI-4** **Delete** queues a `delete` action; the toast `toast.itemDeleted` offers **Undo** for 5
   seconds. While the action waits and no sync runs, Undo removes it from the queue. Once it may
   have reached GitHub, Undo queues an `add` of the item at the end of its section.
