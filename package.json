@@ -1,6 +1,6 @@
 {
   "name": "pwa-nexus",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Offline Android PWA template: plain HTML, CSS and ES modules, no build step",
   "private": true,
   "type": "module",

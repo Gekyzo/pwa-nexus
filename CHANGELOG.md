@@ -4,6 +4,10 @@ User-visible changes, newest first.
 
 ## Unreleased
 
+No change.
+
+## 0.1.7 - 2026-10-17
+
 - The default projects carry the new app names: Bodega, Attire, Compound and Rota.
 - A new item can go to other projects too: pick them below the description. Only the
   projects with the same section can be picked.
