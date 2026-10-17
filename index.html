@@ -115,6 +115,10 @@
         <select id="item-section" class="select" required data-i18n-attr="aria-label:item.section"></select>
         <label class="field"><input id="item-title" class="input field-input" type="text" maxlength="80" required data-i18n-attr="placeholder:item.title"><span class="field-label" data-i18n="item.title"></span></label>
         <label class="field"><textarea id="item-body" class="input field-input multiline" maxlength="500" rows="3" data-i18n-attr="placeholder:item.body"></textarea><span class="field-label" data-i18n="item.body"></span></label>
+        <div id="item-also" hidden>
+          <h3 class="sheet-title part" data-i18n="item.alsoTo"></h3>
+          <div id="item-also-list" class="cluster" role="group" data-i18n-attr="aria-label:item.alsoTo"></div>
+        </div>
         <div class="cluster">
           <button id="item-delete" class="button danger" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg><span data-i18n="item.delete"></span></button>
           <button class="button primary" type="submit" data-i18n="item.save"></button>

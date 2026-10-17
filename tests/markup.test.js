@@ -60,3 +60,8 @@ test('the item sheet has a veil, a dialog, a section picker and text fields with
   assert.match(layer, /<textarea id="item-body"[^>]*maxlength="500"/);
   assert.match(layer, /<button id="item-delete" class="button danger"/);
 });
+
+test('the item sheet has the other projects to add a new item to, hidden until it opens (UI-3)', () => {
+  const [layer = ''] = body.match(/<div id="item-sheet" class="sheet-layer"[\s\S]*?<\/form>\s*<\/div>/) ?? [];
+  assert.match(layer, /<textarea id="item-body"[\s\S]*<div id="item-also" hidden>\s*<h3 class="sheet-title part" data-i18n="item.alsoTo"><\/h3>\s*<div id="item-also-list" class="cluster" role="group" data-i18n-attr="aria-label:item.alsoTo"><\/div>\s*<\/div>[\s\S]*<button id="item-delete"/);
+});

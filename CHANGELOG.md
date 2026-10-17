@@ -5,6 +5,8 @@ User-visible changes, newest first.
 ## Unreleased
 
 - The default projects carry the new app names: Bodega, Attire, Compound and Rota.
+- A new item can go to other projects too: pick them below the description. Only the
+  projects with the same section can be picked.
 - Lists (`Gekyzo/pwa-lists`) is a new default project. It joins the end of the list once, also on a phone that has a stored list.
 
 ## 0.1.6 - 2026-10-16

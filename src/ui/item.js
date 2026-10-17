@@ -1,5 +1,5 @@
 import { cleanItem, outlineOf } from '#roadmap';
-import { makeEntry, applyEntry, enqueue, discardEntry, pendingOf, roadmapView } from '#queue';
+import { makeEntry, enqueue, discardEntry, pendingOf, roadmapView, hasSection, checkEach } from '#queue';
 import { $, el, ui, state, cache, syncing, t, textOf, apply, render, showToast } from '#ui/context';
 import { onItem } from '#ui/projects';
 import { syncAll } from '#ui/sync';
@@ -10,27 +10,53 @@ const viewText = (repo) => roadmapView(cache[repo], pendingOf(state, repo));
 
 const findItem = (sections, ref) => sections.find((section) => section.path === ref.path)?.items.find((one) => one.title === ref.title) ?? null;
 
-// Checks each action against the roadmap on the screen, then queues the ones that change it and
-// starts a sync (SYNC-1, SYNC-2). The entries, or null on an error.
-const queueAll = (repo, actions, options = {}) => {
-  let { text } = viewText(repo);
-  const entries = [];
-  for (const [op, args] of actions) {
-    const entry = makeEntry(repo, op, args);
-    const result = applyEntry(text ?? '', entry);
-    if (result.error) {
-      showToast(textOf(result.error));
-      return null;
-    }
-    if (result.text === text) continue;
-    text = result.text;
-    entries.push(entry);
+const labelOf = (repo) => state.projects.find((project) => project.repo === repo)?.label ?? repo;
+
+// Checks the actions of each repository against its roadmap on the screen, then queues the ones
+// that change it and starts a sync (SYNC-1, SYNC-2). An error in one queues nothing in any (UI-3).
+// The entries, or null on an error.
+const queueEach = (plans, options = {}) => {
+  const checked = checkEach(
+    plans.map(({ repo, actions }) => ({ repo, text: viewText(repo).text, entries: actions.map(([op, args]) => makeEntry(repo, op, args)) })),
+  );
+  if (checked.error) {
+    const message = textOf(checked.error);
+    showToast(plans.length > 1 ? t('item.failedIn', { project: labelOf(checked.repo), message }) : message);
+    return null;
   }
+  const { entries } = checked;
   if (entries.length === 0) return [];
   apply({ state: entries.reduce((next, entry) => enqueue(next, entry).state, state) }, options);
   syncAll();
   return entries;
 };
+
+const queueAll = (repo, actions, options) => queueEach([{ repo, actions }], options);
+
+// The other projects that a new item can go to as well: only those whose roadmap on the screen has
+// the picked section, by its exact path (UI-3). A pressed chip stays pressed while it still fits.
+const renderAlso = () => {
+  const others = state.projects.filter((project) => project.repo !== ui.repo);
+  $('item-also').hidden = ui.editing !== null || others.length === 0;
+  const path = $('item-section').value;
+  const pressed = pickedRepos();
+  $('item-also-list').replaceChildren(
+    ...others.map(({ repo, label }) => {
+      const fits = path !== '' && hasSection(viewText(repo).sections, path);
+      return el('button', {
+        type: 'button',
+        className: 'chip',
+        value: repo,
+        textContent: label,
+        disabled: !fits,
+        title: fits ? '' : t('item.noSection'),
+        ariaPressed: String(fits && pressed.includes(repo)),
+      });
+    }),
+  );
+};
+
+const pickedRepos = () => [...$('item-also-list').querySelectorAll('[aria-pressed="true"]')].map((chip) => chip.value);
 
 export const openItemSheet = (ref = null) => {
   const { sections } = viewText(ui.repo);
@@ -50,6 +76,8 @@ export const openItemSheet = (ref = null) => {
   $('item-title').value = item?.title ?? '';
   $('item-body').value = item?.body ?? '';
   $('item-delete').hidden = !ref;
+  $('item-also-list').replaceChildren();
+  renderAlso();
   render();
   $('item-title').focus();
 };
@@ -78,7 +106,8 @@ const save = () => {
   const actions = ref
     ? [['edit', { ref, base, item }], ...(path === ref.path ? [] : [['move', { ref: { path: ref.path, title: item.title }, to: path }]])]
     : [['add', { path, item }]];
-  if (queueAll(ui.repo, actions)) closeItemSheet();
+  const others = ref ? [] : pickedRepos().map((repo) => ({ repo, actions }));
+  if (queueEach([{ repo: ui.repo, actions }, ...others])) closeItemSheet();
 };
 
 // Undo takes the delete out of the queue while it waits; once it may have reached GitHub, it
@@ -108,6 +137,11 @@ export const bind = () => {
   $('fab').addEventListener('click', () => openItemSheet());
   $('item-veil').addEventListener('click', closeItemSheet);
   $('item-delete').addEventListener('click', remove);
+  $('item-section').addEventListener('change', renderAlso);
+  $('item-also-list').addEventListener('click', ({ target }) => {
+    const chip = target.closest('.chip');
+    if (chip && !chip.disabled) chip.ariaPressed = String(chip.ariaPressed !== 'true');
+  });
   $('item-form').addEventListener('submit', (event) => {
     event.preventDefault();
     save();
