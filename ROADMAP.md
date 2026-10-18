@@ -10,5 +10,6 @@
 - **Project rows of Settings.** The rows of the project editor sit flush with the screen edge, while the other groups are inset.
 - **Add android app shortcuts.** Atajo abrir lista compra, atajo añadir artículo, etc
 - **Back to menu.** La opción de menú proyectos no te devuelve a la lista
+- **Barra progreso.** Añadir barra progreso sincronización
 
 ## Deferred
