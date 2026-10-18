@@ -8,5 +8,6 @@
 - **Two items with one title.** When a section of the file already has two items with the same title, both rows open and change the first one. Warn, and make the later ones read-only.
 - **Lost response after a commit.** When GitHub commits a change but the response is lost, the next sync marks the action stale instead of done. No text is lost.
 - **Project rows of Settings.** The rows of the project editor sit flush with the screen edge, while the other groups are inset.
+- **Add android app shortcuts.** Atajo abrir lista compra, atajo añadir artículo, etc
 
 ## Deferred
