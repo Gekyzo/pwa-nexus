@@ -9,5 +9,6 @@
 - **Lost response after a commit.** When GitHub commits a change but the response is lost, the next sync marks the action stale instead of done. No text is lost.
 - **Project rows of Settings.** The rows of the project editor sit flush with the screen edge, while the other groups are inset.
 - **Add android app shortcuts.** Atajo abrir lista compra, atajo añadir artículo, etc
+- **Back to menu.** La opción de menú proyectos no te devuelve a la lista
 
 ## Deferred
