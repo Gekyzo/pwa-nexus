@@ -103,6 +103,11 @@
 }
 
 @layer screens {
+  /* The tools above the project list keep off the screen edge, in line with the header title. */
+  .pane-list > .cluster {
+    margin-inline: var(--space-4);
+  }
+
   /* @component version-status
      @scope settings
      @summary The state of the installed version: a sign, and a text for the outdated state only.

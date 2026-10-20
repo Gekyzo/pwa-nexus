@@ -4,6 +4,7 @@ User-visible changes, newest first.
 
 ## Unreleased
 
+- The Sync button of Projects keeps off the screen edge, in line with the header title.
 - A press of Projects in the bottom bar, with a roadmap open, goes back to the project list.
 - A bar on the bottom edge of the header shows the progress of a sync: it fills one step for each
   project.
