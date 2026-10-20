@@ -4,6 +4,10 @@ User-visible changes, newest first.
 
 ## Unreleased
 
+No change.
+
+## 0.1.8 - 2026-10-20
+
 - The design system 0.5.0. The item sheet has a head with its title and a close button, and a
   foot with Delete and Save. A drag down from the head closes it, and on a wide screen it opens
   at the side.
