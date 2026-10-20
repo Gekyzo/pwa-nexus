@@ -177,6 +177,28 @@
     text-transform: uppercase;
   }
 
+  /* A field and a help text inside a group keep off its rounded edge. */
+  .settings .list-group > .field {
+    margin: var(--space-3);
+  }
+
+  .settings .list-group > .list-row-meta {
+    margin: 0;
+    padding: 0 var(--space-4) var(--space-3);
+  }
+
+  /* The project editor and its input row have the inset of the other groups. */
+  .settings > .list-group.plain,
+  .settings > .input-row {
+    margin-inline: var(--space-3);
+  }
+
+  .settings .list-group.plain .list-row-meta {
+    display: block;
+    padding: var(--space-1) var(--space-2) var(--space-3);
+    overflow-wrap: anywhere;
+  }
+
   /* @component about
      @scope settings
      @summary The version lines at the end of Settings.

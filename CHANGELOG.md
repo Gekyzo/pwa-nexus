@@ -4,7 +4,8 @@ User-visible changes, newest first.
 
 ## Unreleased
 
-No change.
+- In Settings, the token field, its help and the project rows keep off the edges: no text
+  touches the border of its group or the screen.
 
 ## 0.1.8 - 2026-10-20
 
