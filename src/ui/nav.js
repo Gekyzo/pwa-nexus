@@ -1,4 +1,4 @@
-import { direction, slideTo } from '#sections';
+import { direction, pressSection, slideTo } from '#sections';
 import { visibleSections } from '#modules';
 import { ui, off, render, scroller, guardClick } from '#ui/context';
 import { checkVersion } from '#ui/update';
@@ -40,7 +40,15 @@ export const bind = () => {
     if (event.animationName === 'enter') scroller.classList.remove('enter-next', 'enter-previous');
   });
   document.querySelectorAll('.nav-item').forEach((button) => {
-    button.addEventListener('click', () => setView(button.dataset.view));
+    button.addEventListener('click', () => {
+      const press = pressSection(ui.view, button.dataset.view, ui.repo !== null);
+      if (press === 'go') setView(button.dataset.view);
+      else if (press === 'close') {
+        // As the back button of the detail: the list again, with no search.
+        Object.assign(ui, { repo: null, query: '' });
+        render();
+      }
+    });
   });
   // A horizontal slide that starts out of the rows changes the section (NAV-2). A row keeps its
   // drag for its side actions, and a text field keeps its drag for the selection.

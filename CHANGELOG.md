@@ -4,6 +4,7 @@ User-visible changes, newest first.
 
 ## Unreleased
 
+- A press of Projects in the bottom bar, with a roadmap open, goes back to the project list.
 - The bottom bar shows only the icon of each section, with no name.
 - In Settings, the token field, its help and the project rows keep off the edges: no text
   touches the border of its group or the screen.

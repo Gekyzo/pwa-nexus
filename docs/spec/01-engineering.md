@@ -7,7 +7,7 @@
 | `src/config.js` | The slug of the app, which `npm run init` rewrites | nothing |
 | `src/version.js` | Version rules and the update offer rule | nothing |
 | `src/i18n.js` | The language choice and the translator | `locales/*` |
-| `src/sections.js` | The order of the sections and the rule of the slide between them | nothing |
+| `src/sections.js` | The order of the sections, the rule of the slide between them and of a press of their item | nothing |
 | `src/modules.js` | The modules that Settings turns off, and the visible sections | `sections` |
 | `src/storage.js` | Load, save, validation hook, export, import, device preferences | `config`, `modules` |
 | `src/install.js` | The install offer state machine | nothing |

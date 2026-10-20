@@ -27,3 +27,10 @@ export const direction = (from, to, sections = SECTIONS) => {
   const [a, b] = [sections.indexOf(from), sections.indexOf(to)];
   return a < 0 || b < 0 ? 0 : Math.sign(b - a);
 };
+
+// What a press of the navigation item of `pressed` does from `view` (NAV-3): 'go' to another
+// section, 'close' the detail that is open in the section in view, or null for nothing.
+export const pressSection = (view, pressed, open) => {
+  if (pressed !== view) return 'go';
+  return open ? 'close' : null;
+};
