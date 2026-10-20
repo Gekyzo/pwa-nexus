@@ -52,6 +52,10 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   `online` event and on the **Sync** button.
   The repositories sync one after the other, never two at a time. A sync asked for while one
   runs runs once more at its end. With no token or no network, no sync runs.
+- **SYNC-9** While a sync runs, a bar on the bottom edge of the header (`sync-progress`, a
+  `progressbar` named `sync.progress`) shows the part of the repositories that it has done,
+  `syncShare` of `src/queue.js`: it starts empty and fills one step at the end of each
+  repository. The bar hides when the sync ends, also when an error stops it.
 
 ## Cache, projects and token
 

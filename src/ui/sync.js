@@ -1,5 +1,5 @@
 import { createClient } from '#github';
-import { syncRepo, settleQueue, pendingOf, stopsSync } from '#queue';
+import { syncRepo, settleQueue, pendingOf, stopsSync, syncShare } from '#queue';
 import { putEntry } from '#cache';
 import { $, ui, state, cache, token, syncing, t, render, commit, setCache, setSyncing, showToast } from '#ui/context';
 
@@ -27,14 +27,16 @@ export const syncAll = async () => {
     return;
   }
   setSyncing(true);
-  ui.syncError = null;
+  const { projects } = state;
+  Object.assign(ui, { syncError: null, syncProgress: { done: 0, total: projects.length } });
   render();
   const client = createClient({ token, fetch: (...args) => fetch(...args) });
   try {
-    for (const { repo } of state.projects) {
+    for (const { repo } of projects) {
       const result = await syncRepo({ client, repo, entries: pendingOf(state, repo), version: ui.version.running?.version });
       if (result.file) setCache(putEntry(cache, repo, { ...result.file, fetchedAt: Date.now() }));
       else if (result.error?.type === 'notFound') setCache(putEntry(cache, repo, { missing: true, fetchedAt: Date.now() }));
+      ui.syncProgress = { ...ui.syncProgress, done: ui.syncProgress.done + 1 };
       commit(settleQueue(state, result));
       if (result.error && result.error.type !== 'notFound') ui.syncError = result.error.type;
       if (result.error && stopsSync(result.error.type)) break;
@@ -60,6 +62,12 @@ export const renderSync = () => {
   else if (waiting) text = t('sync.pending', { count: waiting });
   $('subtitle').textContent = text;
   $('sync').disabled = syncing || !token;
+  // The bar of the sync fills one step for each repository (SYNC-9).
+  const share = syncShare(ui.syncProgress.done, ui.syncProgress.total);
+  const bar = $('sync-progress');
+  bar.hidden = !syncing;
+  bar.style.setProperty('--share', share);
+  bar.setAttribute('aria-valuenow', Math.round(share * 100));
 };
 
 export const bind = () => {

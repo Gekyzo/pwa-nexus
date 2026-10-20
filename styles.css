@@ -220,6 +220,37 @@
     margin: 0;
   }
 
+  /* @component sync-progress
+     @scope header
+     @summary The progress of a running sync, on the bottom edge of the header. --share (0 to 1) sets the fill.
+     @part sync-progress-bar  The part of the repositories that the sync has done.
+     @example <header class="app-header"><div class="app-header-text"><h1 class="app-header-title">Projects</h1><p class="app-header-subtitle">Syncing…</p></div><div class="sync-progress" role="progressbar" aria-valuenow="50" style="--share: 0.5"><span class="sync-progress-bar"></span></div></header> */
+  .sync-progress {
+    position: absolute;
+    inset: auto 0 0;
+    height: var(--space-half);
+    background: var(--line);
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .sync-progress[hidden] {
+    display: none;
+  }
+
+  .sync-progress-bar {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    transform: scaleX(var(--share, 0));
+    transform-origin: left;
+    transition: transform var(--motion) var(--ease);
+  }
+
+  :dir(rtl) .sync-progress-bar {
+    transform-origin: right;
+  }
+
   /* @component dust
      @scope nav
      @summary The canvas of the dust effect of a nav item that goes away or comes back.

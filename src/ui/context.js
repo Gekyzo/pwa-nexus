@@ -103,6 +103,8 @@ export const ui = {
   query: '',
   // The type of the error of the last sync, or null (SYNC-7).
   syncError: null,
+  // The repositories that the running sync has done, of its total (SYNC-9).
+  syncProgress: { done: 0, total: 0 },
   // The page of the walkthrough in view, or null while the walkthrough is closed.
   onboarding: firstStart ? 0 : null,
   // `running` is the version of the cached shell; `latest` is the deployed one.

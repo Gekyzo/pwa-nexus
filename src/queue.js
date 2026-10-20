@@ -130,6 +130,9 @@ export const checkEach = (plans) => {
 // An error of one repository that stops the sync of all of them (SYNC-7).
 export const stopsSync = (type) => STOPS.includes(type);
 
+// The part of the repositories that a sync has done, from 0 to 1 (SYNC-9).
+export const syncShare = (done, total) => (total > 0 ? Math.min(Math.max(done / total, 0), 1) : 0);
+
 const failure = (error) => ({ type: error?.type ?? 'network' });
 
 // Gets the file, then commits each waiting entry in order (SYNC-3 … SYNC-6).

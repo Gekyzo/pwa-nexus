@@ -15,6 +15,7 @@ import {
   viewOf,
   roadmapView,
   stopsSync,
+  syncShare,
   syncRepo,
   hasSection,
   checkEach,
@@ -288,4 +289,16 @@ test('checkEach stops at the first repository where an action fails, also the se
   assert.equal(checkEach([plans[0], plans[2]]).repo, 'o/c');
   assert.equal(checkEach([{ repo: 'o/d', text: null, entries: [addTo('o/d', 'C')] }]).repo, 'o/d');
   assert.deepEqual(plans, before);
+});
+
+test('syncShare is the part of the repositories that the sync has done (SYNC-9)', () => {
+  assert.equal(syncShare(0, 4), 0);
+  assert.equal(syncShare(1, 4), 0.25);
+  assert.equal(syncShare(4, 4), 1);
+});
+
+test('syncShare is 0 with no repository, and never more than 1 (SYNC-9)', () => {
+  assert.equal(syncShare(0, 0), 0);
+  assert.equal(syncShare(3, 2), 1);
+  assert.equal(syncShare(-1, 2), 0);
 });

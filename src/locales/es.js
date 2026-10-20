@@ -34,6 +34,7 @@ export default {
   'item.failedIn': '{project}: {message}',
   'sync.run': 'Sincronizar',
   'sync.running': 'Sincronizando…',
+  'sync.progress': 'Progreso de la sincronización',
   'sync.noToken': 'Sin token de GitHub: solo lectura.',
   'sync.offline': 'Sin conexión',
   'sync.offlinePending': { one: 'Sin conexión · {count} cambio en espera', other: 'Sin conexión · {count} cambios en espera' },
