@@ -12,8 +12,9 @@ LAY-1 to LAY-4 of the design system (04-design-system). In this app the Projects
 ## Navigation
 
 - **NAV-1** The sections are `projects` and `settings`, in the order of `SECTIONS`. The navigation
-  shows one item for each section that is on (MOD-1). The current one has
-  `aria-current="page"`, and its title is the title of the header.
+  shows one item for each section that is on (MOD-1): its icon with no name. Its name is the
+  label of its button for a screen reader. The current one has `aria-current="page"`, and its
+  title is the title of the header.
 - **NAV-2** A horizontal slide of at least 60 px that starts in the header or the content, out of
   a row and of a field, goes to the next section (slide left) or the previous one (slide right).
   It stops at the first and the last section. The content comes in from its side.
