@@ -51,14 +51,15 @@ test('the walkthrough has Saltar and the next button in one bar at the bottom, S
   assert.doesNotMatch(body, /onboarding-top/);
 });
 
-test('the item sheet has a veil, a dialog, a section picker and text fields with their maximum lengths (UI-3, UI-7)', () => {
+test('the item sheet has a veil, a dialog with a head, a section picker, text fields with their maximum lengths and a foot (UI-3, UI-7)', () => {
   const [layer = ''] = body.match(/<div id="item-sheet" class="sheet-layer"[\s\S]*?<\/form>\s*<\/div>/) ?? [];
   assert.match(layer, /<div id="item-veil" class="sheet-veil">/);
   assert.match(layer, /<form id="item-form" class="sheet" role="dialog"/);
   assert.match(layer, /<select id="item-section" class="select"[^>]*required/);
   assert.match(layer, /<input id="item-title"[^>]*maxlength="80"[^>]*required/);
   assert.match(layer, /<textarea id="item-body"[^>]*maxlength="500"/);
-  assert.match(layer, /<button id="item-delete" class="button danger"/);
+  assert.match(layer, /<header class="sheet-head"><h2 id="item-sheet-title" class="sheet-title main"><\/h2><button id="item-close" class="button icon" type="button"/);
+  assert.match(layer, /<footer class="sheet-foot">\s*<button id="item-delete" class="button outline danger"[\s\S]*<button class="button primary" type="submit"/);
 });
 
 test('the item sheet has the other projects to add a new item to, hidden until it opens (UI-3)', () => {

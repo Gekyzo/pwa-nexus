@@ -16,7 +16,7 @@ test('vendor/design-system/ has SOURCE.json with the version, the commit and the
   assert.ok(vendored, 'run npm run ds');
   assert.match(source.version ?? '', /^\d+\.\d+\.\d+$/);
   assert.match(source.commit ?? '', /^[0-9a-f]{40}$/);
-  assert.deepEqual(Object.keys(source.files).sort(), ['catalog.js', 'design-system.css', 'rules.js']);
+  assert.deepEqual(Object.keys(source.files).sort(), ['catalog.js', 'design-system.css', 'rules.js', 'sheet.js']);
 });
 
 test('vendor/design-system/ holds the files of SOURCE.json and SOURCE.json only', () => {

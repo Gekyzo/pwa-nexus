@@ -3,6 +3,7 @@ import { treeOf, filterTree } from '#roadmap';
 import { roadmapView, pendingOf, discardEntry, messageOf } from '#queue';
 import { intlTag } from '#i18n';
 import { $, el, ui, state, cache, t, lang, render, apply } from '#ui/context';
+import { setView } from '#ui/nav';
 
 // The handler of a tap on an item row: the item sheet sets it (UI-2).
 let itemHandler = () => {};
@@ -125,6 +126,10 @@ export const renderProjects = () => {
 
 export const bind = () => {
   $('roadmap-back').addEventListener('click', () => openProject(null));
+  $('projects-add').addEventListener('click', () => {
+    setView('settings');
+    $('project-repo').focus();
+  });
   $('roadmap-search').addEventListener('input', (event) => {
     ui.query = event.target.value;
     render();

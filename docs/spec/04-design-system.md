@@ -10,8 +10,8 @@ This document holds the rules of the app only.
 
 ## The copy
 
-- **DSV-1** `vendor/design-system/` holds `design-system.css`, `catalog.js`, `rules.js` and
-  `SOURCE.json`: the version, the commit and the sha256 of each file, and no other file. Only
+- **DSV-1** `vendor/design-system/` holds `design-system.css`, `catalog.js`, `rules.js`, `sheet.js`
+  and `SOURCE.json`: the version, the commit and the sha256 of each file, and no other file. Only
   `npm run ds` writes it, from `../pwa-design-system` with no uncommitted change of those files. A
   file that differs from its hash fails `tests/vendor.test.js`. The tests read the copy only, so
   they pass with no `../pwa-design-system`.
@@ -30,7 +30,9 @@ This document holds the rules of the app only.
   - `section-head`: the variant `nested`, on `section-head` and `item-row`, for an H3 section one
     level in (UI-2);
   - `item-row`: `item-row-name` has a vertical padding, so that the title and the line below it
-    keep a gap to the edges of the row.
+    keep a gap to the edges of the row;
+  - `sheet`: the primary button of `sheet-foot` stays at the side of the hand when it is alone
+    in the foot, as in the sheet of a new item (UI-9).
 - **DSV-4** A change of a shared part is made in `pwa-design-system`, then `npm run ds` here.
   Nothing edits `vendor/` by hand, and `npm run init` copies it as it is (ENG-17).
 
@@ -40,5 +42,5 @@ The parts of `styles.css`, by layer. The shared parts are in the design system.
 
 | Layer | Parts |
 |---|---|
-| components | versions of `input`, `field`, `section-head`, `item-row` (DSV-3) |
+| components | versions of `input`, `field`, `section-head`, `item-row`, `sheet` (DSV-3) |
 | screens | settings: `settings`, `about`, `version-status` · nav: `dust` · onboarding: `onboarding`, `onboarding-art` |

@@ -1,3 +1,4 @@
+import { bindSheetDrag } from '#ds/sheet';
 import { cleanItem, outlineOf } from '#roadmap';
 import { makeEntry, enqueue, discardEntry, pendingOf, roadmapView, hasSection, checkEach } from '#queue';
 import { $, el, ui, state, cache, syncing, t, textOf, apply, render, showToast } from '#ui/context';
@@ -136,6 +137,8 @@ export const bind = () => {
   onItem(openItemSheet);
   $('fab').addEventListener('click', () => openItemSheet());
   $('item-veil').addEventListener('click', closeItemSheet);
+  $('item-close').addEventListener('click', closeItemSheet);
+  bindSheetDrag($('item-sheet'), { close: closeItemSheet });
   $('item-delete').addEventListener('click', remove);
   $('item-section').addEventListener('change', renderAlso);
   $('item-also-list').addEventListener('click', ({ target }) => {

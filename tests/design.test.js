@@ -37,7 +37,7 @@ test('the screen parts of the app are documented in styles.css (DSV-3)', () => {
 test('the versions of styles.css document the variants that the app adds (DSV-3)', () => {
   const blocks = [...read('styles.css').matchAll(/\/\*\s*@extends\s+([\w-]+)([\s\S]*?)\*\//g)];
   const variants = new Map(blocks.map(([, name, text]) => [name, [...text.matchAll(/@variant\s+([\w-]+)/g)].map(([, variant]) => variant)]));
-  assert.deepEqual([...variants.keys()].sort(), ['field', 'input', 'item-row', 'section-head']);
+  assert.deepEqual([...variants.keys()].sort(), ['field', 'input', 'item-row', 'section-head', 'sheet']);
   assert.deepEqual(variants.get('input'), ['filter']);
   assert.deepEqual(variants.get('field'), ['multiline']);
   assert.deepEqual(variants.get('section-head'), ['nested']);

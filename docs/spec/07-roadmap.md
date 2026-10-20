@@ -47,7 +47,9 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
 - **UI-1** Projects is the first section. It lists one row for each project, with its label and
   one line: its item count, its waiting actions (`projects.pending`) and the time of its last
   sync, or `projects.notLoaded` / `projects.noRoadmap`. A tap opens its roadmap in the pane
-  (LAY-3), and the header shows the label of the project.
+  (LAY-3), and the header shows the label of the project. With no project, the list shows
+  `projects.empty` and the button `projects.add`, which opens Settings with the focus in the
+  repository field.
 - **UI-2** The roadmap shows the sections as a tree in file order (ROAD-10): an H2 head with its
   path and its `total`, its items, then each H3 head, one level in, with its title and its item
   count. A tap on a head folds the section; a folded H2 also hides its H3 sections. The items are rows with their title and body.
@@ -74,6 +76,10 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
 - **UI-7** The item sheet edits title, body and section together. Save with a changed title or
   body queues an `edit`; a changed section queues a `move` after it: two actions, two commits.
   A save that changes nothing queues nothing.
+- **UI-9** The item sheet has a head with its title and a close button (`item.close`), a body
+  with the fields, and a foot with **Delete** and **Save** (SHEET-1). The close button, a tap on
+  the veil, Escape and a drag down from the grab or the head close it and save nothing. From
+  840px it is a side sheet.
 - **UI-8** With a roadmap that has sections, a search field (`roadmap.search`) shows above it. Each
   key filters the roadmap with ROAD-11. While the search has text, each section is open and a tap
   on a head does nothing; the folds come back when the field is empty. No match shows

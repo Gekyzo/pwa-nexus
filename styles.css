@@ -22,10 +22,15 @@
     color: inherit;
   }
 
-  /* The rail stands at the start side from 600px: the page moves beside it (LAY-2). */
+  /* From 600px the rail stands at the side of the hand (LAY-2): the page pads that side. */
   @media (min-width: 600px) {
     body {
+      padding-inline-end: calc(var(--rail-width) + env(safe-area-inset-right));
+    }
+
+    [data-hand="left"] body {
       padding-inline-start: calc(var(--rail-width) + env(safe-area-inset-left));
+      padding-inline-end: env(safe-area-inset-right);
     }
   }
 }
@@ -83,6 +88,17 @@
 
   .item-row.nested .item-row-body {
     padding-inline-start: calc(var(--space-2) + var(--space-4));
+  }
+
+  /* @extends sheet */
+  /* The primary button keeps the side of the hand when Delete is hidden: a new item. */
+  .sheet-foot .button.primary {
+    margin-inline-start: auto;
+  }
+
+  [data-hand="left"] .sheet-foot .button.primary {
+    margin-inline-start: 0;
+    margin-inline-end: auto;
   }
 }
 

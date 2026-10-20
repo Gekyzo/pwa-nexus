@@ -4,7 +4,11 @@ User-visible changes, newest first.
 
 ## Unreleased
 
-No change.
+- The design system 0.5.0. The item sheet has a head with its title and a close button, and a
+  foot with Delete and Save. A drag down from the head closes it, and on a wide screen it opens
+  at the side.
+- With no project, the list offers Add a project: it opens Settings at the repository field.
+- From 600px the rail stands at the side of the hand.
 
 ## 0.1.7 - 2026-10-17
 

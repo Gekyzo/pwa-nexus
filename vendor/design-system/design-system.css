@@ -5,7 +5,8 @@
     /* `light-dark()` takes its value from `color-scheme`: the phone, or Theme in Settings. */
     color-scheme: light dark;
     --bg: light-dark(#f6f7f5, #111613); /* page */
-    --surface: light-dark(#ffffff, #1a211d); /* rows, header, sheets */
+    --surface: light-dark(#ffffff, #1d2621); /* rows, header, sheets */
+    --surface-2: light-dark(#eef2ef, #26302a); /* a field or a row set on --surface */
     --text: light-dark(#17201b, #e8ede9);
     --muted: light-dark(#667069, #98a39c); /* second text, idle icons */
     --line: light-dark(#dfe4e0, #2c3530); /* borders and separators */
@@ -24,9 +25,10 @@
     --text-xs: 0.75rem; /* labels, badges, captions */
     --text-s: 0.875rem; /* second text, chips */
     --text-m: 1rem; /* body */
-    --text-l: 1.25rem; /* screen title */
+    --text-l: 1.375rem; /* screen title */
     --text-xl: 2rem; /* the + of the add button */
     --weight-normal: 400;
+    --weight-medium: 600; /* titles, selected labels */
     --weight-strong: 700;
 
     --space-half: 2px;
@@ -36,33 +38,37 @@
     --space-4: 16px;
     --space-5: 20px;
     --space-6: 24px;
+    --space-7: 32px;
 
     --radius-s: 4px;
-    --radius-m: 10px; /* buttons, inputs */
-    --radius-l: 16px; /* groups, banner, add button */
-    --radius-xl: 22px; /* top of a sheet */
+    --radius-m: 12px; /* buttons, inputs */
+    --radius-l: 20px; /* groups, banner, add button */
+    --radius-xl: 28px; /* top of a sheet */
     --radius-pill: 999px;
     --radius-round: 50%;
 
-    --tap: 44px; /* least size of a tap target */
+    --tap: 48px; /* least size of a tap target */
     --tap-l: 56px; /* rows, add button */
     --icon: 24px;
     --icon-s: 20px;
     --arrow: 6px; /* the arrow of a select */
-    --nav-height: 60px;
+    --nav-height: 64px;
+    --dock-height: 56px; /* the bar of the main action above the bottom bar */
     /* The adaptive layout (LAY-1): the rail from 600px, the two panes from 840px. */
     --rail-width: 80px;
+    --side-sheet: 400px; /* a sheet with a head from 840px */
     --content-max: 640px;
     --pane-list: 360px;
     --art-width: 240px; /* the drawings of the walkthrough */
     --logo: 96px; /* the app icon at the top of the walkthrough */
 
     --shadow-s: 0 1px 3px rgb(0 0 0 / 0.3);
-    --shadow-l: 0 6px 18px rgb(0 0 0 / 0.25);
+    --shadow-l: 0 8px 24px rgb(0 0 0 / 0.14);
 
     --motion-fast: 150ms;
-    --motion: 200ms;
+    --motion: 250ms;
     --motion-slow: 1.2s;
+    --ease: cubic-bezier(0.2, 0.8, 0.2, 1); /* the curve of every move */
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -71,6 +77,13 @@
       --motion: 0ms;
       --motion-slow: 0ms;
     }
+  }
+
+  /* The compact density: shorter bars and add button. --tap does not change. */
+  :root[data-density="compact"] {
+    --tap-l: 48px;
+    --nav-height: 56px;
+    --dock-height: 48px;
   }
 
   :root[data-theme="light"] {
@@ -93,7 +106,7 @@
   }
 
   button {
-    min-height: 44px;
+    min-height: var(--tap);
     border: 0;
     border-radius: var(--radius-m);
     background: none;
@@ -129,11 +142,22 @@
     padding-bottom: calc(var(--tap-l) + var(--space-4) * 2);
   }
 
+  /* The dock stands above the bottom bar below 600px, so the content clears it as well. */
+  body:has(.dock:not([hidden])) main {
+    padding-bottom: calc(var(--tap-l) + var(--space-4) * 2 + var(--dock-height));
+  }
+
+  @media (min-width: 600px) {
+    body:has(.dock:not([hidden])) main {
+      padding-bottom: calc(var(--tap-l) + var(--space-4) * 2);
+    }
+  }
+
   /* The content of a new section comes in from its side. `main` stays in its place, so its scroll
      and the bottom padding do not move. */
   main.enter-next > *,
   main.enter-previous > * {
-    animation: enter var(--motion) ease-out;
+    animation: enter var(--motion) var(--ease);
   }
 
   main.enter-next {
@@ -183,7 +207,7 @@
      @variant danger   Removes data. Combine with outline.
      @variant strong   Strong text, for the action of a toast.
      @variant icon     Square, icon or one sign only. Needs an aria-label.
-     @variant toggle   An icon button that is on with aria-pressed="true".
+     @variant toggle   An icon button that is on with aria-pressed="true": the icon takes the accent over a soft accent shape.
      @variant wide     Takes the full width of its box.
      @example <button class="button primary" type="button">Add</button>
      @example <button class="button outline" type="button">Clear menu</button>
@@ -249,11 +273,12 @@
   }
 
   .button.toggle {
-    color: var(--line);
+    color: var(--muted);
   }
 
   .button.toggle[aria-pressed="true"] {
     color: var(--accent);
+    background: var(--accent-soft);
   }
 
   .button.wide {
@@ -368,7 +393,7 @@
     height: 26px;
     margin: 0;
     border-radius: var(--radius-l);
-    background: var(--line);
+    background: var(--muted);
     cursor: pointer;
     transition: background var(--motion);
   }
@@ -402,7 +427,11 @@
      @variant strong  The main box of a sheet, with an accent border.
      @example <input class="input" type="text" placeholder="New tag">
      @example <input class="input raised" type="search" placeholder="Search">
-     @example <input class="input strong" type="text" placeholder="Añadir artículo a la lista"> */
+     @example <input class="input strong" type="text" placeholder="Añadir artículo a la lista">
+     @state invalid  aria-invalid="true": the border takes --danger, also on focus.
+     @part input-help  A line of help or error below the box.
+     @variant danger  On input-help: the error text in --danger.
+     @example <div><input class="input" type="text" value="Notes" aria-invalid="true"><p class="input-help danger">Enter a name</p></div> */
   .input {
     width: 100%;
     min-width: 0;
@@ -417,8 +446,54 @@
     background: var(--surface);
   }
 
+  .input:focus-visible {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .input::-webkit-search-cancel-button {
+    appearance: none;
+  }
+
+  .input[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+
+  .input-help {
+    margin: var(--space-1) 0 0;
+    color: var(--muted);
+    font-size: var(--text-s);
+  }
+
+  .input-help.danger {
+    color: var(--danger);
+  }
+
   .input.strong {
-    border: 2px solid var(--accent);
+    border: 1px solid var(--accent);
+  }
+
+  /* The border grows by 1px on each side, so the padding shrinks by 1px and the text stays still. */
+  .input.strong:focus-visible {
+    border-width: 2px;
+    padding-inline: calc(var(--space-3) - 1px);
+  }
+
+  /* An invalid box keeps the danger border on focus, strong and in a field. */
+  .input[aria-invalid="true"]:focus-visible {
+    border-color: var(--danger);
+  }
+
+  .input.strong[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+
+  .input.strong[aria-invalid="true"]:focus-visible {
+    border-color: var(--danger);
+  }
+
+  .field-input[aria-invalid="true"]:focus {
+    border-color: var(--danger);
   }
 
   /* @component field
@@ -457,7 +532,7 @@
     line-height: 1;
     pointer-events: none;
     transform: translateY(-50%);
-    transition: top var(--motion-fast) ease-out, font-size var(--motion-fast) ease-out, color var(--motion-fast) ease-out;
+    transition: top var(--motion-fast) var(--ease), font-size var(--motion-fast) var(--ease), color var(--motion-fast) var(--ease);
   }
 
   .field-input:focus + .field-label,
@@ -524,6 +599,9 @@
     margin: 0;
     font-size: var(--text-l);
     line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .app-header-subtitle {
@@ -555,11 +633,12 @@
     border-radius: var(--radius-round);
     background: var(--bg);
     font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
     font-weight: var(--weight-strong);
   }
 
   /* @component nav-bar
-     @summary The bottom bar below 600px, a rail at the start side from 600px: one item for each section that is on.
+     @summary The bottom bar below 600px, a rail from 600px at the start side, or at the end side with data-hand="right" on the root (the app pads its body on the rail side): one item for each section that is on.
      @part nav-item  A section: its icon and its name. The current one has aria-current="page".
      @example <nav class="nav-bar" style="width: 100%"><button class="nav-item" type="button" aria-current="page"><svg class="icon" aria-hidden="true"><use href="icons.svg#note"/></svg><span>Notes</span></button><button class="nav-item" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#settings"/></svg><span>Later</span><em class="badge">2</em></button></nav> */
   .nav-bar {
@@ -584,9 +663,18 @@
     font-size: var(--text-xs);
   }
 
+  /* The current section is a pill behind its icon; its label stays plain. */
   .nav-item[aria-current="page"] {
+    color: var(--text);
+    font-weight: var(--weight-medium);
+  }
+
+  .nav-item[aria-current="page"] .icon {
+    box-sizing: content-box;
+    padding: var(--space-1) var(--space-5);
+    border-radius: var(--radius-pill);
+    background: var(--accent-soft);
     color: var(--accent);
-    font-weight: var(--weight-strong);
   }
 
   /* From 600px the bar is a rail at the start side, so a tablet or a phone on its side keeps its
@@ -611,6 +699,20 @@
     }
   }
 
+  /* The right hand puts the rail at the end side, where the thumb is. The app pads its body on the
+     rail side. */
+  @media (min-width: 600px) {
+    :root[data-hand="right"] .nav-bar {
+      inset-inline-start: auto;
+      right: 0;
+      width: calc(var(--rail-width) + env(safe-area-inset-right));
+      padding-inline-start: 0;
+      padding-right: env(safe-area-inset-right);
+      border-inline-end: 0;
+      border-left: 1px solid var(--line);
+    }
+  }
+
   /* @component badge
      @summary A count on a nav item. It is hidden while it is empty.
      @example <span style="position: relative; display: inline-block; width: 48px; height: 32px"><em class="badge">2</em></span> */
@@ -632,15 +734,22 @@
   }
 
   /* @component sheet
-     @summary A panel that comes up from the bottom over a veil. The layer is hidden to close it.
+     @summary A panel that comes up from the bottom over a veil; from 840px a sheet with a head is a side sheet. The layer is hidden to close it.
      @part sheet-layer  The fixed layer that holds the veil and the sheet.
      @part sheet-veil   The dark veil; a tap on it closes the sheet.
-     @part sheet-grab   The handle at the top.
+     @part sheet-grab   The handle at the top. A drag on it closes the sheet.
+     @part sheet-head   The bar under the handle: a title and a Done or close button.
+     @part sheet-body   The part that scrolls, between the head and the foot.
+     @part sheet-foot   The bar that stays at the bottom: the actions of the sheet.
+     @part sheet-saved  A short note in the foot, such as Saved.
+     @state on          On sheet-saved: the note shows.
      @part sheet-title  A title of the sheet or of one of its parts.
+     @variant main      On sheet-title: the title of the head, one line.
      @variant part      On sheet-title: a title below a line that separates it from the part above.
      @part entry        A choice of the sheet: a name, with its effect below it.
      @part entry-note   The effect of an entry.
-     @example <div class="sheet" style="border-radius: var(--radius-xl)"><div class="sheet-grab"></div><h2 class="sheet-title">Group by</h2><button class="entry" type="button"><span>Finish</span><small class="entry-note">Done notes leave the list</small></button><h2 class="sheet-title part">Tags</h2></div> */
+     @example <div class="sheet" style="border-radius: var(--radius-xl)"><div class="sheet-grab"></div><h2 class="sheet-title">Group by</h2><button class="entry" type="button"><span>Finish</span><small class="entry-note">Done notes leave the list</small></button><h2 class="sheet-title part">Tags</h2></div>
+     @example <div class="sheet" style="border-radius: var(--radius-xl); position: static"><div class="sheet-grab"></div><header class="sheet-head"><h2 class="sheet-title main">Note</h2><button class="button" type="button">Done</button></header><div class="sheet-body">Text of the note.</div><footer class="sheet-foot"><button class="button outline danger" type="button">Delete</button><span class="sheet-saved on">Saved</span></footer></div> */
   .sheet-layer {
     position: fixed;
     inset: 0;
@@ -660,7 +769,7 @@
     position: absolute;
     inset: 0;
     background: var(--scrim);
-    transition: opacity var(--motion) ease-out;
+    transition: opacity var(--motion) var(--ease);
   }
 
   .sheet-layer[hidden] .sheet-veil {
@@ -684,19 +793,102 @@
   .sheet {
     position: relative;
     max-height: 85%;
-    overflow-y: auto;
-    padding: var(--space-3) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     background: var(--surface);
-    transition: transform var(--motion) ease-out;
+    transition: transform var(--motion) var(--ease);
   }
 
+  /* A sheet without a head scrolls as a whole, as before. */
+  .sheet:not(:has(.sheet-head)) {
+    overflow-y: auto;
+    padding: var(--space-3) var(--space-4) calc(var(--space-4) + env(safe-area-inset-bottom));
+  }
+
+  /* A sheet with a head keeps its padding in the parts, and only the body scrolls. */
+  .sheet:has(.sheet-head) {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  /* The handle. A sheet without a head keeps the small bar of 0.2.1. */
   .sheet-grab {
     width: 40px;
     height: 4px;
     margin: 0 auto var(--space-3);
     border-radius: var(--radius-s);
     background: var(--line);
+    touch-action: none;
+  }
+
+  /* With a head, the handle is a tap tall and draws its bar inside. */
+  .sheet:has(.sheet-head) .sheet-grab {
+    position: relative;
+    flex: none;
+    width: auto;
+    height: var(--tap);
+    margin: 0;
+    background: none;
+  }
+
+  .sheet:has(.sheet-head) .sheet-grab::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 4px;
+    border-radius: var(--radius-s);
+    background: var(--muted);
+    transform: translate(-50%, -50%);
+  }
+
+  .sheet-head {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0 var(--space-4) var(--space-2);
+    touch-action: none;
+  }
+
+  .sheet-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 0 var(--space-4);
+  }
+
+  /* A headed sheet without a foot ends at the screen edge, so its body clears the bottom inset. */
+  .sheet:has(.sheet-head):not(:has(.sheet-foot)) .sheet-body {
+    padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  }
+
+  .sheet-foot {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4) calc(var(--space-3) + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+  }
+
+  .sheet-saved {
+    color: var(--muted);
+    font-size: var(--text-s);
+    opacity: 0;
+    transition: opacity var(--motion);
+  }
+
+  .sheet-saved.on {
+    opacity: 1;
+  }
+
+  [data-hand="left"] .sheet-head,
+  [data-hand="left"] .sheet-foot {
+    flex-direction: row-reverse;
   }
 
   .sheet-title {
@@ -706,11 +898,87 @@
     font-weight: var(--weight-strong);
   }
 
+  /* The title of the head: it takes the free width and keeps to one line. */
+  .sheet-title.main {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-size: var(--text-l);
+    font-weight: var(--weight-strong);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   /* A title below a line that separates its part from the part above. */
   .sheet-title.part {
     margin-top: var(--space-5);
     padding-top: var(--space-4);
     border-top: 1px solid var(--line);
+  }
+
+  /* From 840px a sheet with a head is a side sheet, full height, at the start side next to the rail
+     (the end side with data-hand="right" on the root). A sheet without a head keeps the bottom sheet. */
+  @media (min-width: 840px) {
+    .sheet-layer:has(.sheet-head) {
+      flex-direction: row;
+      align-items: stretch;
+      justify-content: flex-start;
+      padding-inline-start: calc(var(--rail-width) + env(safe-area-inset-left));
+    }
+
+    .sheet-layer:has(.sheet-head) .sheet {
+      width: var(--side-sheet);
+      height: 100%;
+      max-height: 100%;
+      border-start-start-radius: 0;
+      border-start-end-radius: var(--radius-xl);
+      border-end-start-radius: 0;
+      border-end-end-radius: var(--radius-xl);
+    }
+
+    .sheet-layer:has(.sheet-head)[hidden] .sheet {
+      transform: translateX(-100%);
+    }
+
+    @starting-style {
+      .sheet-layer:has(.sheet-head) .sheet {
+        transform: translateX(-100%);
+      }
+    }
+
+    .sheet:has(.sheet-head) .sheet-grab {
+      display: none;
+    }
+
+    /* With no grab above it, the head clears the top inset. */
+    .sheet-layer:has(.sheet-head) .sheet-head {
+      padding-top: calc(var(--space-3) + env(safe-area-inset-top));
+    }
+
+    :root[data-hand="right"] .sheet-layer:has(.sheet-head) {
+      justify-content: flex-end;
+      padding-inline-start: 0;
+      padding-inline-end: calc(var(--rail-width) + env(safe-area-inset-right));
+    }
+
+    :root[data-hand="right"] .sheet-layer:has(.sheet-head) .sheet {
+      border-start-start-radius: var(--radius-xl);
+      border-start-end-radius: 0;
+      border-end-start-radius: var(--radius-xl);
+      border-end-end-radius: 0;
+    }
+
+    :root[data-hand="right"] .sheet-layer:has(.sheet-head)[hidden] .sheet {
+      transform: translateX(100%);
+    }
+
+    @starting-style {
+      :root[data-hand="right"] .sheet-layer:has(.sheet-head) .sheet {
+        transform: translateX(100%);
+      }
+    }
   }
 
   .entry {
@@ -752,7 +1020,7 @@
     background: var(--toast-bg);
     color: var(--toast-text);
     box-shadow: var(--shadow-l);
-    transition: opacity var(--motion) ease-out, transform var(--motion) ease-out, display var(--motion) allow-discrete;
+    transition: opacity var(--motion) var(--ease), transform var(--motion) var(--ease), display var(--motion) allow-discrete;
   }
 
   /* The toast leaves to this state, and enters from the same one. */
@@ -768,10 +1036,9 @@
     }
   }
 
-  /* An open sheet has the bottom of the screen, so the toast goes to the top. */
-  body:has(.sheet-layer:not([hidden])) .toast {
-    top: calc(var(--space-2) + env(safe-area-inset-top));
-    bottom: auto;
+  /* Below 600px a visible dock stands under the toast, so the toast clears it. */
+  body:has(.dock:not([hidden])) .toast {
+    bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--dock-height) + var(--tap-l) + var(--space-6));
   }
 
   .toast-text {
@@ -784,6 +1051,21 @@
       bottom: calc(env(safe-area-inset-bottom) + var(--tap-l) + var(--space-6));
       left: calc(var(--rail-width) + env(safe-area-inset-left) + var(--space-3));
     }
+
+    body:has(.dock:not([hidden])) .toast {
+      bottom: calc(env(safe-area-inset-bottom) + var(--tap-l) + var(--space-6));
+    }
+
+    :root[data-hand="right"] .toast {
+      left: calc(var(--space-3) + env(safe-area-inset-left));
+      right: calc(var(--rail-width) + env(safe-area-inset-right) + var(--space-3));
+    }
+  }
+
+  /* Last, so it wins over the dock lift above. An open sheet has the bottom of the screen, so the toast goes to the top. */
+  body:has(.sheet-layer:not([hidden])) .toast {
+    top: calc(var(--space-2) + env(safe-area-inset-top));
+    bottom: auto;
   }
 
   /* @component banner
@@ -803,9 +1085,12 @@
   }
 
   /* @component empty-state
-     @summary The text of a list or a part with nothing in it, with an optional action.
+     @summary The text of a list or a part with nothing in it. Holds a button, except inline (STATE-1). A second action is a button outline below the primary.
      @variant inline  In a sheet: aligned with the content, with less space.
+     @variant low     At the bottom of its area, in reach of the thumb. The app gives the list area a height, as the percent needs one.
+     @part empty-state-title  The short title above the text.
      @example <div class="empty-state"><p>The list is empty.</p><button class="button primary" type="button">Bring from Later</button></div>
+     @example <div class="empty-state low" style="height: 240px"><h2 class="empty-state-title">Nothing here</h2><p>Add the first note.</p><button class="button primary" type="button">Add a note</button></div>
      @example <p class="empty-state inline">No note matches.</p> */
   .empty-state {
     margin: calc(var(--space-6) * 2) var(--space-6);
@@ -817,9 +1102,39 @@
     margin-top: var(--space-2);
   }
 
+  /* The empty state is on --bg, with art behind it, and its text is muted: a second action is a
+     --surface box with the text colour, like the content of the list. */
+  .empty-state .button.outline {
+    background: var(--surface);
+    color: var(--text);
+  }
+
   .empty-state.inline {
     margin: var(--space-3) 0;
     text-align: left;
+  }
+
+  .empty-state.low {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    min-height: 50%;
+    margin: 0 var(--space-5) var(--space-6);
+  }
+
+  .empty-state.low .button {
+    width: 100%;
+    min-height: var(--tap-l);
+    margin-top: 0;
+  }
+
+  .empty-state-title {
+    margin: 0;
+    color: var(--text);
+    font-size: var(--text-l);
+    font-weight: var(--weight-strong);
   }
 
   /* @component item-list
@@ -836,7 +1151,7 @@
     overflow: hidden;
     min-height: 0;
     opacity: 0;
-    transition: height var(--motion) ease-out, opacity var(--motion) ease-out;
+    transition: height var(--motion) var(--ease), opacity var(--motion) var(--ease);
   }
 
   /* @component item-row
@@ -846,8 +1161,12 @@
      @part item-row-check         The round checkbox of an entry that can be done.
      @part item-row-name          The name button, with its quantity and its meta line.
      @part item-row-qty           The quantity after the name.
+     @part item-row-label         The text of the name. It keeps two lines, then ends with an ellipsis.
      @part item-row-meta          A muted line below the name, such as its tags.
-     @part item-row-actions       The swipe actions behind the right end.
+     @part item-row-end           The fixed slot at the end, two buttons wide. It holds up to two button icon and
+                                  mirrors as a whole for the left hand.
+     @part item-row-actions       The swipe actions behind the right end. Hidden while the row is closed, so a
+                                  fractional pixel ratio shows no edge of them. The drag code adds open on settle.
      @part item-row-backdrop      The action under a slide to the right.
      @state done      A ticked entry: its name is struck out.
      @state flash     A row that has just come back: its body flashes.
@@ -857,13 +1176,15 @@
      @state open      On item-row-swipe: the actions show.
      @state armed     On item-row-swipe: a slide far enough to run its action.
      @state dragging  On item-row-body: the body follows the finger, with no transition.
-     @example <ul class="item-list" style="width: 100%"><li class="item-row"><div class="item-row-swipe"><div class="item-row-body"><input class="item-row-check" type="checkbox" aria-label="Call Ana"><button class="item-row-name" type="button"><span>Ideas <span class="item-row-qty">1 h</span></span><small class="item-row-meta">Work</small></button><button class="button icon toggle" type="button" aria-pressed="false" aria-label="Repeat"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg></button></div></div></li><li class="item-row done"><div class="item-row-body"><input class="item-row-check" type="checkbox" checked aria-label="Read book"><button class="item-row-name" type="button"><span>Read book</span></button><button class="pill ghost" type="button">+ Later</button></div></li></ul>
-     @example <ul class="item-list" style="width: 100%"><li class="item-row"><div class="item-row-swipe open"><div class="item-row-actions"><button class="swipe-action" type="button" aria-label="Move"><svg class="icon" aria-hidden="true"><use href="icons.svg#settings"/></svg></button><button class="swipe-action danger" type="button" aria-label="Delete"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div><div class="item-row-body" style="transform: translateX(-128px)"><button class="item-row-name" type="button"><span>Call Ana</span></button></div></div></li></ul> */
+     @state tick      On item-row-body: the whole body is the tick target. The check is a mark only.
+     @example <ul class="item-list" style="width: 100%"><li class="item-row"><div class="item-row-swipe"><div class="item-row-body"><input class="item-row-check" type="checkbox" aria-label="Call Ana"><button class="item-row-name" type="button"><span class="item-row-label">Ideas <span class="item-row-qty">1 h</span></span><small class="item-row-meta">Work</small></button><button class="button icon toggle" type="button" aria-pressed="false" aria-label="Repeat"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg></button></div></div></li><li class="item-row done"><div class="item-row-body"><input class="item-row-check" type="checkbox" checked aria-label="Read book"><button class="item-row-name" type="button"><span>Read book</span></button><button class="pill ghost" type="button">+ Later</button></div></li></ul>
+     @example <ul class="item-list" style="width: 100%"><li class="item-row"><div class="item-row-body tick"><input class="item-row-check" type="checkbox" aria-label="Call Ana"><button class="item-row-name" type="button"><span class="item-row-label">Call Ana about the long list of notes for the next meeting at the office</span></button><div class="item-row-end"><button class="button icon" type="button" aria-label="Edit"><svg class="icon" aria-hidden="true"><use href="icons.svg#settings"/></svg></button><button class="button icon" type="button" aria-label="Delete"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div></div></li></ul>
+     @example <ul class="item-list" style="width: 100%"><li class="item-row"><div class="item-row-swipe open"><div class="item-row-actions"><button class="swipe-action" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#settings"/></svg><span class="swipe-action-label">Move</span></button><button class="swipe-action danger" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg><span class="swipe-action-label">Delete</span></button></div><div class="item-row-body" style="transform: translateX(-144px)"><button class="item-row-name" type="button"><span>Call Ana</span></button></div></div></li></ul> */
   .item-row {
     border-bottom: 1px solid var(--line);
     background: var(--surface);
     /* The rows of a scope open a gap for a lifted row. `placeLifted` in drag.js sets the transform. */
-    transition: transform var(--motion-fast) ease-out;
+    transition: transform var(--motion-fast) var(--ease);
   }
 
   .item-row.lifted {
@@ -874,7 +1195,7 @@
   }
 
   .item-row.flash .item-row-body {
-    animation: flash var(--motion-slow) ease-out;
+    animation: flash var(--motion-slow) var(--ease);
   }
 
   .item-row.gone {
@@ -898,6 +1219,10 @@
     right: 0;
     bottom: 0;
     display: flex;
+  }
+
+  .item-row-swipe:not(.open) .item-row-actions {
+    visibility: hidden;
   }
 
   /* The slide to the right shows its action below the row. The actions cover it. */
@@ -931,7 +1256,7 @@
     padding-right: var(--space-3);
     touch-action: pan-y;
     user-select: none;
-    transition: transform var(--motion-fast) ease-out;
+    transition: transform var(--motion-fast) var(--ease);
   }
 
   .item-row-swipe .item-row-body.dragging {
@@ -968,6 +1293,24 @@
     transform: rotate(-45deg);
   }
 
+  /* The slot at the end: as wide as two buttons, so the text ends at the same place on every row. */
+  .item-row-end {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: calc(var(--tap) * 2);
+  }
+
+  /* With tick, the body takes the tap and the check only shows the state. */
+  .item-row-body.tick {
+    cursor: pointer;
+  }
+
+  .item-row-body.tick .item-row-check {
+    pointer-events: none;
+  }
+
   .item-row-name {
     flex: 1;
     display: flex;
@@ -992,6 +1335,14 @@
     text-decoration: line-through;
   }
 
+  /* The text of a name keeps two lines. The meta line below it is not clamped. */
+  .item-row-label {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
   .item-row-meta {
     color: var(--muted);
     font-size: var(--text-xs);
@@ -1004,20 +1355,31 @@
 
   /* @component swipe-action
      @summary An action behind the right end of a row, shown by a slide to the left.
-     @variant danger  Removes the item.
-     @example <div style="display: flex; height: 56px"><button class="swipe-action" type="button" aria-label="Move"><svg class="icon" aria-hidden="true"><use href="icons.svg#settings"/></svg></button><button class="swipe-action danger" type="button" aria-label="Delete"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div> */
+     @variant neutral  A plain action, such as edit, in the surface colour.
+     @variant danger   Removes the item.
+     @part swipe-action-label  The word below the icon.
+     @example <div style="display: flex; height: 64px"><button class="swipe-action neutral" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#settings"/></svg><span class="swipe-action-label">Edit</span></button><button class="swipe-action" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg><span class="swipe-action-label">Repeat</span></button><button class="swipe-action danger" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg><span class="swipe-action-label">Delete</span></button></div> */
   .swipe-action {
-    display: grid;
-    place-items: center;
-    width: calc(var(--tap) + var(--space-5));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-half);
+    width: calc(var(--tap) + var(--space-6));
     height: 100%;
     border-radius: 0;
+    font-size: var(--text-xs);
     background: var(--accent-soft);
     color: var(--accent);
   }
 
   .swipe-action + .swipe-action {
     border-left: 1px solid var(--surface);
+  }
+
+  .swipe-action.neutral {
+    background: var(--surface-2);
+    color: var(--text);
   }
 
   .swipe-action.danger {
@@ -1076,9 +1438,17 @@
      @part list-row-text  The main text of a row that has two.
      @part list-row-meta  A muted text at the end of a row.
      @variant accent      On list-row: the row that makes a new thing.
+     @variant card        No border: a soft shadow lifts the box.
+     @part list-group-head      The quiet title above a group.
+     @part settings-row         A tall row of a group: a label, a value and a chevron.
+     @part settings-row-label   The text of a settings row.
+     @part settings-row-value   The muted value at the end of a settings row.
+     @part chevron              The muted end mark of a settings row (see section-head).
+     @variant danger      On settings-row: the row of a risky action, in the danger colour.
      @example <div class="list-group" style="width: 100%"><button class="list-row" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#help"/></svg><span>Show the introduction</span></button><select class="select" aria-label="Language"><option>English</option></select></div>
      @example <div class="list-group pair" style="width: 100%"><button class="list-row" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#export"/></svg><span>Export</span></button><button class="list-row" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#import"/></svg><span>Import</span></button></div>
-     @example <ul class="list-group plain" style="width: 100%"><li><button class="list-row" type="button"><span class="list-row-text">Buy milk</span><span class="list-row-meta">In Notes</span></button></li><li><button class="list-row accent" type="button">Create «Buy»</button></li></ul> */
+     @example <ul class="list-group plain" style="width: 100%"><li><button class="list-row" type="button"><span class="list-row-text">Buy milk</span><span class="list-row-meta">In Notes</span></button></li><li><button class="list-row accent" type="button">Create «Buy»</button></li></ul>
+     @example <h3 class="list-group-head">Data</h3><div class="list-group card" style="width: 100%"><button class="settings-row" type="button"><span class="settings-row-label">Language</span><span class="settings-row-value">English</span><span class="chevron">›</span></button><button class="settings-row danger" type="button"><span class="settings-row-label">Delete all</span></button></div> */
   .list-group {
     margin: 0 var(--space-3);
     border: 1px solid var(--line);
@@ -1148,9 +1518,59 @@
     font-size: var(--text-xs);
   }
 
+  .list-group.card {
+    border: 0;
+    box-shadow: var(--shadow-s);
+  }
+
+  .list-group-head {
+    margin: var(--space-5) var(--space-4) var(--space-2);
+    color: var(--muted);
+    font-size: var(--text-s);
+    font-weight: var(--weight-medium);
+  }
+
+  .settings-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+    min-height: var(--tap-l);
+    padding: 0 var(--space-3) 0 var(--space-4);
+    border-radius: 0;
+    color: var(--text);
+    font-size: var(--text-m);
+    text-align: start;
+  }
+
+  .settings-row + .settings-row {
+    border-top: 1px solid var(--line);
+  }
+
+  .settings-row-label {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .settings-row-value {
+    color: var(--muted);
+  }
+
+  .settings-row .chevron {
+    flex: none;
+    color: var(--muted);
+  }
+
+  .settings-row.danger {
+    color: var(--danger);
+    font-weight: var(--weight-medium);
+  }
+
   /* @component fab
      @summary The add button, fixed above the bottom bar at the side of the hand.
-     @example <button class="fab" type="button" style="position: static">+</button> */
+     @state collapsed  A square of the tap size with the icon only, for example while a list scrolls.
+     @example <button class="fab" type="button" style="position: static">+</button>
+     @example <button class="fab collapsed" type="button" style="position: static">+</button> */
   .fab {
     position: fixed;
     right: calc(var(--space-4) + env(safe-area-inset-right));
@@ -1164,6 +1584,35 @@
     font-size: var(--text-xl);
     line-height: 1;
     box-shadow: var(--shadow-l);
+    transition: width var(--motion-fast) var(--ease), height var(--motion-fast) var(--ease);
+  }
+
+  .fab.collapsed {
+    width: var(--tap);
+    height: var(--tap);
+  }
+
+  /* Below 600px a dock stands between the button and the bottom bar. */
+  body:has(.dock:not([hidden])) .fab {
+    bottom: calc(var(--nav-height) + env(safe-area-inset-bottom) + var(--dock-height) + var(--space-4));
+  }
+
+  /* @component action-bar
+     @summary A row of buttons stuck to the bottom of a scroll area, over a fade.
+     @example <div class="action-bar" style="position: static"><button class="button" type="button">Cancel</button><button class="button primary" type="button">Save</button></div> */
+  .action-bar {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: linear-gradient(transparent, var(--bg) var(--space-4));
+  }
+
+  .action-bar .button {
+    flex: 1;
+    min-height: var(--tap-l);
+    white-space: nowrap;
   }
 
   /* Left hand: the controls change side. Text stays aligned to the left, and a row slides as before. */
@@ -1177,18 +1626,23 @@
     margin-left: 0;
   }
 
+  /* The text of a row starts at --space-4 with either hand. Only the check and the trailing slot change side. */
   [data-hand="left"] .item-row-body {
-    flex-direction: row-reverse;
-    padding: 0 var(--space-2) 0 var(--space-1);
+    padding-left: calc(var(--space-4) - var(--space-1));
   }
 
-  [data-hand="left"] .item-row-swipe .item-row-body {
-    padding-right: var(--space-2);
-    padding-left: var(--space-3);
+  [data-hand="left"] .item-row-body > .item-row-name:first-child {
+    padding-left: var(--space-1);
   }
 
   [data-hand="left"] .item-row-check {
+    order: 1;
     margin: var(--space-3) var(--space-2) var(--space-3) var(--space-1);
+  }
+
+  [data-hand="left"] .item-row-end {
+    order: -1;
+    flex-direction: row-reverse;
   }
 
   [data-hand="left"] .fab {
@@ -1204,6 +1658,99 @@
 
     [data-hand="left"] .fab {
       left: calc(var(--rail-width) + env(safe-area-inset-left) + var(--space-4));
+    }
+
+    :root[data-hand="right"] .fab {
+      right: calc(var(--rail-width) + env(safe-area-inset-right) + var(--space-4));
+    }
+
+    body:has(.dock:not([hidden])) .fab {
+      bottom: calc(env(safe-area-inset-bottom) + var(--space-4));
+    }
+  }
+
+  /* @component dock
+     @summary The filter and the search of a list, in thumb reach below 600px. From 600px the app shows them in the header.
+     @part dock-field  A search box in the dock: an input and a clear button.
+     @part dock-input  The input in the field. The field draws the border.
+     @part dock-clear  The button that empties the field.
+     @example <div class="dock" style="position: static"><button class="chip" type="button" aria-pressed="true">All 4</button><button class="chip" type="button">Filter</button><label class="dock-field"><input class="dock-input" type="search" aria-label="Filter"><button class="dock-clear" type="button" aria-label="Clear">x</button></label></div> */
+  .dock {
+    position: fixed;
+    right: 0;
+    bottom: calc(var(--nav-height) + env(safe-area-inset-bottom));
+    left: 0;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: var(--dock-height);
+    padding-inline: calc(var(--space-4) + env(safe-area-inset-left)) calc(var(--space-4) + env(safe-area-inset-right));
+    border-top: 1px solid var(--line);
+    background: var(--surface);
+  }
+
+  .dock .chip {
+    flex: 1;
+    justify-content: center;
+    background: var(--surface-2);
+  }
+
+  .dock-field {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    min-height: 0;
+    height: calc(var(--dock-height) - var(--space-2));
+    border: 2px solid var(--line);
+    border-radius: var(--radius-pill);
+    background: var(--surface-2);
+  }
+
+  .dock-field:focus-within {
+    border-color: var(--accent);
+  }
+
+  .dock-input {
+    flex: 1;
+    align-self: stretch;
+    min-width: 0;
+    min-height: 0;
+    padding: 0 var(--space-4);
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+  }
+
+  /* The field draws the focus, so the input has no outline and no native clear. */
+  .dock-input:focus-visible {
+    outline: none;
+  }
+
+  .dock-input::-webkit-search-cancel-button {
+    appearance: none;
+  }
+
+  .dock-clear {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: var(--tap);
+    height: var(--tap);
+    border-radius: var(--radius-round);
+    color: var(--muted);
+  }
+
+  [data-hand="left"] .dock {
+    flex-direction: row-reverse;
+  }
+
+  /* No bar at the bottom from 600px, and the app shows the filter in the header. */
+  @media (min-width: 600px) {
+    .dock {
+      display: none;
     }
   }
 }
@@ -1228,11 +1775,16 @@
     flex-wrap: nowrap;
     overflow-x: auto;
     scrollbar-width: none;
+    padding-inline-end: var(--space-6);
+    mask-image: linear-gradient(to right, black calc(100% - var(--space-7)), transparent);
   }
 
   /* @component input-row
-     @summary An input that grows, and the button that submits it.
-     @example <div class="input-row"><input class="input" type="text" placeholder="New tag"><button class="button primary" type="button">Add</button></div> */
+     @summary An input that grows, and the button that submits it. With the left hand the button is on the left.
+       The button has no fill while it is disabled, so an empty box reads as not ready.
+     @variant pinned  Sticks to the bottom of a sheet body, on --surface.
+     @example <div class="input-row"><input class="input" type="text" placeholder="New tag"><button class="button primary" type="button">Add</button></div>
+     @example <div class="input-row pinned" style="position: static"><input class="input" type="text" placeholder="New tag"><button class="button primary" type="button" disabled>Add</button></div> */
   .input-row {
     display: flex;
     gap: var(--space-2);
@@ -1240,6 +1792,28 @@
 
   .input-row > .input {
     flex: 1;
+  }
+
+  .input-row > .button:disabled {
+    background: var(--surface-2);
+    color: var(--muted);
+    opacity: 1;
+  }
+
+  .input-row.pinned {
+    position: sticky;
+    bottom: 0;
+    padding-block: var(--space-2);
+    background: var(--surface);
+  }
+
+  /* The last child of a sheet body without a foot stands at the screen edge: it clears the inset. */
+  .input-row.pinned:last-child {
+    padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom));
+  }
+
+  [data-hand="left"] .input-row {
+    flex-direction: row-reverse;
   }
 
   /* @component split

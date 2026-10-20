@@ -34,12 +34,13 @@
           <ul id="project-list" class="item-list"></ul>
           <div id="projects-empty" class="empty-state" hidden>
             <p data-i18n="projects.empty"></p>
+            <button id="projects-add" class="button primary" type="button" data-i18n="projects.add"></button>
           </div>
         </div>
         <article id="roadmap" class="pane-detail">
           <button id="roadmap-back" class="button quiet pane-back" type="button" data-i18n="roadmap.back"></button>
           <input id="roadmap-search" class="input raised filter" type="search" autocomplete="off" spellcheck="false" data-i18n-attr="placeholder:roadmap.search,aria-label:roadmap.search" hidden>
-          <p id="roadmap-empty" class="empty-state"></p>
+          <p id="roadmap-empty" class="empty-state inline"></p>
           <div id="roadmap-stale"></div>
           <ul id="roadmap-list" class="item-list"></ul>
         </article>
@@ -111,18 +112,20 @@
       <div id="item-veil" class="sheet-veil"></div>
       <form id="item-form" class="sheet" role="dialog" aria-modal="true" aria-labelledby="item-sheet-title" autocomplete="off">
         <div class="sheet-grab"></div>
-        <h2 id="item-sheet-title" class="sheet-title"></h2>
-        <select id="item-section" class="select" required data-i18n-attr="aria-label:item.section"></select>
-        <label class="field"><input id="item-title" class="input field-input" type="text" maxlength="80" required data-i18n-attr="placeholder:item.title"><span class="field-label" data-i18n="item.title"></span></label>
-        <label class="field"><textarea id="item-body" class="input field-input multiline" maxlength="500" rows="3" data-i18n-attr="placeholder:item.body"></textarea><span class="field-label" data-i18n="item.body"></span></label>
-        <div id="item-also" hidden>
-          <h3 class="sheet-title part" data-i18n="item.alsoTo"></h3>
-          <div id="item-also-list" class="cluster" role="group" data-i18n-attr="aria-label:item.alsoTo"></div>
+        <header class="sheet-head"><h2 id="item-sheet-title" class="sheet-title main"></h2><button id="item-close" class="button icon" type="button" data-i18n-attr="aria-label:item.close"><svg class="icon" aria-hidden="true"><use href="icons.svg#close"/></svg></button></header>
+        <div class="sheet-body">
+          <select id="item-section" class="select" required data-i18n-attr="aria-label:item.section"></select>
+          <label class="field"><input id="item-title" class="input field-input" type="text" maxlength="80" required data-i18n-attr="placeholder:item.title"><span class="field-label" data-i18n="item.title"></span></label>
+          <label class="field"><textarea id="item-body" class="input field-input multiline" maxlength="500" rows="3" data-i18n-attr="placeholder:item.body"></textarea><span class="field-label" data-i18n="item.body"></span></label>
+          <div id="item-also" hidden>
+            <h3 class="sheet-title part" data-i18n="item.alsoTo"></h3>
+            <div id="item-also-list" class="cluster" role="group" data-i18n-attr="aria-label:item.alsoTo"></div>
+          </div>
         </div>
-        <div class="cluster">
-          <button id="item-delete" class="button danger" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg><span data-i18n="item.delete"></span></button>
+        <footer class="sheet-foot">
+          <button id="item-delete" class="button outline danger" type="button"><svg class="icon small" aria-hidden="true"><use href="icons.svg#trash"/></svg><span data-i18n="item.delete"></span></button>
           <button class="button primary" type="submit" data-i18n="item.save"></button>
-        </div>
+        </footer>
       </form>
     </div>
 
@@ -187,7 +190,8 @@
           "#onboarding": "./src/onboarding.js",
           "#ui/dust": "./src/ui/dust.js",
           "#ui/onboarding": "./src/ui/onboarding.js",
-          "#ui/update": "./src/ui/update.js"
+          "#ui/update": "./src/ui/update.js",
+          "#ds/sheet": "./vendor/design-system/sheet.js"
         }
       }
     </script>
