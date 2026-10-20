@@ -7,6 +7,8 @@ User-visible changes, newest first.
 - The bottom bar shows only the icon of each section, with no name.
 - In Settings, the token field, its help and the project rows keep off the edges: no text
   touches the border of its group or the screen.
+- In Settings, the project names and the repository field take the surface colour, so they stand out
+  from the page.
 
 ## 0.1.8 - 2026-10-20
 
