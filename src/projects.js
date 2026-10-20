@@ -12,7 +12,7 @@ export const DEFAULT_PROJECTS = [
   { repo: 'Gekyzo/pwa-financial-calculator', label: 'Compound' },
   { repo: 'Gekyzo/pwa-shifts', label: 'Rota' },
   { repo: 'Gekyzo/pwa-nexus', label: 'Nexus' },
-  { repo: 'Gekyzo/pwa-lists', label: 'Lists' },
+  { repo: 'Gekyzo/pwa-lists', label: 'Stash' },
 ];
 
 // The default projects that a doc saved before `defaults` existed was offered (PROJ-4).

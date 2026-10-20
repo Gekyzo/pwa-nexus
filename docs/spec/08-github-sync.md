@@ -62,7 +62,7 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
 - **PROJ-1** The doc `pwa-nexus.doc` is `{ version: 1, projects: [{ repo, label }], queue, defaults }`. A
   new install gets the six default projects: `Gekyzo/shopping-list`, `Gekyzo/pwa-wardrobe`,
   `Gekyzo/pwa-financial-calculator`, `Gekyzo/pwa-shifts`, `Gekyzo/pwa-nexus` and `Gekyzo/pwa-lists`,
-  labelled Bodega, Attire, Compound, Rota, Nexus and Lists. A stored doc
+  labelled Bodega, Attire, Compound, Rota, Nexus and Stash. A stored doc
   keeps its own list. `repo` is `owner/name`, also when pasted as a GitHub URL or
   with `.git` (`error.repoInvalid`); one repository two times, in any case, is `error.repoTaken`.
   A blank label is the name of the repository, and a label has at most 40 characters

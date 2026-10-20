@@ -9,6 +9,7 @@ User-visible changes, newest first.
   at the side.
 - With no project, the list offers Add a project: it opens Settings at the repository field.
 - From 600px the rail stands at the side of the hand.
+- The default project `Gekyzo/pwa-lists` is labelled Stash, its new app name.
 
 ## 0.1.7 - 2026-10-17
 
