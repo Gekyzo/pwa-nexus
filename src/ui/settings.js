@@ -73,7 +73,7 @@ export const applyLanguage = () => {
 
 // One row of the project editor: its name as a field, its repository, and Remove (UI-6).
 const editorRow = (project) => {
-  const label = el('input', { className: 'input raised', type: 'text', value: project.label, maxLength: 40 });
+  const label = el('input', { className: 'input', type: 'text', value: project.label, maxLength: 40 });
   label.setAttribute('aria-label', t('settings.label', { repo: project.repo }));
   label.addEventListener('change', () => apply(renameProject(state, project.repo, label.value)));
   const remove = el('button', { className: 'button icon danger', type: 'button', onclick: () => removeRepo(project.repo) }, [icon('trash')]);

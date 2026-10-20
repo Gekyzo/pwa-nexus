@@ -422,8 +422,9 @@
   }
 
   /* @component input
-     @summary A one-line text box. Height --tap, on --bg.
-     @variant raised  On a --bg page: the box takes --surface.
+     @summary A one-line text box. Height --tap. On the page the box is --surface; inside a sheet, a
+       list-group or a pinned input-row (all --surface) it sinks to --bg, so it always stands out.
+     @variant raised  Deprecated: the box takes --surface, the default on the page now.
      @variant strong  The main box of a sheet, with an accent border.
      @example <input class="input" type="text" placeholder="New tag">
      @example <input class="input raised" type="search" placeholder="Search">
@@ -439,6 +440,11 @@
     padding: 0 var(--space-3);
     border: 1px solid var(--line);
     border-radius: var(--radius-m);
+    background: var(--surface);
+  }
+
+  /* On a --surface container the box sinks to --bg, so it keeps its contrast. */
+  :where(.sheet, .list-group:not(.plain), .input-row.pinned) .input {
     background: var(--bg);
   }
 
@@ -527,7 +533,7 @@
     left: var(--space-3);
     padding: 0 var(--space-1);
     border-radius: var(--radius-s);
-    background: var(--bg);
+    background: var(--surface);
     color: var(--muted);
     line-height: 1;
     pointer-events: none;
@@ -538,8 +544,18 @@
   .field-input:focus + .field-label,
   .field-input:not(:placeholder-shown) + .field-label {
     top: 0;
-    background: linear-gradient(var(--surface) 50%, var(--bg) 50%);
+    background: linear-gradient(var(--bg) 50%, var(--surface) 50%);
     font-size: var(--text-xs);
+  }
+
+  /* The label takes the fill of its box: the container above the border, the box below it. */
+  :where(.sheet, .list-group:not(.plain), .input-row.pinned) .field-label {
+    background: var(--bg);
+  }
+
+  :where(.sheet, .list-group:not(.plain), .input-row.pinned) .field-input:focus + .field-label,
+  :where(.sheet, .list-group:not(.plain), .input-row.pinned) .field-input:not(:placeholder-shown) + .field-label {
+    background: linear-gradient(var(--surface) 50%, var(--bg) 50%);
   }
 
   .field-input:focus + .field-label {
