@@ -104,7 +104,7 @@ The doc keys are in [08-github-sync.md](08-github-sync.md). The device preferenc
 | `tests/design.test.js` | Each rule of `vendor/design-system/rules.js` over the two stylesheets, `index.html`, `icons.svg`, `src/ui/` and `designs/`; the screen parts of the app and the variants of its versions (DSV-3) |
 | `tests/vendor.test.js` | The copy of the design system: its files and hashes, its place in `index.html`, `designs/index.html` and `SHELL`, no copied rule in `styles.css` (DSV-1 to DSV-3) |
 | `tests/png.test.js` | The PNG encoder and decoder of `scripts/png.mjs`, which `npm run icons` uses |
-| `tests/release.test.js` | The release of `scripts/release.mjs`: the bump commit, the tag and the refusals (VER-10 to VER-12) |
+| `tests/release.test.js` | The release of `scripts/release.mjs`: the bump commit, the tag and the refusals, also a `main` behind `origin` (VER-10 to VER-12) |
 | `tests/changelog.test.js` | The release of `CHANGELOG.md` by `scripts/changelog.mjs` (VER-17) |
 | `tests/init.test.js` | The arguments of `scripts/init.mjs`, and a run of it in a copy: the new names, no trace of the template, `vendor/` kept as it is, its refusal of a second run (ENG-17) |
 | `tests/spec.test.js` | The facts of this specification that the code can prove (ENG-12) |
