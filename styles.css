@@ -135,7 +135,7 @@
   }
 
   .version-status[data-status='current'] {
-    color: var(--accent);
+    color: var(--done);
   }
 
   .version-status[data-status='outdated'] {
@@ -246,7 +246,7 @@
   .sync-progress-bar {
     display: block;
     height: 100%;
-    background: var(--accent);
+    background: var(--done);
     transform: scaleX(var(--share, 0));
     transform-origin: left;
     transition: transform var(--motion) var(--ease);
@@ -403,7 +403,7 @@
   }
 
   .onboarding-dot.on {
-    background: var(--accent);
+    background: var(--ink);
   }
 
   /* Saltar sits beside the next button, on the side away from the thumb. */
@@ -425,9 +425,9 @@
      @scope onboarding
      @summary The line drawing of a walkthrough page, inline in the page. Its shapes take these parts.
      @part art-card     A card shape, filled with --surface.
-     @part art-accent   An accent stroke.
-     @part art-soft     A soft accent fill.
-     @part art-solid    A solid accent fill.
+     @part art-accent   A --done stroke.
+     @part art-soft     A --done-soft fill with a --done stroke.
+     @part art-solid    A solid --done fill.
      @part art-on-solid A stroke on a solid fill.
      @example <div class="onboarding-art"><svg viewBox="0 0 240 160" aria-hidden="true"><rect class="art-card art-accent" x="20" y="20" width="90" height="120" rx="10"/><circle class="art-solid" cx="160" cy="80" r="13"/><path class="art-on-solid" d="M160 74v12M154 80h12"/></svg></div> */
   .onboarding-art > svg {
@@ -446,20 +446,20 @@
   }
 
   .art-accent {
-    stroke: var(--accent);
+    stroke: var(--done);
   }
 
   .art-soft {
-    fill: var(--accent-soft);
-    stroke: var(--accent);
+    fill: var(--done-soft);
+    stroke: var(--done);
   }
 
   .art-solid {
-    fill: var(--accent);
+    fill: var(--done);
     stroke: none;
   }
 
   .art-on-solid {
-    stroke: var(--accent-text);
+    stroke: var(--on-done);
   }
 }

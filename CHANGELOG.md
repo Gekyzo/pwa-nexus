@@ -4,7 +4,7 @@ User-visible changes, newest first.
 
 ## Unreleased
 
-No change.
+- The look of design system 0.7.1: the Geist font, the stone ground, smaller corners and heads in the colour of the text.
 
 ## 0.1.9 - 2026-10-20
 

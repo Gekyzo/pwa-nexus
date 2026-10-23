@@ -10,8 +10,8 @@ This document holds the rules of the app only.
 
 ## The copy
 
-- **DSV-1** `vendor/design-system/` holds `design-system.css`, `catalog.js`, `rules.js`, `sheet.js`
-  and `SOURCE.json`: the version, the commit and the sha256 of each file, and no other file. Only
+- **DSV-1** `vendor/design-system/` holds `design-system.css`, `catalog.js`, `rules.js`, `sheet.js`,
+  the font `geist.woff2` and `SOURCE.json`: the version, the commit and the sha256 of each file, and no other file. Only
   `npm run ds` writes it, from `../pwa-design-system` with no uncommitted change of those files. A
   file that differs from its hash fails `tests/vendor.test.js`. The tests read the copy only, so
   they pass with no `../pwa-design-system`.

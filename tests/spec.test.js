@@ -72,6 +72,12 @@ test('the cache prefix of sw.js is the slug of src/config.js', () => {
   assert.equal(manifest, `${APP_SLUG}-manifest`);
 });
 
+test('DSV-1 names each file of vendor/design-system/ (SOURCE.json)', () => {
+  const rule = docs['04-design-system.md'].split('**DSV-1**')[1].split('- **DSV-2**')[0];
+  const { files: vendored } = JSON.parse(read('vendor/design-system/SOURCE.json'));
+  for (const file of [...Object.keys(vendored), 'SOURCE.json']) assert.ok(rule.includes(`\`${file}\``), file);
+});
+
 test('the language document has each language and the fallback', () => {
   const languages = docs['06-i18n.md'];
   const codes = [...section('06-i18n.md', 'Languages').matchAll(/\(`([a-z]{2})`/g)].map(([, code]) => code);
