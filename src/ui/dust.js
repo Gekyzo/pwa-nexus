@@ -9,7 +9,7 @@ import { symbolNodes } from '#ui/controls';
 const DUST_MS = 900;
 const PLACE_MS = 300;
 
-// The pixels of a button of the bottom bar: its icon, in its colour.
+// The pixels of a button of the bottom bar: its icon, then its label, in their colours.
 const drawButton = async (button) => {
   const box = button.getBoundingClientRect();
   const canvas = el('canvas', { width: Math.ceil(box.width), height: Math.ceil(box.height) });
@@ -35,6 +35,14 @@ const drawButton = async (button) => {
   image.src = `data:image/svg+xml,${encodeURIComponent(new XMLSerializer().serializeToString(copy))}`;
   await image.decode();
   context.drawImage(image, place.left - box.left, place.top - box.top, place.width, place.height);
+  const label = button.querySelector('span');
+  const text = label.getBoundingClientRect();
+  const font = getComputedStyle(label);
+  context.font = `${font.fontWeight} ${font.fontSize} ${font.fontFamily}`;
+  context.fillStyle = font.color;
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.fillText(label.textContent, text.left - box.left + text.width / 2, text.top - box.top + text.height / 2);
   return { box, image: context.getImageData(0, 0, canvas.width, canvas.height) };
 };
 

@@ -4,7 +4,7 @@ User-visible changes, newest first.
 
 ## Unreleased
 
-No change.
+- The bottom bar shows the name of each section under its icon again.
 
 ## 0.1.11 - 2026-10-24
 
