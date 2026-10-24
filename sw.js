@@ -1,4 +1,4 @@
-const CACHE = 'pwa-nexus-shell-v2';
+const CACHE = 'pwa-nexus-shell-v3';
 
 const SHELL = [
   './',
