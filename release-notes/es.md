@@ -4,6 +4,10 @@ Lo que cambia para ti en cada versión de la app. La versión más nueva va prim
 
 ## Unreleased
 
+No change.
+
+## 0.1.16 - 2026-10-24
+
 - `Deshacer` tras `Borrar` durante una sincronización ya no vuelve a añadir el elemento al final de su sección con dos commits de más.
 - Un proyecto quitado durante una sincronización ya no envía sus cambios en espera.
 - Un cambio que llegó a GitHub mientras se cortaba la conexión ya no se muestra como fallido en la siguiente sincronización.

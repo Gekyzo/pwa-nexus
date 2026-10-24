@@ -4,6 +4,10 @@ Technical changes, newest first. What a user sees of a version goes to `release-
 
 ## Unreleased
 
+No change.
+
+## 0.1.16 - 2026-10-24
+
 - Review fixes: `normalizeDoc` keeps `sent`, so it outlives a restart; Undo of a delete that may have reached GitHub queues an `add` marked `sent` (`undoDeleteOf`) instead of waiting for the answer; a `sent` delete is done only when no item keeps its title or body; `viewOf` shows a `sent` action that the text has as applied; `editItem` lets the first of two items with one title change when its title stays; Undo of Discard leaves out committed actions.
 - A sync reads the queue and the projects at each step (SYNC-10): `syncRepo` takes `keep`, checked just before each commit, and `onSend`, which names the entry on its way. Undo of a delete waits for that answer only for the entry in flight (UI-4). A project removed during the sync is skipped and keeps no cache entry.
 - A commit with no answer marks its entry `sent` (`settleQueue` takes `sent`, `isEntry` accepts it). At the next sync a `sent` entry that no longer applies is done when the file already shows its result (`isApplied`), not stale (SYNC-11).
