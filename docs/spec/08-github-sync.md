@@ -60,6 +60,11 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   when it started. Just before each commit it checks that the action is still in the queue: an
   action that the user discarded or undid, or whose project was removed, is not sent. A project
   removed during the sync is not synced, and its cache entry is not written back.
+- **SYNC-11** A commit with no answer (a `network` error after the request went out) may have
+  reached GitHub: the action stays in the queue marked `sent`. At the next sync, a `sent` action
+  that no longer applies is done, with no commit, when the file already shows its result: the
+  item added or edited as the action has it, the item moved to its new section, or the deleted
+  item gone. Otherwise it is stale as SYNC-6 says. An action that is not `sent` keeps SYNC-6.
 
 ## Cache, projects and token
 

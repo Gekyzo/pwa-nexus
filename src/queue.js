@@ -38,7 +38,8 @@ export const isEntry = (value) =>
   isObject(value.args) &&
   ARGS[value.op](value.args) &&
   typeof value.createdAt === 'number' &&
-  (value.stale === undefined || typeof value.stale === 'boolean');
+  (value.stale === undefined || typeof value.stale === 'boolean') &&
+  (value.sent === undefined || typeof value.sent === 'boolean');
 
 // An edit or a delete carries the item as the phone saw it: if GitHub has another version, the
 // action would overwrite text written elsewhere, so it fails and goes stale (SYNC-6).
@@ -83,11 +84,13 @@ export const discardEntry = (state, id) => ({ state: { ...state, queue: state.qu
 
 export const pendingOf = (state, repo) => state.queue.filter((entry) => entry.repo === repo);
 
-export const settleQueue = (state, { done, stale }) => ({
+// `sent` holds the entries whose commit got no answer: GitHub may have them (SYNC-11).
+export const settleQueue = (state, { done, stale, sent = [] }) => ({
   ...state,
   queue: state.queue
     .filter((entry) => !done.includes(entry.id))
-    .map((entry) => (stale.includes(entry.id) ? { ...entry, stale: true } : entry)),
+    .map((entry) => (stale.includes(entry.id) ? { ...entry, stale: true } : entry))
+    .map((entry) => (sent.includes(entry.id) ? { ...entry, sent: true } : entry)),
 });
 
 // The text that the screen shows: the cached text with the waiting entries on top (SYNC-2).
@@ -135,6 +138,19 @@ export const syncShare = (done, total) => (total > 0 ? Math.min(Math.max(done / 
 
 const failure = (error) => ({ type: error?.type ?? 'network' });
 
+const sameItem = (found, item) => found !== null && found.title === item.title && found.body === item.body;
+
+// True when `md` already shows the result of the action: a commit whose answer was lost (SYNC-11).
+const isApplied = (md, { op, args }) => {
+  if (op === 'add') return sameItem(itemOf(md, { path: args.path, title: args.item.title }), args.item);
+  if (op === 'edit') {
+    const renamed = args.item.title !== args.ref.title;
+    return sameItem(itemOf(md, { path: args.ref.path, title: args.item.title }), args.item) && (!renamed || itemOf(md, args.ref) === null);
+  }
+  if (op === 'move') return itemOf(md, { path: args.to, title: args.ref.title }) !== null && itemOf(md, args.ref) === null;
+  return itemOf(md, args.ref) === null;
+};
+
 // Gets the file, then commits each waiting entry in order (SYNC-3 … SYNC-6). `keep` says, just
 // before each commit, whether the entry is still in the queue: one that the user discarded or
 // undid, or whose project was removed, during the sync is skipped (SYNC-10). `onSend` names the
@@ -142,7 +158,8 @@ const failure = (error) => ({ type: error?.type ?? 'network' });
 export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH, version = null, keep = () => true, onSend = () => {} }) => {
   const done = [];
   const stale = [];
-  const result = (file, error = null) => ({ file, done, stale, error });
+  const sent = [];
+  const result = (file, error = null) => ({ file, done, stale, sent, error });
   let file;
   try {
     file = await client.getFile(repo, path);
@@ -154,7 +171,9 @@ export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH, ver
       if (!keep(entry)) break;
       const applied = applyEntry(file.text, entry);
       if (applied.error) {
-        stale.push(entry.id);
+        // A commit sent before whose answer was lost: GitHub has it, so it is done (SYNC-11).
+        if (entry.sent && isApplied(file.text, entry)) done.push(entry.id);
+        else stale.push(entry.id);
         break;
       }
       if (applied.text === file.text) {
@@ -176,7 +195,11 @@ export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH, ver
         done.push(entry.id);
         break;
       }
-      if (sendError?.type !== 'conflict' || attempt > 0) return result(file, failure(sendError));
+      if (sendError?.type !== 'conflict' || attempt > 0) {
+        // No answer: the commit may have reached GitHub.
+        if (failure(sendError).type === 'network') sent.push(entry.id);
+        return result(file, failure(sendError));
+      }
       try {
         file = await client.getFile(repo, path);
       } catch (again) {

@@ -205,7 +205,7 @@ test('syncRepo stops on a network error and keeps the actions not sent (SYNC-7)'
 test('syncRepo with no ROADMAP.md returns no file and does nothing', async () => {
   const client = fakeClient(MD, { get: [new GitHubError('notFound', 404)] });
   const result = await syncRepo({ client, repo: 'o/r', entries: [add('C', '1')] });
-  assert.deepEqual(result, { file: null, done: [], stale: [], error: { type: 'notFound' } });
+  assert.deepEqual(result, { file: null, done: [], stale: [], sent: [], error: { type: 'notFound' } });
 });
 
 test('syncRepo marks an edit stale when the item changed on GitHub since it was read (SYNC-6)', async () => {
@@ -332,4 +332,81 @@ test('syncRepo names the action it sends, and null once the answer is in', async
   const seen = [];
   await syncRepo({ client, repo: 'o/r', entries: [add('C', '1')], onSend: (id) => seen.push(id) });
   assert.deepEqual(seen, ['1', null]);
+});
+
+// A client whose next commit reaches GitHub but whose answer is lost.
+const losingClient = (text) => {
+  const client = fakeClient(text);
+  const put = client.putFile;
+  let lose = true;
+  client.putFile = async (...args) => {
+    await put(...args);
+    if (lose) {
+      lose = false;
+      throw new GitHubError('network');
+    }
+    return client.remote.sha;
+  };
+  return client;
+};
+
+const ref = (title) => ({ path: 'Planned', title });
+
+test('syncRepo reports an action whose commit had no answer as sent (SYNC-11)', async () => {
+  const client = losingClient(MD);
+  const result = await syncRepo({ client, repo: 'o/r', entries: [add('C', '1'), add('D', '2')] });
+  assert.deepEqual(result.done, []);
+  assert.deepEqual(result.sent, ['1']);
+  assert.deepEqual(result.error, { type: 'network' });
+});
+
+test('settleQueue marks the sent entries, and isEntry accepts the mark (SYNC-11)', () => {
+  const state = { version: 1, projects: [], queue: [add('C', '1'), add('D', '2')] };
+  const next = settleQueue(state, { done: [], stale: [], sent: ['1'] });
+  assert.equal(next.queue[0].sent, true);
+  assert.equal(next.queue[1].sent, undefined);
+  assert.ok(isEntry(next.queue[0]));
+  assert.equal(isEntry({ ...next.queue[0], sent: 'yes' }), false);
+});
+
+test('syncRepo counts a sent action that GitHub already has as done, with no commit (SYNC-11)', async () => {
+  const after = {
+    add: '## Planned\n\n- **A.** one\n- **B.** two\n- **C.**\n\n## Deferred\n',
+    edit: '## Planned\n\n- **A2.** new\n- **B.** two\n\n## Deferred\n',
+    move: '## Planned\n\n- **B.** two\n\n## Deferred\n\n- **A.** one\n',
+    delete: '## Planned\n\n- **B.** two\n\n## Deferred\n',
+  };
+  const sentEntries = {
+    add: add('C', 'x'),
+    edit: entry('edit', { ref: ref('A'), base: { title: 'A', body: 'one' }, item: { title: 'A2', body: 'new' } }, 'x'),
+    move: entry('move', { ref: ref('A'), to: 'Deferred' }, 'x'),
+    delete: entry('delete', { ref: ref('A'), base: { title: 'A', body: 'one' } }, 'x'),
+  };
+  for (const op of Object.keys(after)) {
+    const client = fakeClient(after[op]);
+    const result = await syncRepo({ client, repo: 'o/r', entries: [{ ...sentEntries[op], sent: true }] });
+    assert.deepEqual(result.done, ['x'], op);
+    assert.deepEqual(result.stale, [], op);
+    assert.equal(client.remote.calls.filter(([kind]) => kind === 'put').length, 0, op);
+  }
+});
+
+test('syncRepo commits a sent action that never reached GitHub', async () => {
+  const client = fakeClient(MD);
+  const result = await syncRepo({ client, repo: 'o/r', entries: [{ ...add('C', '1'), sent: true }] });
+  assert.deepEqual(result.done, ['1']);
+  assert.equal(client.remote.calls.filter(([kind]) => kind === 'put').length, 1);
+});
+
+test('syncRepo still marks a sent action stale when GitHub has other text, and an unsent one too', async () => {
+  const other = '## Planned\n\n- **A.** changed elsewhere\n- **B.** two\n\n## Deferred\n';
+  const edit = entry('edit', { ref: ref('A'), base: { title: 'A', body: 'one' }, item: { title: 'A2', body: 'new' } }, 'x');
+  for (const sent of [true, undefined]) {
+    const result = await syncRepo({ client: fakeClient(other), repo: 'o/r', entries: [{ ...edit, sent }] });
+    assert.deepEqual(result.stale, ['x'], String(sent));
+  }
+  // An unsent delete of an item that is gone stays stale, as before (SYNC-6).
+  const gone = entry('delete', { ref: ref('A'), base: { title: 'A', body: 'one' } }, 'y');
+  const result = await syncRepo({ client: fakeClient('## Planned\n\n- **B.** two\n'), repo: 'o/r', entries: [gone] });
+  assert.deepEqual(result.stale, ['y']);
 });
