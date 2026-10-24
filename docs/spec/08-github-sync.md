@@ -56,6 +56,10 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   `progressbar` named `sync.progress`) shows the part of the repositories that it has done,
   `syncShare` of `src/queue.js`: it starts empty and fills one step at the end of each
   repository. The bar hides when the sync ends, also when an error stops it.
+- **SYNC-10** A sync reads the queue and the projects as they are at each step, not as they were
+  when it started. Just before each commit it checks that the action is still in the queue: an
+  action that the user discarded or undid, or whose project was removed, is not sent. A project
+  removed during the sync is not synced, and its cache entry is not written back.
 
 ## Cache, projects and token
 

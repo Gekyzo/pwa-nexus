@@ -4,7 +4,8 @@ What changes for you in each version of the app. The newest version is first.
 
 ## Unreleased
 
-No change.
+- Undo of a delete during a sync no longer adds the item back at the end of its section with two extra commits.
+- A project removed during a sync no longer commits its waiting actions or comes back in the cache.
 
 ## 0.1.15 - 2026-10-24
 

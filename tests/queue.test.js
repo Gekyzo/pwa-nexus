@@ -302,3 +302,34 @@ test('syncShare is 0 with no repository, and never more than 1 (SYNC-9)', () => 
   assert.equal(syncShare(3, 2), 1);
   assert.equal(syncShare(-1, 2), 0);
 });
+
+test('syncRepo skips an action that left the queue during the sync: no commit, neither done nor stale (UI-4, PROJ-2)', async () => {
+  const client = fakeClient(MD);
+  const entries = [add('C', '1'), add('D', '2'), add('E', '3')];
+  const kept = new Set(['1', '3']);
+  const result = await syncRepo({ client, repo: 'o/r', entries, keep: ({ id }) => kept.has(id) });
+  assert.deepEqual(result.done, ['1', '3']);
+  assert.deepEqual(result.stale, []);
+  assert.deepEqual(client.remote.calls.map(([, message]) => message).slice(1), ['Add roadmap item: C [pwa-nexus]', 'Add roadmap item: E [pwa-nexus]']);
+});
+
+test('syncRepo asks keep just before each commit, so an action dropped while another one is sent is not sent', async () => {
+  const client = fakeClient(MD);
+  const kept = new Set(['1', '2']);
+  const put = client.putFile;
+  // The user drops action 2 while action 1 is on its way.
+  client.putFile = async (...args) => {
+    kept.delete('2');
+    return put(...args);
+  };
+  const result = await syncRepo({ client, repo: 'o/r', entries: [add('C', '1'), add('D', '2')], keep: ({ id }) => kept.has(id) });
+  assert.deepEqual(result.done, ['1']);
+  assert.equal(client.remote.calls.filter(([kind]) => kind === 'put').length, 1);
+});
+
+test('syncRepo names the action it sends, and null once the answer is in', async () => {
+  const client = fakeClient(MD);
+  const seen = [];
+  await syncRepo({ client, repo: 'o/r', entries: [add('C', '1')], onSend: (id) => seen.push(id) });
+  assert.deepEqual(seen, ['1', null]);
+});

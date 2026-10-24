@@ -135,8 +135,11 @@ export const syncShare = (done, total) => (total > 0 ? Math.min(Math.max(done / 
 
 const failure = (error) => ({ type: error?.type ?? 'network' });
 
-// Gets the file, then commits each waiting entry in order (SYNC-3 … SYNC-6).
-export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH, version = null }) => {
+// Gets the file, then commits each waiting entry in order (SYNC-3 … SYNC-6). `keep` says, just
+// before each commit, whether the entry is still in the queue: one that the user discarded or
+// undid, or whose project was removed, during the sync is skipped (SYNC-10). `onSend` names the
+// entry whose commit is on its way, then null.
+export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH, version = null, keep = () => true, onSend = () => {} }) => {
   const done = [];
   const stale = [];
   const result = (file, error = null) => ({ file, done, stale, error });
@@ -148,6 +151,7 @@ export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH, ver
   }
   for (const entry of entries.filter((one) => !one.stale)) {
     for (let attempt = 0; ; attempt += 1) {
+      if (!keep(entry)) break;
       const applied = applyEntry(file.text, entry);
       if (applied.error) {
         stale.push(entry.id);
@@ -157,18 +161,26 @@ export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH, ver
         done.push(entry.id);
         break;
       }
+      onSend(entry.id);
+      let sha = null;
+      let sendError = null;
       try {
-        const sha = await client.putFile(repo, path, { text: applied.text, sha: file.sha, message: commitMessageOf(entry, version) });
+        sha = await client.putFile(repo, path, { text: applied.text, sha: file.sha, message: commitMessageOf(entry, version) });
+      } catch (error) {
+        sendError = error;
+      } finally {
+        onSend(null);
+      }
+      if (!sendError) {
         file = { text: applied.text, sha };
         done.push(entry.id);
         break;
-      } catch (error) {
-        if (error?.type !== 'conflict' || attempt > 0) return result(file, failure(error));
-        try {
-          file = await client.getFile(repo, path);
-        } catch (again) {
-          return result(file, failure(again));
-        }
+      }
+      if (sendError?.type !== 'conflict' || attempt > 0) return result(file, failure(sendError));
+      try {
+        file = await client.getFile(repo, path);
+      } catch (again) {
+        return result(file, failure(again));
       }
     }
   }

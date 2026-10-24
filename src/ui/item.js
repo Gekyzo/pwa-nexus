@@ -1,9 +1,9 @@
 import { bindSheetDrag } from '#ds/sheet';
 import { cleanItem, outlineOf } from '#roadmap';
 import { makeEntry, enqueue, discardEntry, pendingOf, roadmapView, hasSection, checkEach } from '#queue';
-import { $, el, ui, state, cache, syncing, t, textOf, apply, render, showToast } from '#ui/context';
+import { $, el, ui, state, cache, t, textOf, apply, render, showToast } from '#ui/context';
 import { onItem } from '#ui/projects';
-import { syncAll } from '#ui/sync';
+import { syncAll, isSending, afterSend } from '#ui/sync';
 
 const BRANCH = '└\u00a0';
 
@@ -111,11 +111,15 @@ const save = () => {
   if (queueEach([{ repo: ui.repo, actions }, ...others])) closeItemSheet();
 };
 
-// Undo takes the delete out of the queue while it waits; once it may have reached GitHub, it
-// queues the item back instead (UI-4).
+// Undo takes the delete out of the queue while it waits, also during a sync: the sync skips it.
+// While its commit is on its way, Undo waits for the answer. Once GitHub has the delete, Undo
+// queues the item back (UI-4).
 const undoDelete = (repo, id, ref, item) => {
-  if (!syncing && state.queue.some((entry) => entry.id === id)) apply(discardEntry(state, id));
-  else queueAll(repo, [['add', { path: ref.path, item }]]);
+  const readd = () => queueAll(repo, [['add', { path: ref.path, item }]]);
+  const discard = () => apply(discardEntry(state, id));
+  if (isSending(id)) afterSend(id, (done) => (done ? readd() : discard()));
+  else if (state.queue.some((entry) => entry.id === id)) discard();
+  else readd();
 };
 
 const remove = () => {

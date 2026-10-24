@@ -4,7 +4,7 @@ Technical changes, newest first. What a user sees of a version goes to `release-
 
 ## Unreleased
 
-No change.
+- A sync reads the queue and the projects at each step (SYNC-10): `syncRepo` takes `keep`, checked just before each commit, and `onSend`, which names the entry on its way. Undo of a delete waits for that answer only for the entry in flight (UI-4). A project removed during the sync is skipped and keeps no cache entry.
 
 ## 0.1.15 - 2026-10-24
 

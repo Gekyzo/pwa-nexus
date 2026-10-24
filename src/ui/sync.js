@@ -15,6 +15,20 @@ export const errorKey = (type) => ERROR_KEYS[type] ?? 'error.offline';
 
 // A sync asked for while one runs runs once more at its end, with the actions queued meanwhile.
 let again = false;
+// The entry whose commit is on its way, and what to do once its answer is in (UI-4).
+let sending = null;
+const waiting = new Map();
+
+export const isSending = (id) => sending === id;
+
+// Runs `then(done)` once the commit on its way for entry `id` has its answer: `done` is true when
+// GitHub has the action.
+export const afterSend = (id, then) => {
+  waiting.set(id, then);
+};
+
+const inQueue = ({ id }) => state.queue.some((entry) => entry.id === id);
+const listed = (repo) => state.projects.some((project) => project.repo === repo);
 
 // One repository after the other, never two at a time (SYNC-8).
 export const syncAll = async () => {
@@ -33,11 +47,30 @@ export const syncAll = async () => {
   const client = createClient({ token, fetch: (...args) => fetch(...args) });
   try {
     for (const { repo } of projects) {
-      const result = await syncRepo({ client, repo, entries: pendingOf(state, repo), version: ui.version.running?.version });
-      if (result.file) setCache(putEntry(cache, repo, { ...result.file, fetchedAt: Date.now() }));
-      else if (result.error?.type === 'notFound') setCache(putEntry(cache, repo, { missing: true, fetchedAt: Date.now() }));
+      // A project removed during the sync is not synced, and its cache entry is not written back (SYNC-10).
+      if (!listed(repo)) {
+        ui.syncProgress = { ...ui.syncProgress, done: ui.syncProgress.done + 1 };
+        continue;
+      }
+      const result = await syncRepo({
+        client,
+        repo,
+        entries: pendingOf(state, repo),
+        version: ui.version.running?.version,
+        keep: inQueue,
+        onSend: (id) => {
+          sending = id;
+        },
+      });
+      // A project removed while its sync ran keeps no cache entry.
+      if (listed(repo) && result.file) setCache(putEntry(cache, repo, { ...result.file, fetchedAt: Date.now() }));
+      else if (listed(repo) && result.error?.type === 'notFound') setCache(putEntry(cache, repo, { missing: true, fetchedAt: Date.now() }));
       ui.syncProgress = { ...ui.syncProgress, done: ui.syncProgress.done + 1 };
       commit(settleQueue(state, result));
+      for (const [id, then] of waiting) {
+        waiting.delete(id);
+        then(result.done.includes(id));
+      }
       if (result.error && result.error.type !== 'notFound') ui.syncError = result.error.type;
       if (result.error && stopsSync(result.error.type)) break;
     }

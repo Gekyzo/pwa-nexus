@@ -71,8 +71,9 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   commit each. `checkEach` checks them all first: if one fails, `item.failedIn` names its project
   and the reason, and nothing is queued in any.
 - **UI-4** **Delete** queues a `delete` action; the toast `toast.itemDeleted` offers **Undo** for 5
-  seconds. While the action waits and no sync runs, Undo removes it from the queue. Once it may
-  have reached GitHub, Undo queues an `add` of the item at the end of its section.
+  seconds. While the action waits, also during a sync, Undo removes it from the queue, and the
+  sync does not send it (SYNC-10). While its commit is on its way, Undo waits for the answer.
+  Once GitHub has the delete, Undo queues an `add` of the item at the end of its section.
 - **UI-7** The item sheet edits title, body and section together. Save with a changed title or
   body queues an `edit`; a changed section queues a `move` after it: two actions, two commits.
   A save that changes nothing queues nothing.
