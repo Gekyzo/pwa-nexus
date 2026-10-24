@@ -5,8 +5,8 @@ repository, and commits each change back from the phone. Plain HTML, CSS and ES 
 from `pwa-template`: no build step and no dependencies.
 
 - **Projects:** Bodega (`Gekyzo/shopping-list`), Attire (`Gekyzo/pwa-wardrobe`), Compound
-  (`Gekyzo/pwa-financial-calculator`), Rota (`Gekyzo/pwa-shifts`), Nexus (`Gekyzo/pwa-nexus`) and
-  Lists (`Gekyzo/pwa-lists`) by default. Add, rename or remove projects in Settings.
+  (`Gekyzo/pwa-financial-calculator`), Rota (`Gekyzo/pwa-shifts`), Nexus (`Gekyzo/pwa-nexus`),
+  Stash (`Gekyzo/pwa-lists`) and Fittings (`Gekyzo/pwa-fittings`) by default. Add, rename or remove projects in Settings.
 - **Roadmap:** the `##` and `###` sections of `ROADMAP.md`, with their `- **Title.** text` items.
 - **Actions:** add an item to a section you pick, edit it, move it to another section, or delete
   it. Each action is one commit on the default branch, such as `Add roadmap item: <title>`.

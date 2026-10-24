@@ -4,7 +4,7 @@ Technical changes, newest first. What a user sees of a version goes to `release-
 
 ## Unreleased
 
-No change.
+- `Gekyzo/pwa-fittings` joins the default projects as Fittings (PROJ-1). A stored list gets it once at the next start (PROJ-4).
 
 ## 0.1.17 - 2026-10-24
 

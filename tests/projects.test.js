@@ -10,7 +10,7 @@ test('the doc key has the slug (PROJ-1)', () => {
   assert.equal(DOC_KEY, `${APP_SLUG}.doc`);
 });
 
-test('a new doc has the six default projects and no queue (PROJ-1)', () => {
+test('a new doc has the seven default projects and no queue (PROJ-1)', () => {
   assert.deepEqual(emptyDoc(), { version: 1, projects: DEFAULT_PROJECTS, queue: [], defaults: DEFAULT_PROJECTS.map((p) => p.repo) });
   assert.deepEqual(DEFAULT_PROJECTS.map((p) => p.repo), [
     'Gekyzo/shopping-list',
@@ -19,9 +19,10 @@ test('a new doc has the six default projects and no queue (PROJ-1)', () => {
     'Gekyzo/pwa-shifts',
     'Gekyzo/pwa-nexus',
     'Gekyzo/pwa-lists',
+    'Gekyzo/pwa-fittings',
   ]);
   emptyDoc().projects.push({ repo: 'x/y', label: 'x' });
-  assert.equal(emptyDoc().projects.length, 6);
+  assert.equal(emptyDoc().projects.length, 7);
 });
 
 test('addProject takes owner/name, a URL or a .git name, and labels it with the name by default', () => {
@@ -102,7 +103,7 @@ test('offerDefaults never adds back a default project that the user removed (PRO
 test('offerDefaults keeps a project the user added already, in any case, and changes no input', () => {
   const state = docOf([...FIRST, 'gekyzo/PWA-SHIFTS']);
   const next = offerDefaults(state);
-  assert.deepEqual(next.projects.map((p) => p.repo), [...FIRST, 'gekyzo/PWA-SHIFTS', 'Gekyzo/pwa-nexus', 'Gekyzo/pwa-lists']);
+  assert.deepEqual(next.projects.map((p) => p.repo), [...FIRST, 'gekyzo/PWA-SHIFTS', 'Gekyzo/pwa-nexus', 'Gekyzo/pwa-lists', 'Gekyzo/pwa-fittings']);
   assert.equal(state.defaults, undefined);
   assert.equal(state.projects.length, 4);
 });
