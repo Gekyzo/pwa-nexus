@@ -1,7 +1,7 @@
 # Layout and navigation
 
-Rules of `src/sections.js`, `src/modules.js`, `src/onboarding.js` and the views `nav`, `dust` and
-`onboarding` of `src/ui/`.
+Rules of `src/sections.js`, `src/modules.js`, `src/onboarding.js` and the views `nav`, `dust`,
+`settings` and `onboarding` of `src/ui/`.
 
 ## Size classes
 
@@ -32,6 +32,15 @@ LAY-1 to LAY-4 of the design system (04-design-system). In this app the Projects
 - **MOD-3** A switch of Modules animates the item of its section: it breaks into dust and its
   place closes, or its place opens and the dust settles (`src/ui/dust.js`). With reduced motion
   the item goes or comes at once.
+
+## Settings
+
+- **SET-1** Settings is a column of groups, each a `list-group-head` above its rows, as in
+  pwa-shopping-list: **GitHub** and **Projects** (UI-6), **Backup** (**Export**, **Import**),
+  **Preferences** (**Language**, **Hand**, **Theme**), **Modules** (MOD-1), **App** (INS-2) and
+  **Help** (ONB-3), then the version lines (VER-4). A row of Preferences shows its current value
+  and a chevron, and a tap on it opens the native picker of its select. A row that opens
+  something ends with a chevron; **Test the token** shows a toast and has none.
 
 ## Walkthrough
 

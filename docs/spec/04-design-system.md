@@ -32,7 +32,8 @@ This document holds the rules of the app only.
   - `item-row`: `item-row-name` has a vertical padding, so that the title and the line below it
     keep a gap to the edges of the row;
   - `sheet`: the primary button of `sheet-foot` stays at the side of the hand when it is alone
-    in the foot, as in the sheet of a new item (UI-9).
+    in the foot, as in the sheet of a new item (UI-9);
+  - `list-group`, in `settings`: the select of a row of Preferences lies over the row (SET-1).
 - **DSV-4** A change of a shared part is made in `pwa-design-system`, then `npm run ds` here.
   Nothing edits `vendor/` by hand, and `npm run init` copies it as it is (ENG-17).
 
@@ -43,4 +44,4 @@ The parts of `styles.css`, by layer. The shared parts are in the design system.
 | Layer | Parts |
 |---|---|
 | components | versions of `input`, `field`, `section-head`, `item-row`, `sheet` (DSV-3) |
-| screens | settings: `settings`, `about`, `version-status` · nav: `dust` · onboarding: `onboarding`, `onboarding-art` |
+| screens | settings: `settings` (version of `list-group`), `about`, `version-status` · nav: `dust` · onboarding: `onboarding`, `onboarding-art` |

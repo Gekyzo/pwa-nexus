@@ -53,6 +53,7 @@ export default {
   'onboarding.offline.title': 'Funciona sin conexión',
   'onboarding.offline.text': 'Pon tu token de GitHub en `Ajustes`. Lo que cambies sin red se guarda al volver la conexión.',
   'settings.backup': 'Copia de seguridad',
+  'settings.preferences': 'Preferencias',
   'settings.github': 'GitHub',
   'settings.token': 'Token de acceso',
   'settings.tokenTest': 'Probar el token',

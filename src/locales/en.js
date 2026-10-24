@@ -53,6 +53,7 @@ export default {
   'onboarding.offline.title': 'Works offline',
   'onboarding.offline.text': 'Put your GitHub token in `Settings`. What you change offline is saved when the connection comes back.',
   'settings.backup': 'Backup',
+  'settings.preferences': 'Preferences',
   'settings.github': 'GitHub',
   'settings.token': 'Access token',
   'settings.tokenTest': 'Test the token',

@@ -35,6 +35,13 @@ import { syncAll, errorKey } from '#ui/sync';
 import { runUpdate } from '#ui/update';
 import { renderOnboarding } from '#ui/onboarding';
 
+// The value of a row of Preferences is the text of the option that its select has.
+const renderValues = () => {
+  for (const id of ['language', 'hand', 'theme']) {
+    $(`${id}-value`).textContent = $(id).selectedOptions[0]?.textContent ?? '';
+  }
+};
+
 // Writes the fixed text of the page, then the text that a render builds.
 export const applyLanguage = () => {
   document.documentElement.lang = lang;
@@ -67,6 +74,7 @@ export const applyLanguage = () => {
   document.querySelectorAll('[data-module]').forEach((box) => {
     box.checked = isOn(box.dataset.module);
   });
+  renderValues();
   render();
   renderOnboarding();
 };
@@ -141,6 +149,7 @@ export const bind = () => {
   });
   $('hand').addEventListener('change', (event) => setHand(event.target.value));
   $('theme').addEventListener('change', (event) => setTheme(event.target.value));
+  for (const id of ['hand', 'theme']) $(id).addEventListener('change', renderValues);
   document.querySelectorAll('[data-module]').forEach((box) => {
     box.addEventListener('change', () => {
       setModules(switchModule(off, box.dataset.module, box.checked));
