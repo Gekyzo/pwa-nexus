@@ -46,7 +46,8 @@ Open the deployed URL in Chrome. Use the **Install** button of Settings, or Chro
 
 ## Release and deploy
 
-1. Write the user-visible changes under `## Unreleased` in `CHANGELOG.md`.
+1. Write the technical changes under `## Unreleased` in `CHANGELOG.md`, and the user-visible
+   changes under `## Unreleased` in every `release-notes/<lang>.md`.
 2. `npm run release` (or `npm run release -- minor|major`). It commits `Bump version to X.Y.Z`
    and creates the tag `vX.Y.Z`.
 3. `git push --follow-tags`. The workflow `.github/workflows/pages.yml` deploys the tag.
