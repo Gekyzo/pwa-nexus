@@ -8,6 +8,7 @@ What changes for you in each version of the app. The newest version is first.
 - A project removed during a sync no longer commits its waiting actions or comes back in the cache.
 - A change that reached GitHub while the connection dropped is no longer shown as a failed change at the next sync.
 - Undo after Discard, Remove or Import no longer brings back changes that a sync sent to GitHub in the meantime.
+- When a section has two items with the same title, the later one is read-only and says to edit it on GitHub, instead of opening and changing the first one.
 
 ## 0.1.15 - 2026-10-24
 

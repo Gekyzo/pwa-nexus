@@ -272,3 +272,14 @@ test('itemOf gives the title and the body of an item, or null', () => {
   assert.equal(itemOf(NESTED, { path: 'A', title: 'Nope' }), null);
   assert.equal(itemOf(NESTED, { path: 'Nope', title: 'Next' }), null);
 });
+
+test('sectionsOf marks each later item with the title of an earlier one in its section (UI-11)', () => {
+  const md = '## Planned\n\n- **A.** one\n- **B.** two\n- **A.** again\n\n## Deferred\n\n- **A.** other section\n';
+  const [planned, deferred] = sectionsOf(md);
+  assert.deepEqual(planned.items, [
+    { title: 'A', body: 'one' },
+    { title: 'B', body: 'two' },
+    { title: 'A', body: 'again', duplicate: true },
+  ]);
+  assert.deepEqual(deferred.items, [{ title: 'A', body: 'other section' }]);
+});

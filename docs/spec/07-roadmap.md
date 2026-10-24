@@ -63,6 +63,9 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   **Discard** puts the action back at its place in the queue. Undo of **Remove** puts the project
   back at its place, with its actions after the queue. Undo of **Import** goes back to the doc
   before the import. An action that a sync of this start committed is never put back.
+- **UI-11** An action finds an item by its section and its title, so it reaches only the first
+  item of a title in a section. A later item with the same title is `duplicate` (`sectionsOf`):
+  its row shows the warning `item.duplicate` and does not open.
 - **UI-3** With a roadmap open, **+** opens the sheet of a new item: a section picker with no
   default (`item.pickSection`), a title and a body. The body field starts three lines high and
   grows with its text up to 40% of the screen, then scrolls. The picker lists the sections as the tree of

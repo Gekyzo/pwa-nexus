@@ -50,10 +50,14 @@ const fold = (key) => {
   render();
 };
 
+// A later item with the title of an earlier one cannot be told apart by an action: its row is
+// read-only and says why (UI-11).
 const itemRow = (path, item) => {
-  const name = el('button', { className: 'item-row-name', type: 'button', onclick: () => itemHandler({ path, title: item.title }) }, [
+  const onclick = item.duplicate ? null : () => itemHandler({ path, title: item.title });
+  const name = el('button', { className: 'item-row-name', type: 'button', disabled: Boolean(item.duplicate), onclick }, [
     el('span', { textContent: item.title }),
     ...(item.body ? [el('small', { className: 'item-row-meta', textContent: item.body })] : []),
+    ...(item.duplicate ? [el('small', { className: 'item-row-meta', textContent: t('item.duplicate') })] : []),
   ]);
   return el('li', { className: 'item-row' }, [el('div', { className: 'item-row-body' }, [name])]);
 };

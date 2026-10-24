@@ -8,6 +8,7 @@ Lo que cambia para ti en cada versión de la app. La versión más nueva va prim
 - Un proyecto quitado durante una sincronización ya no envía sus cambios en espera.
 - Un cambio que llegó a GitHub mientras se cortaba la conexión ya no se muestra como fallido en la siguiente sincronización.
 - `Deshacer` tras `Descartar`, quitar un proyecto o importar ya no recupera cambios que una sincronización envió a GitHub entretanto.
+- Si una sección tiene dos elementos con el mismo título, el segundo es de solo lectura y pide editarlo en GitHub, en lugar de abrir y cambiar el primero.
 
 ## 0.1.15 - 2026-10-24
 

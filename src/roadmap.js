@@ -67,12 +67,16 @@ export const parse = (md) => {
   return { eol, lines, sections };
 };
 
+// An item whose title an earlier item of its section has is `duplicate`: an action finds the
+// first one by its title, so the later ones are read-only (UI-11).
 export const sectionsOf = (md) =>
   parse(md).sections.map(({ path, title, level, items }) => ({
     path,
     title,
     level,
-    items: items.map(({ title: name, body }) => ({ title: name, body })),
+    items: items.map(({ title: name, body }, index) =>
+      items.slice(0, index).some((other) => other.title === name) ? { title: name, body, duplicate: true } : { title: name, body },
+    ),
   }));
 
 // The sections as a tree: each H2 with its H3 sections as `children`, and `total`, its items plus

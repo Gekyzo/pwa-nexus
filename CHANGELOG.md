@@ -7,6 +7,7 @@ Technical changes, newest first. What a user sees of a version goes to `release-
 - A sync reads the queue and the projects at each step (SYNC-10): `syncRepo` takes `keep`, checked just before each commit, and `onSend`, which names the entry on its way. Undo of a delete waits for that answer only for the entry in flight (UI-4). A project removed during the sync is skipped and keeps no cache entry.
 - A commit with no answer marks its entry `sent` (`settleQueue` takes `sent`, `isEntry` accepts it). At the next sync a `sent` entry that no longer applies is done when the file already shows its result (`isApplied`), not stale (SYNC-11).
 - Undo is the inverse of its action (UI-10): `showToast` and `apply` take `undo` as a function of the doc; `restoreEntry`, `restoreProject` and `withoutEntries` leave out what `committed` (the ids that the syncs of this start committed) holds.
+- `sectionsOf` marks a later item with the title of an earlier one in its section as `duplicate`; its row is disabled with `item.duplicate` (UI-11).
 
 ## 0.1.15 - 2026-10-24
 

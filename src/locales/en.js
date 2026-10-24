@@ -29,6 +29,7 @@ export default {
   'item.close': 'Close',
   'item.save': 'Save',
   'item.delete': 'Delete',
+  'item.duplicate': 'Same title as an item above. Edit it on GitHub.',
   'item.alsoTo': 'Also add to',
   'item.noSection': 'It has no such section',
   'item.failedIn': '{project}: {message}',
