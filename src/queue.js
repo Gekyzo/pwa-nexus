@@ -84,11 +84,21 @@ export const discardEntry = (state, id) => ({ state: { ...state, queue: state.qu
 
 // The inverse of a discard: the entry goes back at `index` of the queue as it is now, so what a
 // sync settled meanwhile stays settled (UI-10).
-export const restoreEntry = (state, entry, index) => {
-  if (state.queue.some((one) => one.id === entry.id)) return { state };
+export const restoreEntry = (state, entry, index, committed = []) => {
+  if (committed.includes(entry.id) || state.queue.some((one) => one.id === entry.id)) return { state };
   const queue = [...state.queue];
   queue.splice(Math.min(index, queue.length), 0, entry);
   return { state: { ...state, queue } };
+};
+
+// What Undo of a delete does (UI-4). A delete that surely was not sent leaves the queue. One that
+// may have reached GitHub, on its way or sent with no answer, leaves the queue too, and the item
+// is queued back as an `add` marked `sent`: the sync then adds it, or finds it there (SYNC-11).
+export const undoDeleteOf = (state, { id }, { maybeSent }) => {
+  const queued = state.queue.find((entry) => entry.id === id);
+  if (!queued) return { discard: false, readd: true };
+  const sure = !maybeSent && !queued.sent;
+  return { discard: true, readd: !sure };
 };
 
 // A doc to go back to, without the entries that GitHub has now (UI-10).
@@ -105,12 +115,32 @@ export const settleQueue = (state, { done, stale, sent = [] }) => ({
     .map((entry) => (sent.includes(entry.id) ? { ...entry, sent: true } : entry)),
 });
 
+const sameItem = (found, item) => found !== null && found.title === item.title && found.body === item.body;
+
+// True when `md` already shows the result of the action: a commit whose answer was lost (SYNC-11).
+const isApplied = (md, { op, args }) => {
+  if (op === 'add') return sameItem(itemOf(md, { path: args.path, title: args.item.title }), args.item);
+  if (op === 'edit') {
+    const renamed = args.item.title !== args.ref.title;
+    return sameItem(itemOf(md, { path: args.ref.path, title: args.item.title }), args.item) && (!renamed || itemOf(md, args.ref) === null);
+  }
+  if (op === 'move') return itemOf(md, { path: args.to, title: args.ref.title }) !== null && itemOf(md, args.ref) === null;
+  // A delete is done only when nothing on GitHub still has the title or the body of the item:
+  // a rename or a move made elsewhere keeps it stale (SYNC-6).
+  if (itemOf(md, args.ref) !== null) return false;
+  if (!args.base) return true;
+  const { title, body } = args.base;
+  return !sectionsOf(md).some((section) => section.items.some((one) => one.title === title || (body && one.body === body)));
+};
+
 // The text that the screen shows: the cached text with the waiting entries on top (SYNC-2).
 export const viewOf = (text, entries) =>
   entries.reduce(
     (view, entry) => {
       if (entry.stale) return view;
       const result = applyEntry(view.text, entry);
+      // A sent action that the text has already is applied (SYNC-11).
+      if (result.error && entry.sent && isApplied(view.text, entry)) return view;
       return result.error ? { ...view, failed: [...view.failed, entry.id] } : { ...view, text: result.text };
     },
     { text, failed: [] },
@@ -150,18 +180,7 @@ export const syncShare = (done, total) => (total > 0 ? Math.min(Math.max(done / 
 
 const failure = (error) => ({ type: error?.type ?? 'network' });
 
-const sameItem = (found, item) => found !== null && found.title === item.title && found.body === item.body;
 
-// True when `md` already shows the result of the action: a commit whose answer was lost (SYNC-11).
-const isApplied = (md, { op, args }) => {
-  if (op === 'add') return sameItem(itemOf(md, { path: args.path, title: args.item.title }), args.item);
-  if (op === 'edit') {
-    const renamed = args.item.title !== args.ref.title;
-    return sameItem(itemOf(md, { path: args.ref.path, title: args.item.title }), args.item) && (!renamed || itemOf(md, args.ref) === null);
-  }
-  if (op === 'move') return itemOf(md, { path: args.to, title: args.ref.title }) !== null && itemOf(md, args.ref) === null;
-  return itemOf(md, args.ref) === null;
-};
 
 // Gets the file, then commits each waiting entry in order (SYNC-3 … SYNC-6). `keep` says, just
 // before each commit, whether the entry is still in the queue: one that the user discarded or

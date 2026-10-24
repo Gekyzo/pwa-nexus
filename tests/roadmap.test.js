@@ -283,3 +283,10 @@ test('sectionsOf marks each later item with the title of an earlier one in its s
   ]);
   assert.deepEqual(deferred.items, [{ title: 'A', body: 'other section' }]);
 });
+
+test('editItem changes the first of two items with one title when the title stays (UI-11)', () => {
+  const md = '## Planned\n\n- **A.** one\n- **A.** two\n';
+  assert.deepEqual(editItem(md, { path: 'Planned', title: 'A' }, { title: 'A', body: 'new' }), { text: '## Planned\n\n- **A.** new\n- **A.** two\n' });
+  // A new title still may not take the title of another item.
+  assert.equal(editItem(md + '- **B.** three\n', { path: 'Planned', title: 'A' }, { title: 'B', body: 'one' }).error.key, 'error.titleTaken');
+});

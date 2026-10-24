@@ -114,6 +114,14 @@ export const normalizeDoc = (data) => {
   if (defaults !== undefined && !(Array.isArray(defaults) && defaults.every((repo) => typeof repo === 'string' && REPO.test(repo)))) return null;
   const projects = data.projects.map(({ repo, label }) => ({ repo, label: label.trim() }));
   if (new Set(projects.map((project) => project.repo.toLowerCase())).size !== projects.length) return null;
-  const queue = data.queue.map(({ id, repo, op, args, createdAt, stale }) => ({ id, repo, op, args, createdAt, ...(stale ? { stale } : {}) }));
+  const queue = data.queue.map(({ id, repo, op, args, createdAt, stale, sent }) => ({
+    id,
+    repo,
+    op,
+    args,
+    createdAt,
+    ...(stale ? { stale } : {}),
+    ...(sent ? { sent } : {}),
+  }));
   return { version: 1, projects, queue, ...(defaults ? { defaults: [...defaults] } : {}) };
 };

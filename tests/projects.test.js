@@ -131,3 +131,10 @@ test('restoreProject leaves out the actions that GitHub has, and does nothing fo
   const same = doc(['o/b']);
   assert.equal(restoreProject(same, removed).state, same);
 });
+
+test('normalizeDoc keeps the sent mark of an entry, so it outlives a restart (SYNC-11)', () => {
+  const sent = { ...entry('o/a', '1'), sent: true };
+  const doc = normalizeDoc({ version: 1, projects: [{ repo: 'o/a', label: 'A' }], queue: [sent, entry('o/a', '2')] });
+  assert.equal(doc.queue[0].sent, true);
+  assert.equal('sent' in doc.queue[1], false);
+});

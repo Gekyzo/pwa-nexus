@@ -65,7 +65,8 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   before the import. An action that a sync of this start committed is never put back.
 - **UI-11** An action finds an item by its section and its title, so it reaches only the first
   item of a title in a section. A later item with the same title is `duplicate` (`sectionsOf`):
-  its row shows the warning `item.duplicate` and does not open.
+  its row shows the warning `item.duplicate` and does not open. The first one opens, and an edit
+  that keeps its title applies: the clash was in the file already.
 - **UI-3** With a roadmap open, **+** opens the sheet of a new item: a section picker with no
   default (`item.pickSection`), a title and a body. The body field starts three lines high and
   grows with its text up to 40% of the screen, then scrolls. The picker lists the sections as the tree of
@@ -79,9 +80,11 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   commit each. `checkEach` checks them all first: if one fails, `item.failedIn` names its project
   and the reason, and nothing is queued in any.
 - **UI-4** **Delete** queues a `delete` action; the toast `toast.itemDeleted` offers **Undo** for 5
-  seconds. While the action waits, also during a sync, Undo removes it from the queue, and the
-  sync does not send it (SYNC-10). While its commit is on its way, Undo waits for the answer.
-  Once GitHub has the delete, Undo queues an `add` of the item at the end of its section.
+  seconds. While the action waits and surely was not sent, also during a sync, Undo removes it
+  from the queue, and the sync does not send it (SYNC-10). When it may have reached GitHub (its
+  commit is on its way, or it is marked `sent`), Undo removes it and queues an `add` of the item
+  marked `sent`: the sync adds the item at the end of its section, or finds it there (SYNC-11).
+  Once GitHub has the delete, Undo queues that `add`.
 - **UI-7** The item sheet edits title, body and section together. Save with a changed title or
   body queues an `edit`; a changed section queues a `move` after it: two actions, two commits.
   A save that changes nothing queues nothing.

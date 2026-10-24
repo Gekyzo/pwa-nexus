@@ -189,7 +189,9 @@ export const editItem = (md, ref, input) => {
   const keepsBody = oneLine(input?.body) === found.body;
   const { item, error } = cleanItem(keepsBody ? { title: input?.title, body: '' } : input);
   if (error) return { text: md, error };
-  if (section.items.some((other) => other !== found && sameTitle(other.title, item.title))) return fail(md, 'error.titleTaken');
+  // An item that keeps its title keeps a clash that the file has already (UI-11).
+  const keepsTitle = sameTitle(item.title, found.title);
+  if (!keepsTitle && section.items.some((other) => other !== found && sameTitle(other.title, item.title))) return fail(md, 'error.titleTaken');
   if (keepsBody) {
     if (item.title === found.title) return { text: md };
     return { text: splice(model, found.start, 1, [retitle(model.lines[found.start], item.title)]) };

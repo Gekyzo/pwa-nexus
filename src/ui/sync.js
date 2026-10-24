@@ -15,17 +15,11 @@ export const errorKey = (type) => ERROR_KEYS[type] ?? 'error.offline';
 
 // A sync asked for while one runs runs once more at its end, with the actions queued meanwhile.
 let again = false;
-// The entry whose commit is on its way, and what to do once its answer is in (UI-4).
-let sending = null;
-const waiting = new Map();
+// The entries whose commit went out in the sync of the repository that runs now, until the
+// queue is settled: GitHub may have them (UI-4).
+const maybeSent = new Set();
 
-export const isSending = (id) => sending === id;
-
-// Runs `then(done)` once the commit on its way for entry `id` has its answer: `done` is true when
-// GitHub has the action.
-export const afterSend = (id, then) => {
-  waiting.set(id, then);
-};
+export const isMaybeSent = (id) => maybeSent.has(id);
 
 // The entries that GitHub has, from the syncs of this start: an undo leaves them out (UI-10).
 export const committed = new Set();
@@ -62,7 +56,7 @@ export const syncAll = async () => {
         version: ui.version.running?.version,
         keep: inQueue,
         onSend: (id) => {
-          sending = id;
+          if (id) maybeSent.add(id);
         },
       });
       // A project removed while its sync ran keeps no cache entry.
@@ -71,14 +65,13 @@ export const syncAll = async () => {
       ui.syncProgress = { ...ui.syncProgress, done: ui.syncProgress.done + 1 };
       result.done.forEach((id) => committed.add(id));
       commit(settleQueue(state, result));
-      for (const [id, then] of waiting) {
-        waiting.delete(id);
-        then(result.done.includes(id));
-      }
+      // Settled: a done entry left the queue, one with no answer is marked `sent`.
+      maybeSent.clear();
       if (result.error && result.error.type !== 'notFound') ui.syncError = result.error.type;
       if (result.error && stopsSync(result.error.type)) break;
     }
   } finally {
+    maybeSent.clear();
     setSyncing(false);
     render();
   }

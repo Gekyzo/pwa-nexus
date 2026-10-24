@@ -19,6 +19,7 @@ import {
   syncRepo,
   restoreEntry,
   withoutEntries,
+  undoDeleteOf,
   hasSection,
   checkEach,
 } from '#queue';
@@ -430,4 +431,36 @@ test('withoutEntries drops the actions that GitHub has from a doc to go back to 
   const old = { version: 1, projects: [], queue: [add('C', '1'), add('D', '2')] };
   assert.deepEqual(withoutEntries(old, ['1']).queue.map(({ id }) => id), ['2']);
   assert.equal(old.queue.length, 2);
+});
+
+test('syncRepo keeps a sent delete stale while an item still has its title or its body (SYNC-11)', async () => {
+  const del = { ...entry('delete', { ref: ref('A'), base: { title: 'A', body: 'one' } }, 'x'), sent: true };
+  // Renamed elsewhere before the delete landed: the body is still there.
+  const renamed = await syncRepo({ client: fakeClient('## Planned\n\n- **A2.** one\n- **B.** two\n'), repo: 'o/r', entries: [del] });
+  assert.deepEqual(renamed.stale, ['x']);
+  // Moved to another section: the title is still there.
+  const moved = await syncRepo({ client: fakeClient('## Planned\n\n- **B.** two\n\n## Deferred\n\n- **A.** one\n'), repo: 'o/r', entries: [del] });
+  assert.deepEqual(moved.stale, ['x']);
+});
+
+test('viewOf shows a sent action that the text already has as applied, not as failed (SYNC-11)', () => {
+  const sentAdd = { ...entry('add', { path: 'Planned', item: { title: 'A', body: 'one' } }, 'x'), sent: true };
+  assert.deepEqual(viewOf(MD, [sentAdd]), { text: MD, failed: [] });
+});
+
+test('restoreEntry does not put back an action that GitHub has (UI-10)', () => {
+  const now = { version: 1, projects: [], queue: [] };
+  assert.equal(restoreEntry(now, add('C', '2'), 0, ['2']).state, now);
+});
+
+test('undoDeleteOf discards a delete that surely was not sent, and re-adds the item as maybe there otherwise (UI-4)', () => {
+  const item = { title: 'A', body: 'one' };
+  const del = entry('delete', { ref: ref('A'), base: item }, 'd');
+  const state = { version: 1, projects: [], queue: [del] };
+  assert.deepEqual(undoDeleteOf(state, del, { maybeSent: false }), { discard: true, readd: false });
+  // On its way, or sent with no answer: GitHub may have it.
+  assert.deepEqual(undoDeleteOf(state, del, { maybeSent: true }), { discard: true, readd: true });
+  assert.deepEqual(undoDeleteOf({ ...state, queue: [{ ...del, sent: true }] }, del, { maybeSent: false }), { discard: true, readd: true });
+  // Committed already: only the add.
+  assert.deepEqual(undoDeleteOf({ ...state, queue: [] }, del, { maybeSent: false }), { discard: false, readd: true });
 });

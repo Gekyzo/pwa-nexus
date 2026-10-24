@@ -4,6 +4,7 @@ import { roadmapView, pendingOf, discardEntry, restoreEntry, messageOf } from '#
 import { intlTag } from '#i18n';
 import { $, el, ui, state, cache, t, lang, render, apply } from '#ui/context';
 import { setView } from '#ui/nav';
+import { committed } from '#ui/sync';
 
 // The handler of a tap on an item row: the item sheet sets it (UI-2).
 let itemHandler = () => {};
@@ -92,7 +93,7 @@ const staleBanner = (entry) =>
       textContent: t('sync.discard'),
       onclick: () => {
         const index = state.queue.findIndex((one) => one.id === entry.id);
-        apply(discardEntry(state, entry.id), { undoText: t('toast.discarded'), undo: (now) => restoreEntry(now, entry, index).state });
+        apply(discardEntry(state, entry.id), { undoText: t('toast.discarded'), undo: (now) => restoreEntry(now, entry, index, [...committed]).state });
       },
     }),
   ]);

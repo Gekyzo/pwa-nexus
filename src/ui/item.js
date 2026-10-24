@@ -1,9 +1,9 @@
 import { bindSheetDrag } from '#ds/sheet';
 import { cleanItem, outlineOf } from '#roadmap';
-import { makeEntry, enqueue, discardEntry, pendingOf, roadmapView, hasSection, checkEach } from '#queue';
+import { makeEntry, enqueue, discardEntry, pendingOf, roadmapView, hasSection, checkEach, undoDeleteOf } from '#queue';
 import { $, el, ui, state, cache, t, textOf, apply, render, showToast } from '#ui/context';
 import { onItem } from '#ui/projects';
-import { syncAll, isSending, afterSend } from '#ui/sync';
+import { syncAll, isMaybeSent } from '#ui/sync';
 
 const BRANCH = '└\u00a0';
 
@@ -111,15 +111,15 @@ const save = () => {
   if (queueEach([{ repo: ui.repo, actions }, ...others])) closeItemSheet();
 };
 
-// Undo takes the delete out of the queue while it waits, also during a sync: the sync skips it.
-// While its commit is on its way, Undo waits for the answer. Once GitHub has the delete, Undo
-// queues the item back (UI-4).
-const undoDelete = (repo, id, ref, item) => {
-  const readd = () => queueAll(repo, [['add', { path: ref.path, item }]]);
-  const discard = () => apply(discardEntry(state, id));
-  if (isSending(id)) afterSend(id, (done) => (done ? readd() : discard()));
-  else if (state.queue.some((entry) => entry.id === id)) discard();
-  else readd();
+// Undo takes a delete that surely was not sent out of the queue. One that may have reached GitHub
+// leaves the queue too, and the item is queued back as an `add` marked `sent`, which the sync adds
+// or finds there (UI-4, SYNC-11).
+const undoDelete = (repo, entry, item) => {
+  const { discard, readd } = undoDeleteOf(state, entry, { maybeSent: isMaybeSent(entry.id) });
+  let next = discard ? discardEntry(state, entry.id).state : state;
+  if (readd) next = enqueue(next, { ...makeEntry(repo, 'add', { path: entry.args.ref.path, item }), sent: true }).state;
+  apply({ state: next });
+  if (readd) syncAll();
 };
 
 const remove = () => {
@@ -130,7 +130,7 @@ const remove = () => {
   if (!entries) return;
   closeItemSheet();
   const [entry] = entries;
-  showToast(t('toast.itemDeleted'), { action: { label: t('toast.undo'), run: () => undoDelete(repo, entry.id, ref, item) } });
+  showToast(t('toast.itemDeleted'), { action: { label: t('toast.undo'), run: () => undoDelete(repo, entry, item) } });
 };
 
 export const renderItemSheet = () => {
