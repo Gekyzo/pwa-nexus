@@ -4,7 +4,7 @@ Lo que cambia para ti en cada versión de la app. La versión más nueva va prim
 
 ## Unreleased
 
-- Fittings se une a los proyectos. Aparece al final de tu lista tras la actualización.
+- Fittings, Landlord y Tenant se unen a los proyectos. Aparecen al final de tu lista tras la actualización.
 
 ## 0.1.17 - 2026-10-24
 

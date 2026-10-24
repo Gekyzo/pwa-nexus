@@ -4,7 +4,7 @@ What changes for you in each version of the app. The newest version is first.
 
 ## Unreleased
 
-- Fittings joins the projects. It shows at the end of your list after the update.
+- Fittings, Landlord and Tenant join the projects. They show at the end of your list after the update.
 
 ## 0.1.17 - 2026-10-24
 

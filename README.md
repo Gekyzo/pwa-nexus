@@ -6,7 +6,8 @@ from `pwa-template`: no build step and no dependencies.
 
 - **Projects:** Bodega (`Gekyzo/shopping-list`), Attire (`Gekyzo/pwa-wardrobe`), Compound
   (`Gekyzo/pwa-financial-calculator`), Rota (`Gekyzo/pwa-shifts`), Nexus (`Gekyzo/pwa-nexus`),
-  Stash (`Gekyzo/pwa-lists`) and Fittings (`Gekyzo/pwa-fittings`) by default. Add, rename or remove projects in Settings.
+  Stash (`Gekyzo/pwa-lists`), Fittings (`Gekyzo/pwa-fittings`), Landlord
+  (`Gekyzo/pwa-landlord`) and Tenant (`Gekyzo/pwa-tenant`) by default. Add, rename or remove projects in Settings.
 - **Roadmap:** the `##` and `###` sections of `ROADMAP.md`, with their `- **Title.** text` items.
 - **Actions:** add an item to a section you pick, edit it, move it to another section, or delete
   it. Each action is one commit on the default branch, such as `Add roadmap item: <title>`.

@@ -75,9 +75,10 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   offline from it, and a sync replaces the entry. A stored cache that is not valid is kept under
   `pwa-nexus.cache.corrupt`.
 - **PROJ-1** The doc `pwa-nexus.doc` is `{ version: 1, projects: [{ repo, label }], queue, defaults }`. A
-  new install gets the seven default projects: `Gekyzo/shopping-list`, `Gekyzo/pwa-wardrobe`,
-  `Gekyzo/pwa-financial-calculator`, `Gekyzo/pwa-shifts`, `Gekyzo/pwa-nexus`, `Gekyzo/pwa-lists`
-  and `Gekyzo/pwa-fittings`, labelled Bodega, Attire, Compound, Rota, Nexus, Stash and Fittings. A stored doc
+  new install gets the nine default projects: `Gekyzo/shopping-list`, `Gekyzo/pwa-wardrobe`,
+  `Gekyzo/pwa-financial-calculator`, `Gekyzo/pwa-shifts`, `Gekyzo/pwa-nexus`, `Gekyzo/pwa-lists`,
+  `Gekyzo/pwa-fittings`, `Gekyzo/pwa-landlord` and `Gekyzo/pwa-tenant`, labelled Bodega, Attire,
+  Compound, Rota, Nexus, Stash, Fittings, Landlord and Tenant. A stored doc
   keeps its own list. `repo` is `owner/name`, also when pasted as a GitHub URL or
   with `.git` (`error.repoInvalid`); one repository two times, in any case, is `error.repoTaken`.
   A blank label is the name of the repository, and a label has at most 40 characters
