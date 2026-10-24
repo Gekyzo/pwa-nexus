@@ -1,5 +1,5 @@
 export default {
-  'app.title': 'Nexus',
+  'app.title': 'Hojas de ruta - Nexus',
   'app.description': 'Hojas de ruta de mis proyectos',
   'nav.label': 'Secciones',
   'nav.settings': 'Ajustes',

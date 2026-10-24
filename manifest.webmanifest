@@ -1,7 +1,7 @@
 {
-  "name": "Nexus",
+  "name": "Project roadmaps - Nexus",
   "short_name": "Nexus",
-  "description": "Installable web app template",
+  "description": "Roadmaps of my projects",
   "lang": "en",
   "id": "./",
   "start_url": "./",

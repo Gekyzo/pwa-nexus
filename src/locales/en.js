@@ -1,5 +1,5 @@
 export default {
-  'app.title': 'Nexus',
+  'app.title': 'Project roadmaps - Nexus',
   'app.description': 'Roadmaps of my projects',
   'nav.label': 'Sections',
   'nav.settings': 'Settings',
