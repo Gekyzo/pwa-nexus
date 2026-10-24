@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { APP_SLUG } from '#config';
 import { makeEntry } from '#queue';
-import { DOC_KEY, MAX_LABEL, DEFAULT_PROJECTS, emptyDoc, normalizeDoc, offerDefaults, findProject, addProject, renameProject, removeProject } from '#projects';
+import { DOC_KEY, MAX_LABEL, DEFAULT_PROJECTS, emptyDoc, normalizeDoc, offerDefaults, findProject, addProject, renameProject, removeProject, restoreProject } from '#projects';
 
 const entry = (repo, id) => makeEntry(repo, 'delete', { ref: { path: 'P', title: 'T' } }, { id, now: 1 });
 
@@ -111,4 +111,23 @@ test('normalizeDoc keeps the offered defaults, and refuses a list that is not of
   assert.deepEqual(normalizeDoc(docOf(FIRST, ALL)).defaults, ALL);
   assert.equal(normalizeDoc(docOf(FIRST)).defaults, undefined);
   for (const defaults of ['x', [1], ['nope']]) assert.equal(normalizeDoc({ ...docOf(FIRST), defaults }), null, JSON.stringify(defaults));
+});
+
+const doc = (repos, queue = []) => ({ version: 1, projects: repos.map((repo) => ({ repo, label: repo })), queue });
+
+test('restoreProject puts a removed project back at its place, with its actions after the others (UI-10)', () => {
+  const removed = { project: { repo: 'o/b', label: 'o/b' }, index: 1, entries: [entry('o/b', '2'), entry('o/b', '3')] };
+  // Meanwhile a sync committed action 1 of o/a, and the user queued action 4.
+  const now = doc(['o/a', 'o/c'], [entry('o/a', '4')]);
+  const { state } = restoreProject(now, removed);
+  assert.deepEqual(state.projects.map(({ repo }) => repo), ['o/a', 'o/b', 'o/c']);
+  assert.deepEqual(state.queue.map(({ id }) => id), ['4', '2', '3']);
+});
+
+test('restoreProject leaves out the actions that GitHub has, and does nothing for a project that is back already', () => {
+  const removed = { project: { repo: 'o/b', label: 'o/b' }, index: 0, entries: [entry('o/b', '2'), entry('o/b', '3')] };
+  const { state } = restoreProject(doc(['o/a']), removed, ['2']);
+  assert.deepEqual(state.queue.map(({ id }) => id), ['3']);
+  const same = doc(['o/b']);
+  assert.equal(restoreProject(same, removed).state, same);
 });

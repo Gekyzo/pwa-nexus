@@ -17,6 +17,8 @@ import {
   stopsSync,
   syncShare,
   syncRepo,
+  restoreEntry,
+  withoutEntries,
   hasSection,
   checkEach,
 } from '#queue';
@@ -409,4 +411,23 @@ test('syncRepo still marks a sent action stale when GitHub has other text, and a
   const gone = entry('delete', { ref: ref('A'), base: { title: 'A', body: 'one' } }, 'y');
   const result = await syncRepo({ client: fakeClient('## Planned\n\n- **B.** two\n'), repo: 'o/r', entries: [gone] });
   assert.deepEqual(result.stale, ['y']);
+});
+
+test('restoreEntry puts a discarded action back at its place in the queue as it is now (UI-10)', () => {
+  const discarded = add('C', '2');
+  // Meanwhile action 1 was committed and action 4 was queued.
+  const now = { version: 1, projects: [], queue: [add('D', '3'), add('E', '4')] };
+  assert.deepEqual(restoreEntry(now, discarded, 1).state.queue.map(({ id }) => id), ['3', '2', '4']);
+  assert.deepEqual(restoreEntry(now, discarded, 9).state.queue.map(({ id }) => id), ['3', '4', '2']);
+});
+
+test('restoreEntry does nothing for an action that is in the queue already', () => {
+  const now = { version: 1, projects: [], queue: [add('C', '2')] };
+  assert.equal(restoreEntry(now, add('C', '2'), 0).state, now);
+});
+
+test('withoutEntries drops the actions that GitHub has from a doc to go back to (UI-10)', () => {
+  const old = { version: 1, projects: [], queue: [add('C', '1'), add('D', '2')] };
+  assert.deepEqual(withoutEntries(old, ['1']).queue.map(({ id }) => id), ['2']);
+  assert.equal(old.queue.length, 2);
 });

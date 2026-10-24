@@ -119,10 +119,11 @@ let toastTimer = null;
 // The button of the toast: { label, run }, or null.
 export let toastAction = null;
 
-// `undo` is the doc to go back to; `action` is { label, run } for any other button.
+// `undo` turns the doc as it is then into the doc to go back to: the inverse of the action, so
+// what a sync settled meanwhile stays settled (UI-10). `action` is { label, run } for any other button.
 export const showToast = (text, { undo = null, action = null, ms = undo || action ? UNDO_MS : MESSAGE_MS } = {}) => {
   clearTimeout(toastTimer);
-  toastAction = undo ? { label: t('toast.undo'), run: () => commit(undo) } : action;
+  toastAction = undo ? { label: t('toast.undo'), run: () => commit(undo(state)) } : action;
   $('toast-text').textContent = text;
   $('toast-action').textContent = toastAction?.label ?? '';
   $('toast-action').hidden = !toastAction;
@@ -164,16 +165,16 @@ export const setSyncing = (on) => {
   syncing = on;
 };
 
-// Applies a pure operation. `undoText` makes the change reversible for a few seconds.
-export const apply = (result, { undoText = null } = {}) => {
+// Applies a pure operation. `undoText` with `undo`, the inverse of the operation as a function of
+// the doc, makes the change reversible for a few seconds (UI-10).
+export const apply = (result, { undoText = null, undo = null } = {}) => {
   if (result.error) {
     showToast(textOf(result.error));
     return false;
   }
-  const previous = state;
   const saved = commit(result.state);
   if (!saved) showToast(t('error.notSaved'));
-  else if (undoText) showToast(undoText, { undo: previous });
+  else if (undoText && undo) showToast(undoText, { undo });
   else hideToast();
   return true;
 };

@@ -1,6 +1,6 @@
 import { findProject } from '#projects';
 import { treeOf, filterTree } from '#roadmap';
-import { roadmapView, pendingOf, discardEntry, messageOf } from '#queue';
+import { roadmapView, pendingOf, discardEntry, restoreEntry, messageOf } from '#queue';
 import { intlTag } from '#i18n';
 import { $, el, ui, state, cache, t, lang, render, apply } from '#ui/context';
 import { setView } from '#ui/nav';
@@ -86,7 +86,10 @@ const staleBanner = (entry) =>
       className: 'button outline',
       type: 'button',
       textContent: t('sync.discard'),
-      onclick: () => apply(discardEntry(state, entry.id), { undoText: t('toast.discarded') }),
+      onclick: () => {
+        const index = state.queue.findIndex((one) => one.id === entry.id);
+        apply(discardEntry(state, entry.id), { undoText: t('toast.discarded'), undo: (now) => restoreEntry(now, entry, index).state });
+      },
     }),
   ]);
 

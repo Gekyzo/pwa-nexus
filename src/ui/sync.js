@@ -27,6 +27,9 @@ export const afterSend = (id, then) => {
   waiting.set(id, then);
 };
 
+// The entries that GitHub has, from the syncs of this start: an undo leaves them out (UI-10).
+export const committed = new Set();
+
 const inQueue = ({ id }) => state.queue.some((entry) => entry.id === id);
 const listed = (repo) => state.projects.some((project) => project.repo === repo);
 
@@ -66,6 +69,7 @@ export const syncAll = async () => {
       if (listed(repo) && result.file) setCache(putEntry(cache, repo, { ...result.file, fetchedAt: Date.now() }));
       else if (listed(repo) && result.error?.type === 'notFound') setCache(putEntry(cache, repo, { missing: true, fetchedAt: Date.now() }));
       ui.syncProgress = { ...ui.syncProgress, done: ui.syncProgress.done + 1 };
+      result.done.forEach((id) => committed.add(id));
       commit(settleQueue(state, result));
       for (const [id, then] of waiting) {
         waiting.delete(id);

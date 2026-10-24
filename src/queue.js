@@ -82,6 +82,18 @@ export const enqueue = (state, entry) => ({ state: { ...state, queue: [...state.
 
 export const discardEntry = (state, id) => ({ state: { ...state, queue: state.queue.filter((entry) => entry.id !== id) } });
 
+// The inverse of a discard: the entry goes back at `index` of the queue as it is now, so what a
+// sync settled meanwhile stays settled (UI-10).
+export const restoreEntry = (state, entry, index) => {
+  if (state.queue.some((one) => one.id === entry.id)) return { state };
+  const queue = [...state.queue];
+  queue.splice(Math.min(index, queue.length), 0, entry);
+  return { state: { ...state, queue } };
+};
+
+// A doc to go back to, without the entries that GitHub has now (UI-10).
+export const withoutEntries = (state, ids) => ({ ...state, queue: state.queue.filter((entry) => !ids.includes(entry.id)) });
+
 export const pendingOf = (state, repo) => state.queue.filter((entry) => entry.repo === repo);
 
 // `sent` holds the entries whose commit got no answer: GitHub may have them (SYNC-11).

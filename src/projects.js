@@ -73,6 +73,16 @@ export const removeProject = (state, repo) => {
   };
 };
 
+// The inverse of removeProject: the project goes back at `index`, and its actions after the
+// queue as it is now, without those whose id is in `committed` (UI-10).
+export const restoreProject = (state, { project, index, entries }, committed = []) => {
+  if (findProject(state, project.repo)) return { state };
+  const projects = [...state.projects];
+  projects.splice(Math.min(index, projects.length), 0, project);
+  const back = entries.filter((entry) => !committed.includes(entry.id) && !state.queue.some((one) => one.id === entry.id));
+  return { state: { ...state, projects, queue: [...state.queue, ...back] } };
+};
+
 // Adds each default project that the doc was never offered, once: a default that the user removed
 // stays removed, and a repository already in the list is not added twice (PROJ-4).
 export const offerDefaults = (state) => {

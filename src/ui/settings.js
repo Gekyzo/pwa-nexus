@@ -1,7 +1,7 @@
-import { normalizeDoc, addProject, renameProject, removeProject } from '#projects';
+import { normalizeDoc, addProject, renameProject, removeProject, restoreProject } from '#projects';
 import { dropEntry } from '#cache';
 import { createClient } from '#github';
-import { ROADMAP_PATH, pendingOf } from '#queue';
+import { ROADMAP_PATH, pendingOf, withoutEntries } from '#queue';
 import { exportJson, exportFilename, importJson } from '#storage';
 import { LANGUAGES, LANGUAGE_NAMES } from '#i18n';
 import { switchModule } from '#modules';
@@ -31,7 +31,7 @@ import {
   setCache,
 } from '#ui/context';
 import { icon } from '#ui/controls';
-import { syncAll, errorKey } from '#ui/sync';
+import { syncAll, errorKey, committed } from '#ui/sync';
 import { runUpdate } from '#ui/update';
 import { renderOnboarding } from '#ui/onboarding';
 
@@ -93,7 +93,10 @@ const editorRow = (project) => {
 const removeRepo = (repo) => {
   const waiting = pendingOf(state, repo).length;
   if (waiting && !window.confirm(t('settings.removeQueued', { count: waiting }))) return;
-  if (apply(removeProject(state, repo), { undoText: t('toast.projectRemoved') })) setCache(dropEntry(cache, repo));
+  const index = state.projects.findIndex((project) => project.repo === repo);
+  const removed = { project: state.projects[index], index, entries: pendingOf(state, repo) };
+  const undo = (now) => restoreProject(now, removed, [...committed]).state;
+  if (apply(removeProject(state, repo), { undoText: t('toast.projectRemoved'), undo })) setCache(dropEntry(cache, repo));
 };
 
 export const renderSettings = () => {
@@ -170,6 +173,8 @@ export const bind = () => {
     }
     const projects = t('projects.count', { count: result.state.projects.length });
     if (!window.confirm(t('import.confirm', { projects }))) return;
-    apply(result, { undoText: t('toast.imported') });
+    // The doc before the import, without what a sync committed since (UI-10).
+    const previous = state;
+    apply(result, { undoText: t('toast.imported'), undo: () => withoutEntries(previous, [...committed]) });
   });
 };
