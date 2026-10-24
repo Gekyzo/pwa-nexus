@@ -4,6 +4,10 @@ What changes for you in each version of the app. The newest version is first.
 
 ## Unreleased
 
+No change.
+
+## 0.1.18 - 2026-10-24
+
 - Fittings, Landlord and Tenant join the projects. They show at the end of your list after the update.
 
 ## 0.1.17 - 2026-10-24
