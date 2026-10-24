@@ -2,10 +2,11 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
+import { LANGUAGES } from '#i18n';
 
 // sw.js is a classic script: run it with a stub `self` and return its pure functions.
 const source = readFileSync(new URL('../sw.js', import.meta.url), 'utf8');
-const { localizeManifest } = vm.runInNewContext(`${source}\n;({ localizeManifest })`, {
+const { localizeManifest, SHELL } = vm.runInNewContext(`${source}\n;({ localizeManifest, SHELL })`, {
   self: { addEventListener: () => {} },
 });
 
@@ -51,4 +52,12 @@ test('localizeManifest does not change its input', () => {
   const input = build();
   localizeManifest(input, { lang: 'en', name: 'Template app', description: 'Template' });
   assert.deepEqual(input, build());
+});
+
+test('SHELL has the release notes of each language, so they show offline (VER-21)', () => {
+  for (const lang of LANGUAGES) assert.ok(SHELL.includes(`./release-notes/${lang}.md`), lang);
+});
+
+test('SHELL has the release notes modules (VER-21)', () => {
+  for (const file of ['./src/whatsnew.js', './src/ui/whatsnew.js']) assert.ok(SHELL.includes(file), file);
 });

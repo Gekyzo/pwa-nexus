@@ -2,7 +2,7 @@ import { parseCatalog, classesInScript, menuOf } from '../vendor/design-system/c
 
 // A browser cannot list a directory, so the views are named here. tests/design.test.js keeps the
 // list equal to src/ui/.
-const UI = ['context', 'controls', 'dust', 'install', 'item', 'nav', 'onboarding', 'projects', 'settings', 'sync', 'update'];
+const UI = ['context', 'controls', 'dust', 'install', 'item', 'nav', 'onboarding', 'projects', 'settings', 'sync', 'update', 'whatsnew'];
 
 // The shared stylesheet first, then the app's: the order of index.html.
 const SHEETS = ['../vendor/design-system/design-system.css', '../styles.css'];

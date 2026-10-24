@@ -25,6 +25,9 @@ import {
   loadOnboarded,
   saveOnboarded,
   TOKEN_KEY,
+  SEEN_VERSION_KEY,
+  loadSeen,
+  saveSeen,
   loadToken,
   saveToken,
 } from '#storage';
@@ -56,7 +59,7 @@ const normalize = (data) => (data?.version === 1 && Array.isArray(data.items) ? 
 const opts = { key: KEY, normalize, empty };
 
 test('every key starts with the slug of the app', () => {
-  for (const key of [KEY, LANGUAGE_KEY, HAND_KEY, THEME_KEY, MODULES_KEY, ONBOARDED_KEY]) {
+  for (const key of [KEY, LANGUAGE_KEY, HAND_KEY, THEME_KEY, MODULES_KEY, ONBOARDED_KEY, SEEN_VERSION_KEY]) {
     assert.ok(key.startsWith(`${APP_SLUG}.`), key);
   }
 });
@@ -267,4 +270,17 @@ test('a blank stored token reads as no token, and broken storage gives null and 
   assert.equal(loadToken(fakeStorage({ [TOKEN_KEY]: '  ' })), null);
   assert.equal(loadToken(brokenStorage()), null);
   assert.equal(saveToken(brokenStorage(), 'x'), false);
+});
+
+test('loadSeen gives the stored version, and null when there is none or the storage throws', () => {
+  assert.equal(loadSeen(fakeStorage({ [SEEN_VERSION_KEY]: '1.2.3' })), '1.2.3');
+  assert.equal(loadSeen(fakeStorage()), null);
+  assert.equal(loadSeen(brokenStorage()), null);
+});
+
+test('saveSeen stores the version, and is false for a storage that throws', () => {
+  const storage = fakeStorage();
+  assert.equal(saveSeen(storage, '1.2.3'), true);
+  assert.equal(loadSeen(storage), '1.2.3');
+  assert.equal(saveSeen(brokenStorage(), '1.2.3'), false);
 });

@@ -184,6 +184,27 @@ export const saveOnboarded = (storage) => {
   }
 };
 
+// The newest version whose release notes the user has seen (VER-21).
+export const SEEN_VERSION_KEY = keyOf('seen-version');
+
+// Null when nothing is stored or the storage cannot be read: no notes show.
+export const loadSeen = (storage) => {
+  try {
+    return storage.getItem(SEEN_VERSION_KEY);
+  } catch {
+    return null;
+  }
+};
+
+export const saveSeen = (storage, version) => {
+  try {
+    storage.setItem(SEEN_VERSION_KEY, version);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 // The GitHub token: a preference of this device, never part of the doc or of an export (TOK-2).
 export const TOKEN_KEY = keyOf('token');
 

@@ -30,6 +30,7 @@
 | `src/ui/settings.js` | Settings, the token and the project editor, and the text of the page in its language | `projects`, `cache`, `github`, `queue`, `storage`, `i18n`, `modules`, `ui/context`, `ui/controls`, `ui/sync`, `ui/update`, `ui/onboarding` |
 | `src/ui/dust.js` | The dust of a navigation item (optional) | `particles`, `ui/context`, `ui/controls` |
 | `src/ui/onboarding.js` | The walkthrough (optional) | `onboarding`, `sections`, `storage`, `ui/context`, `ui/controls` |
+| `src/ui/whatsnew.js` | The release notes sheet, its Settings row and the seen version | `whatsnew`, `onboarding`, `i18n`, `storage`, `ds/sheet`, `ui/context`, `ui/onboarding` |
 | `src/app.js` | Wires the views, the global keys, the service worker and the update check | all of the above |
 
 ## Code rules
@@ -63,8 +64,8 @@
 ## Storage keys
 
 The doc keys are in [08-github-sync.md](08-github-sync.md). The device preferences are `pwa-nexus.lang`,
-`pwa-nexus.hand`, `pwa-nexus.theme`, `pwa-nexus.modules`, `pwa-nexus.onboarded` and
-`pwa-nexus.token` (TOK-2).
+`pwa-nexus.hand`, `pwa-nexus.theme`, `pwa-nexus.modules`, `pwa-nexus.onboarded`,
+`pwa-nexus.token` (TOK-2) and `pwa-nexus.seen-version` (VER-21).
 
 ## Change guide
 

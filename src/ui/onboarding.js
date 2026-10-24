@@ -5,8 +5,9 @@ import { $, el, storage, ui, t, guardClick } from '#ui/context';
 import { icon } from '#ui/controls';
 
 // A part of a page text: plain text, or a key with an optional icon. A key with an icon and no
-// text gets the name of its control (`onboarding.icon.<name>`).
-const keyNode = ({ text, key, icon: name }) => {
+// text gets the name of its control (`onboarding.icon.<name>`). The release notes show their keys
+// the same way (VER-22).
+export const keyNode = ({ text, key, icon: name }) => {
   if (!key) return text;
   const node = el('span', { className: 'onboarding-key' }, name ? [icon(name, 'small'), text] : [text]);
   if (name && !text) {

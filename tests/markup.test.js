@@ -67,3 +67,15 @@ test('the item sheet has the other projects to add a new item to, hidden until i
   const [layer = ''] = body.match(/<div id="item-sheet" class="sheet-layer"[\s\S]*?<\/form>\s*<\/div>/) ?? [];
   assert.match(layer, /<textarea id="item-body"[\s\S]*<div id="item-also" hidden>\s*<h3 class="sheet-title part" data-i18n="item.alsoTo"><\/h3>\s*<div id="item-also-list" class="cluster" role="group" data-i18n-attr="aria-label:item.alsoTo"><\/div>\s*<\/div>[\s\S]*<button id="item-delete"/);
 });
+
+test('the What\'s new sheet has a veil, a dialog with its title and Close, and a body (VER-22)', () => {
+  const [layer = ''] = body.match(/<div id="whatsnew-sheet" class="sheet-layer"[\s\S]*?<\/section>\s*<\/div>/) ?? [];
+  assert.match(layer, /<div id="whatsnew-veil" class="sheet-veil">/);
+  assert.match(layer, /<section id="whatsnew" class="sheet" role="dialog" aria-modal="true" aria-labelledby="whatsnew-title">/);
+  assert.match(layer, /<h2 id="whatsnew-title" class="sheet-title main" data-i18n="whatsNew.title"><\/h2><button id="whatsnew-close" class="button tonal" type="button" data-i18n="whatsNew.close"><\/button>/);
+  assert.match(layer, /<div id="whatsnew-body" class="sheet-body whatsnew-body"><\/div>/);
+});
+
+test('Help in Settings has the What\'s new row after the introduction, hidden until there are notes (VER-23)', () => {
+  assert.match(body, /<button id="show-onboarding"[^\n]*<\/button>\s*<button id="show-whatsnew" class="settings-row" type="button" hidden><span class="settings-row-label" data-i18n="settings.whatsNew"><\/span><span class="chevron" aria-hidden="true">›<\/span><\/button>/);
+});
