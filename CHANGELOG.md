@@ -4,7 +4,7 @@ Technical changes, newest first. What a user sees of a version goes to `release-
 
 ## Unreleased
 
-No change.
+- New art in `icons/source.png`, a molecule of four coloured spheres; `npm run icons` wrote the PNG icons and the logo again (VER-15).
 
 ## 0.1.18 - 2026-10-24
 

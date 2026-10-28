@@ -4,7 +4,7 @@ Lo que cambia para ti en cada versión de la app. La versión más nueva va prim
 
 ## Unreleased
 
-No change.
+- La app tiene un icono nuevo: una molécula de esferas de colores.
 
 ## 0.1.18 - 2026-10-24
 
