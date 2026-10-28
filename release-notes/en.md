@@ -4,6 +4,10 @@ What changes for you in each version of the app. The newest version is first.
 
 ## Unreleased
 
+No change.
+
+## 0.1.19 - 2026-10-28
+
 - The app has a new icon: a molecule of colourful spheres.
 
 ## 0.1.18 - 2026-10-24
