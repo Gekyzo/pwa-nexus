@@ -4,6 +4,7 @@ What changes for you in each version of the app. The newest version is first.
 
 ## Unreleased
 
+- Fittings is no longer one of the starting projects. If your list has it, remove it in Settings.
 - On a tablet or a computer, the menu is always on the left and the app is centred on wide screens. The open roadmap is a card beside the projects.
 - The projects show as cards with the icon of each app. Open a project to see a link to its app.
 - LearnSWE and Routines join the projects. They show at the end of your list after the update.

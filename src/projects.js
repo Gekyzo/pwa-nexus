@@ -13,7 +13,6 @@ export const DEFAULT_PROJECTS = [
   { repo: 'Gekyzo/pwa-shifts', label: 'Rota' },
   { repo: 'Gekyzo/pwa-nexus', label: 'Nexus' },
   { repo: 'Gekyzo/pwa-lists', label: 'Stash' },
-  { repo: 'Gekyzo/pwa-fittings', label: 'Fittings' },
   { repo: 'Gekyzo/pwa-landlord', label: 'Landlord' },
   { repo: 'Gekyzo/pwa-tenant', label: 'Tenant' },
   { repo: 'Gekyzo/pwa-learning-swe', label: 'LearnSWE' },

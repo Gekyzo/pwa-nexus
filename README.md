@@ -6,7 +6,7 @@ from `pwa-template`: no build step and no dependencies.
 
 - **Projects:** Bodega (`Gekyzo/shopping-list`), Attire (`Gekyzo/pwa-wardrobe`), Compound
   (`Gekyzo/pwa-financial-calculator`), Rota (`Gekyzo/pwa-shifts`), Nexus (`Gekyzo/pwa-nexus`),
-  Stash (`Gekyzo/pwa-lists`), Fittings (`Gekyzo/pwa-fittings`), Landlord
+  Stash (`Gekyzo/pwa-lists`), Landlord
   (`Gekyzo/pwa-landlord`), Tenant (`Gekyzo/pwa-tenant`), LearnSWE (`Gekyzo/pwa-learning-swe`) and
   Routines (`Gekyzo/pwa-training-routines`) by default. Add, rename or remove projects in Settings.
 - **Roadmap:** the `##` and `###` sections of `ROADMAP.md`, with their `- **Title.** text` items.
