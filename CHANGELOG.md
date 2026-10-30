@@ -4,6 +4,10 @@ Technical changes, newest first. What a user sees of a version goes to `release-
 
 ## Unreleased
 
+No change.
+
+## 0.1.22 - 2026-10-31
+
 - The What's new sheet shows `**bold**` text in bold (VER-22): `textParts` in `src/onboarding.js` marks the text between a pair of `**` with `strong: true`, keys included, and keeps a `**` with no pair as text; `noteItem` in `src/ui/whatsnew.js` puts such a part in a `<strong>`.
 
 ## 0.1.21 - 2026-10-31
