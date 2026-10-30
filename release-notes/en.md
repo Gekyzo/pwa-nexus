@@ -4,6 +4,10 @@ What changes for you in each version of the app. The newest version is first.
 
 ## Unreleased
 
+No change.
+
+## 0.1.21 - 2026-10-31
+
 - **Ideas**, a new section, keeps your ideas for new apps: press **+**, write the name, and it is saved, also offline. Each idea has Features, Specs and Notes, in `IDEAS.md` of the Nexus repository.
 
 ## 0.1.20 - 2026-10-30
