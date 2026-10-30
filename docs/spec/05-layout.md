@@ -36,11 +36,18 @@ LAY-1 to LAY-4 of the design system (04-design-system). In this app the Projects
 ## Settings
 
 - **SET-1** Settings is a column of groups, each a `list-group-head` above its rows, as in
-  pwa-shopping-list: **GitHub** and **Projects** (UI-6), **Backup** (**Export**, **Import**),
+  pwa-shopping-list: **GitHub** and **Projects** (UI-6), **Backup** (**Export**, **Import**, **Delete all data**),
   **Preferences** (**Language**, **Hand**, **Theme**), **Modules** (MOD-1), **App** (INS-2) and
   **Help** (ONB-3, VER-23), then the version lines (VER-4). A row of Preferences shows its current value
   and a chevron, and a tap on it opens the native picker of its select. A row that opens
   something ends with a chevron; **Test the token** shows a toast and has none.
+- **SET-2** **Delete all data** is the last row of Backup, in the colour of danger, with no
+  chevron. It asks `reset.confirm`, which also says that the GitHub token goes and has to be
+  entered again. A yes removes each `localStorage` key of the app, `<slug>.*` (`resetAll`): the
+  doc, the cache, the token and the preferences, and no key of another app of the origin. Then it
+  loads the page again: the app starts as a new install, with the walkthrough (ONB-1) and no token
+  (TOK-3). It has no Undo. When the removal fails, `error.resetFailed` shows and nothing else
+  changes. The caches of the worker stay.
 
 ## Walkthrough
 

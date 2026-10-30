@@ -4,6 +4,7 @@ Technical changes, newest first. What a user sees of a version goes to `release-
 
 ## Unreleased
 
+- **Delete all data** in Settings › Backup, as in pwa-shopping-list (SET-2): `resetAll` in `src/storage.js` removes each `localStorage` key of the app, `<slug>.*`, the token included, and no key of another app of the origin; the page loads again as a new install. Keys `settings.reset`, `reset.confirm`, `error.resetFailed`.
 - `Gekyzo/pwa-fittings` leaves the default projects (PROJ-1): a new install has ten. A stored doc keeps its list, so a device that has Fittings keeps it until the user removes it in Settings (PROJ-2).
 - Design system 0.8.1 (`npm run ds`): the shared wide layout (LAY-1 to LAY-5, DSV-5). From 600px the rail stands at the start with either hand, and the `body` rule pads `--rail-width` at the start and `--frame-side` at the end; from 1024px the app stands in a centred frame with a sidebar; from 840px the roadmap is a card beside the list and a sheet with a head is a card below the header (`--header-height` from a `ResizeObserver` in `src/app.js`). The Sync button and the project cards drop their own side padding from 600px, so they line up with the title. `.version-status` is relative, so Settings no longer scrolls the page as well.
 - The home of Projects is a grid of cards with the icon of each app (UI-1). The project screen starts with a head: the icon, the repository and a link to the app at its GitHub Pages site (UI-12). `appUrl` and `iconUrl` in `src/projects.js` derive both from the repository (PROJ-5).

@@ -2,7 +2,7 @@ import { normalizeDoc, addProject, renameProject, removeProject, restoreProject 
 import { dropEntry } from '#cache';
 import { createClient } from '#github';
 import { ROADMAP_PATH, pendingOf, withoutEntries } from '#queue';
-import { exportJson, exportFilename, importJson } from '#storage';
+import { exportJson, exportFilename, importJson, resetAll } from '#storage';
 import { LANGUAGES, LANGUAGE_NAMES } from '#i18n';
 import { switchModule } from '#modules';
 import {
@@ -10,6 +10,7 @@ import {
   el,
   state,
   cache,
+  storage,
   token,
   t,
   lang,
@@ -146,6 +147,16 @@ export const bind = () => {
     download(exportFilename(new Date()), exportJson(state));
   });
   $('import').addEventListener('click', () => $('import-file').click());
+  // SET-2: the app starts again as a new install, with the walkthrough. With no storage the data is
+  // only in memory, so the reload alone clears it. The token goes too.
+  $('reset').addEventListener('click', () => {
+    if (!window.confirm(t('reset.confirm'))) return;
+    if (storage && !resetAll(storage)) {
+      showToast(t('error.resetFailed'));
+      return;
+    }
+    location.reload();
+  });
   $('language').addEventListener('change', (event) => {
     setLanguage(event.target.value || null);
     applyLanguage();

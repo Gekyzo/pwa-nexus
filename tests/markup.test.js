@@ -79,3 +79,7 @@ test('the What\'s new sheet has a veil, a dialog with its title and Close, and a
 test('Help in Settings has the What\'s new row after the introduction, hidden until there are notes (VER-23)', () => {
   assert.match(body, /<button id="show-onboarding"[^\n]*<\/button>\s*<button id="show-whatsnew" class="settings-row" type="button" hidden><span class="settings-row-label" data-i18n="settings.whatsNew"><\/span><span class="chevron" aria-hidden="true">›<\/span><\/button>/);
 });
+
+test('Backup ends with Delete all data, a danger row with no chevron (SET-2)', () => {
+  assert.match(body, /<button id="import" class="settings-row" type="button">.*?<\/button>\s*<button id="reset" class="settings-row danger" type="button"><span class="settings-row-label" data-i18n="settings.reset"><\/span><\/button>\s*<\/div>/);
+});
