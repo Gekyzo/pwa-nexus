@@ -16,6 +16,7 @@ export const DEFAULT_PROJECTS = [
   { repo: 'Gekyzo/pwa-fittings', label: 'Fittings' },
   { repo: 'Gekyzo/pwa-landlord', label: 'Landlord' },
   { repo: 'Gekyzo/pwa-tenant', label: 'Tenant' },
+  { repo: 'Gekyzo/pwa-learning-swe', label: 'LearnSWE' },
 ];
 
 // The default projects that a doc saved before `defaults` existed was offered (PROJ-4).

@@ -4,7 +4,7 @@ Technical changes, newest first. What a user sees of a version goes to `release-
 
 ## Unreleased
 
-No change.
+- `Gekyzo/pwa-learning-swe` joins the default projects as LearnSWE (PROJ-1). A stored list gets it once at the next start (PROJ-4).
 
 ## 0.1.19 - 2026-10-28
 

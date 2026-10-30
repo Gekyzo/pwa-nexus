@@ -4,7 +4,7 @@ Lo que cambia para ti en cada versión de la app. La versión más nueva va prim
 
 ## Unreleased
 
-No change.
+- LearnSWE se une a los proyectos. Aparece al final de tu lista tras la actualización.
 
 ## 0.1.19 - 2026-10-28
 
