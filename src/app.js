@@ -14,7 +14,8 @@ import { bind as bindWhatsNew, startWhatsNew, isWhatsNewOpen, closeWhatsNew } fr
 const renderAll = () => {
   renderNav();
   const project = ui.view === 'projects' && ui.repo !== null ? findProject(state, ui.repo) : null;
-  $('title').textContent = project?.label ?? t(`nav.${ui.view}`);
+  const idea = ui.view === 'ideas' ? ui.idea : null;
+  $('title').textContent = project?.label ?? idea ?? t(`nav.${ui.view}`);
   renderProjects();
   renderIdeas();
   renderSync();
@@ -64,8 +65,8 @@ document.addEventListener('keydown', (event) => {
   }
   if (ui.sheetOpen) closeItemSheet();
   else if (isNameOpen()) closeNameSheet();
-  else if (ui.repo !== null) {
-    ui.repo = null;
+  else if (ui.repo !== null || ui.idea !== null) {
+    Object.assign(ui, { repo: null, idea: null });
     render();
   }
 });

@@ -103,3 +103,12 @@ test('the sprite has the icon of the Ideas item', () => {
   const sprite = readFileSync(new URL('../icons.svg', import.meta.url), 'utf8');
   assert.match(sprite, /<symbol id="bulb"/);
 });
+
+test('the idea detail has back, rename, delete, search and its lists (IDEA-11)', () => {
+  const [detail = ''] = body.match(/<article id="idea" class="pane-detail">[\s\S]*?<\/article>/) ?? [];
+  assert.match(body, /<section id="ideas" class="pane" hidden>[\s\S]*<article id="idea" class="pane-detail">/);
+  assert.match(detail, /<button id="idea-back" class="button quiet pane-back" type="button" data-i18n="roadmap.back"><\/button>/);
+  assert.match(detail, /<header id="idea-head" class="cluster idea-head" hidden>\s*<button id="idea-rename" class="button outline" type="button" data-i18n="ideas.rename"><\/button>\s*<button id="idea-delete" class="button outline danger" type="button">/);
+  assert.match(detail, /<input id="idea-search" class="input raised filter" type="search"[^>]*data-i18n-attr="placeholder:roadmap.search,aria-label:roadmap.search" hidden>/);
+  assert.match(detail, /<p id="idea-empty" class="empty-state inline"><\/p>\s*<div id="idea-stale"><\/div>\s*<ul id="idea-parts" class="item-list"><\/ul>/);
+});

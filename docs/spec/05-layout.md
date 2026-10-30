@@ -20,7 +20,7 @@ LAY-1 to LAY-4 of the design system (04-design-system). In this app the Projects
   It stops at the first and the last section. The content comes in from its side.
 - **NAV-3** A press of the item of the section in view closes the detail that is open in it, as
   its back button does: in Projects, an open roadmap goes back to the project list, with no
-  search. With no detail open, the press does nothing. `pressSection` of `src/sections.js`.
+  search; in Ideas, an open idea goes back to the list of ideas. With no detail open, the press does nothing. `pressSection` of `src/sections.js`.
 
 ## Modules
 

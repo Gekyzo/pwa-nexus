@@ -73,8 +73,8 @@ const fold = (key) => {
 
 // A later item with the title of an earlier one cannot be told apart by an action: its row is
 // read-only and says why (UI-11).
-const itemRow = (path, item) => {
-  const onclick = item.duplicate ? null : () => itemHandler({ path, title: item.title });
+const itemRow = (path, item, onItem) => {
+  const onclick = item.duplicate ? null : () => onItem({ path, title: item.title });
   const name = el('button', { className: 'item-row-name', type: 'button', disabled: Boolean(item.duplicate), onclick }, [
     el('span', { textContent: item.title }),
     ...(item.body ? [el('small', { className: 'item-row-meta', textContent: item.body })] : []),
@@ -84,22 +84,23 @@ const itemRow = (path, item) => {
 };
 
 // A section is a head that folds, then its rows and its H3 sections, nested one level (UI-2).
-// While a search runs, each section is open and a tap on its head does nothing (UI-8).
-const sectionNodes = (repo, section, nested = false) => {
-  const key = keyOf(repo, section.path);
+// While a search runs, each section is open and a tap on its head does nothing (UI-8). `name` is
+// the fold key of the file, `onItem` opens a row and `label` names a section; Ideas uses all three.
+export const sectionNodes = (name, section, { onItem = itemHandler, label = null, nested = false } = {}) => {
+  const key = keyOf(name, section.path);
   const searching = ui.query.trim() !== '';
   const open = searching || !ui.folded.includes(key);
   const onclick = searching ? null : () => fold(key);
   const button = el('button', { className: 'section-head-button', type: 'button', onclick }, [
-    el('span', { textContent: `${nested ? section.title : section.path} · ${section.total}` }),
+    el('span', { textContent: `${label ?? (nested ? section.title : section.path)} · ${section.total}` }),
     el('span', { className: 'chevron', textContent: open ? '▾' : '▸' }),
   ]);
   button.setAttribute('aria-expanded', String(open));
   const head = el('li', { className: nested ? 'section-head nested' : 'section-head' }, [button]);
   if (!open) return [head];
-  const rows = section.items.map((item) => itemRow(section.path, item));
+  const rows = section.items.map((item) => itemRow(section.path, item, onItem));
   if (nested) rows.forEach((row) => row.classList.add('nested'));
-  return [head, ...rows, ...section.children.flatMap((child) => sectionNodes(repo, child, true))];
+  return [head, ...rows, ...section.children.flatMap((child) => sectionNodes(name, child, { onItem, nested: true }))];
 };
 
 // An action that no longer applies stays until the user discards it (SYNC-6, UI-5).

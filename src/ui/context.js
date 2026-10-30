@@ -100,6 +100,8 @@ export const ui = {
   // The repository whose roadmap is open, or null.
   repo: null,
   sheetOpen: false,
+  // The file that the item sheet changes: { repo, file, paths }, `paths` the sections it may pick.
+  sheetTarget: { repo: null, file: 'ROADMAP.md', paths: null, label: null },
   // The idea open in Ideas, by its name, or null.
   idea: null,
   // The sheet of the name of an idea, and the idea it renames, or null for a new idea.

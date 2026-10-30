@@ -58,3 +58,22 @@ The ideas of new apps that have no repository yet, kept in one `IDEAS.md`.
 - **IDEA-10** A sync does `IDEAS.md` after the projects (SYNC-8), as one more step of its bar
   (SYNC-9), with `create` (SYNC-3), also while the module `ideas` is off. A missing `IDEAS.md`
   with no action is cached as `missing` and is no error.
+- **IDEA-11** A tap on an idea opens it in the pane (LAY-3), with its name as the title of the
+  header. Its head has **Rename** (`ideas.rename`) and **Delete** (`ideas.delete`). Its parts show
+  as the sections of UI-2, the three of `PARTS` by their label in the catalog
+  (`ideas.part.features`, `ideas.part.specs`, `ideas.part.notes`), another one by its title, with
+  the search of UI-8. An idea with no part says `ideas.noParts`, and **+** is off. With no idea
+  open, the pane says `ideas.pick`. The banners of UI-5 of the actions of the open idea show in
+  its detail, not above the list. The back button, Escape, a press of Ideas in the navigation and
+  a change of section close it. An idea that the text no longer has closes.
+- **IDEA-12** In an idea, **+** and a tap on an entry open the item sheet of UI-3, UI-7 and UI-9 on
+  `IDEAS.md`. Its picker lists only the parts of that idea, by their label, so an entry moves only
+  between the parts of its idea. `item.alsoTo` is hidden. The actions are queued with the file
+  `IDEAS.md` (SYNC-1). Delete of an entry and its Undo follow UI-4.
+- **IDEA-13** **Rename** opens the name sheet of IDEA-9 with the name in it. Save with the same
+  name queues nothing; another name queues a `renameIdea` with its `base` (IDEA-7), and the open
+  idea follows its new name.
+- **IDEA-14** **Delete** queues a `deleteIdea` with its `base`, closes the idea, and the toast
+  `toast.ideaDeleted` offers **Undo** for 5 seconds, with the rules of UI-4: while the action
+  surely was not sent, Undo removes it from the queue; when it may have reached GitHub, Undo
+  removes it and queues a `restoreIdea` of the lines of the idea, marked `sent` (SYNC-11).

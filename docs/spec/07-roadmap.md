@@ -72,7 +72,9 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
   item of a title in a section. A later item with the same title is `duplicate` (`sectionsOf`):
   its row shows the warning `item.duplicate` and does not open. The first one opens, and an edit
   that keeps its title applies: the clash was in the file already.
-- **UI-3** With a roadmap open, **+** opens the sheet of a new item: a section picker with no
+- **UI-3** With a roadmap open, **+** opens the sheet of a new item. The sheet changes one file
+  (`ui.sheetTarget`): the roadmap of the project, or `IDEAS.md` for an entry of an idea (IDEA-12).
+  The sheet of a new item has a section picker with no
   default (`item.pickSection`), a title and a body. The body field starts three lines high and
   grows with its text up to 40% of the screen, then scrolls. The picker lists the sections as the tree of
   `outlineOf` (ROAD-10): a nested H3 by its title after the mark `└`; its value is the path. Save queues an `add` action and starts a sync.

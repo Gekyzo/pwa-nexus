@@ -16,7 +16,7 @@ const enter = (way) => {
 export const setView = (view) => {
   if (view === ui.view) return;
   const way = direction(ui.view, view, visibleSections(off));
-  Object.assign(ui, { view, repo: null });
+  Object.assign(ui, { view, repo: null, idea: null });
   scroller.scrollTop = 0;
   render();
   enter(way);
@@ -41,11 +41,11 @@ export const bind = () => {
   });
   document.querySelectorAll('.nav-item').forEach((button) => {
     button.addEventListener('click', () => {
-      const press = pressSection(ui.view, button.dataset.view, ui.repo !== null);
+      const press = pressSection(ui.view, button.dataset.view, ui.repo !== null || ui.idea !== null);
       if (press === 'go') setView(button.dataset.view);
       else if (press === 'close') {
         // As the back button of the detail: the list again, with no search.
-        Object.assign(ui, { repo: null, query: '' });
+        Object.assign(ui, { repo: null, idea: null, query: '' });
         render();
       }
     });

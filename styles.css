@@ -207,6 +207,14 @@
      @summary The head of the project screen: the icon of the app, the repository and the link that opens the app.
      @part project-head-repo  The repository, owner/name, muted.
      @example <header class="project-head"><span><span class="project-icon" aria-hidden="true"><span>N</span></span></span><span class="project-head-repo">Gekyzo/pwa-nexus</span><a class="button outline" href="#">Open the app</a></header> */
+  /* @component idea-head
+     @scope ideas
+     @summary The head of an open idea: Rename and Delete.
+     @example <header class="cluster idea-head"><button class="button outline" type="button">Rename</button><button class="button outline danger" type="button">Delete</button></header> */
+  .idea-head {
+    margin-block-end: var(--space-4);
+  }
+
   .project-head {
     display: flex;
     flex-wrap: wrap;

@@ -62,6 +62,17 @@
             <button id="ideas-add" class="button primary" type="button" data-i18n="ideas.new"></button>
           </div>
         </div>
+        <article id="idea" class="pane-detail">
+          <button id="idea-back" class="button quiet pane-back" type="button" data-i18n="roadmap.back"></button>
+          <header id="idea-head" class="cluster idea-head" hidden>
+            <button id="idea-rename" class="button outline" type="button" data-i18n="ideas.rename"></button>
+            <button id="idea-delete" class="button outline danger" type="button"><svg class="icon small" aria-hidden="true"><use href="icons.svg#trash"/></svg><span data-i18n="ideas.delete"></span></button>
+          </header>
+          <input id="idea-search" class="input raised filter" type="search" autocomplete="off" spellcheck="false" data-i18n-attr="placeholder:roadmap.search,aria-label:roadmap.search" hidden>
+          <p id="idea-empty" class="empty-state inline"></p>
+          <div id="idea-stale"></div>
+          <ul id="idea-parts" class="item-list"></ul>
+        </article>
       </section>
 
       <section id="settings" class="settings" hidden>
