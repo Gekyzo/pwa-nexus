@@ -18,6 +18,7 @@ The names of the screen are the English ones; `src/locales/es.js` is the source 
 | [06-i18n.md](06-i18n.md) | The languages and the rules of the text |
 | [07-roadmap.md](07-roadmap.md) | The ROADMAP model, its operations and the projects screen |
 | [08-github-sync.md](08-github-sync.md) | The GitHub client, the action queue and its sync, the cache, the projects and the token |
+| [09-ideas.md](09-ideas.md) | The ideas of new apps in IDEAS.md, their operations and the Ideas section |
 
 ## Rule identifiers
 
@@ -38,6 +39,7 @@ The rules DS-1 to DS-8 and LAY-1 to LAY-4 belong to the design system, `pwa-desi
 | `I18N` | 06-i18n |
 | `ROAD`, `UI` | 07-roadmap |
 | `GH`, `SYNC`, `CACHE`, `PROJ`, `TOK` | 08-github-sync |
+| `IDEA` | 09-ideas |
 
 ## Words
 

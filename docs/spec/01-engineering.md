@@ -13,6 +13,7 @@
 | `src/storage.js` | Load, save, validation hook, export, import, device preferences | `config`, `modules` |
 | `src/install.js` | The install offer state machine | nothing |
 | `src/roadmap.js` | The lossless model of a ROADMAP.md and its item operations | nothing |
+| `src/ideas.js` | The ideas of IDEAS.md: the file, the parts, the idea operations | `roadmap` |
 | `src/github.js` | The GitHub Contents API client: get and put a file, typed errors | nothing |
 | `src/queue.js` | The action queue, the roadmap as the screen shows it, and the sync of one repository | `roadmap` |
 | `src/projects.js` | The doc: the projects, the queue, their operations and validation | `config`, `queue` |
@@ -87,6 +88,7 @@ The doc keys are in [08-github-sync.md](08-github-sync.md). The device preferenc
 | Test file | Covers |
 |---|---|
 | `tests/roadmap.test.js` | The ROADMAP model, its operations and the fixtures of the real roadmaps (ROAD-1 … ROAD-9) |
+| `tests/ideas.test.js` | The ideas of IDEAS.md, their operations and the fixture of `tests/fixtures/ideas/` (IDEA-1 … IDEA-6) |
 | `tests/github.test.js` | The GitHub client with a fake fetch: base64, requests, typed errors (GH-1 … GH-5) |
 | `tests/queue.test.js` | The queue entries, the view text and the sync of a repository with a fake client (SYNC-1 … SYNC-7) |
 | `tests/projects.test.js` | The projects of the doc, their operations and the validation of the doc (PROJ-1, PROJ-2) |
