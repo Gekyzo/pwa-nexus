@@ -34,7 +34,8 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   it applies the action, puts the file with the last sha, and the action leaves the queue. One
   action is one commit. An action that changes no byte leaves the queue with no commit. With
   `create`, a file that GitHub does not have (`notFound`) starts empty when an action waits for
-  it, and its first commit makes it; with no action waiting, the sync returns `notFound`. A
+  it, and its first commit makes it; with no action waiting, or no commit made, the sync returns
+  `notFound` and no file. A
   file made meanwhile on another device is a conflict, and SYNC-5 retries on it.
 - **SYNC-4** The commit messages are `Add roadmap item: <title>`, `Edit roadmap item: <title>`,
   `Move roadmap item to <path>: <title>` and `Delete roadmap item: <title>`. An item of `IDEAS.md`

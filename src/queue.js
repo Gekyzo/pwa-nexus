@@ -275,5 +275,7 @@ export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH, ver
       }
     }
   }
+  // A missing file that got no commit is still missing: its empty start has no sha to cache.
+  if (file.sha === null) return result(null, { type: 'notFound' });
   return result(file);
 };

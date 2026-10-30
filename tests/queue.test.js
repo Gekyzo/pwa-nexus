@@ -617,3 +617,11 @@ test('a create that meets a file made meanwhile retries on it (SYNC-5)', async (
   assert.deepEqual(result.done, ['1']);
   assert.match(client.remote.text, /## Boat\n\n## Car log\n/);
 });
+
+test('syncRepo with create returns notFound and no file when nothing was committed to a missing file (CACHE-1)', async () => {
+  const entries = [{ ...idea('deleteIdea', { name: 'Boat', base: '## Boat' }, '1'), sent: true }];
+  const result = await syncRepo({ client: missingClient(), repo: 'o/r', path: 'IDEAS.md', create: true, entries });
+  assert.deepEqual(result.done, ['1']);
+  assert.equal(result.file, null);
+  assert.deepEqual(result.error, { type: 'notFound' });
+});

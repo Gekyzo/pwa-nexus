@@ -49,6 +49,11 @@ test('cleanName trims and keeps the text', () => {
   assert.deepEqual(cleanName('x'.repeat(81)), { error: { key: 'error.nameTooLong', params: { max: 80 } } });
   assert.deepEqual(cleanName('x'.repeat(80)), { name: 'x'.repeat(80) });
   assert.deepEqual(cleanName('a/b'), { error: { key: 'error.nameSlash' } });
+  // A closing ` #` would leave the heading when the file is read (ROAD-1), so the name loses it.
+  assert.deepEqual(cleanName('C #'), { name: 'C' });
+  assert.deepEqual(cleanName('C ##  '), { name: 'C' });
+  assert.deepEqual(cleanName(' #'), { error: { key: 'error.nameRequired' } });
+  assert.deepEqual(cleanName('C#'), { name: 'C#' });
 });
 
 test('renameIdea rewrites the heading line only', () => {

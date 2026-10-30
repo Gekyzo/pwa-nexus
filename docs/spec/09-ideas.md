@@ -13,7 +13,8 @@ The ideas of new apps that have no repository yet, kept in one `IDEAS.md`.
   sections under it. A new idea gets `### Features`, `### Specs` and `### Notes` (`PARTS`), in that
   order and in English whatever the language of the screen. An entry is an item of a part, with the
   rules of ROAD-7. An H3 part written by hand takes entries like the three of `PARTS`.
-- **IDEA-3** `cleanName(name)` trims the name and makes each run of spaces one space. It is
+- **IDEA-3** `cleanName(name)` trims the name, makes each run of spaces one space, and drops a
+  closing ` #`, which a heading loses when the file is read (ROAD-1). It is
   required (`error.nameRequired`), at most 80 characters (`error.nameTooLong`), and has no `/`
   (`error.nameSlash`), because a `/` would break the path of a part (ROAD-2).
 - **IDEA-4** `addIdea(md, name)` puts the idea, with its three empty parts, at the end of the file,

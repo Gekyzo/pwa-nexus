@@ -14,7 +14,8 @@ const blank = (line) => line.trim() === '';
 const sameName = (a, b) => a.toLowerCase() === b.toLowerCase();
 
 export const cleanName = (name) => {
-  const clean = String(name ?? '').replace(/\s+/g, ' ').trim();
+  // A closing ` #` is no part of a heading when the file is read (ROAD-1), so the name drops it.
+  const clean = String(name ?? '').replace(/\s+/g, ' ').trim().replace(/(^|\s)#+$/, '').trim();
   if (!clean) return { error: { key: 'error.nameRequired' } };
   if (clean.length > MAX_NAME) return { error: { key: 'error.nameTooLong', params: { max: MAX_NAME } } };
   // A slash would break the path of a part, `<idea> / <part>` (ROAD-2).
