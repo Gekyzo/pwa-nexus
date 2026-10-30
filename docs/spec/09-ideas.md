@@ -32,3 +32,9 @@ The ideas of new apps that have no repository yet, kept in one `IDEAS.md`.
   first one.
 - **IDEA-6** A test proves that `tests/fixtures/ideas/IDEAS.md` comes back byte for byte after an
   `addIdea` and the `deleteIdea` of the same idea, and after a `renameIdea` to the same name.
+
+## Actions
+
+- **IDEA-7** A `renameIdea` or a `deleteIdea` carries the lines of the idea as the phone saw them
+  (`base`, from `ideaText`). If the idea on GitHub has other lines, the action is stale
+  (`error.itemChanged`), as SYNC-6 says, so text written elsewhere is never lost.

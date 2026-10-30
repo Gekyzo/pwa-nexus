@@ -61,6 +61,18 @@ test('removeProject drops the project and its queued actions (PROJ-2)', () => {
   assert.deepEqual(removeProject(state, 'x/y'), { state, error: { key: 'error.projectMissing' } });
 });
 
+test('removeProject keeps the idea actions of the repository (PROJ-2)', () => {
+  const ideaEntry = makeEntry('Gekyzo/pwa-nexus', 'addIdea', { name: 'Boat' }, { id: '2', now: 1, file: 'IDEAS.md' });
+  const state = { ...emptyDoc(), queue: [entry('Gekyzo/pwa-nexus', '1'), ideaEntry] };
+  assert.deepEqual(removeProject(state, 'Gekyzo/pwa-nexus').state.queue.map((e) => e.id), ['2']);
+});
+
+test('normalizeDoc keeps the file of an entry', () => {
+  const ideaEntry = makeEntry('a/b', 'addIdea', { name: 'Boat' }, { id: '1', now: 1, file: 'IDEAS.md' });
+  const data = { version: 1, projects: [{ repo: 'a/b', label: 'B' }], queue: [ideaEntry] };
+  assert.deepEqual(normalizeDoc(data).queue, [ideaEntry]);
+});
+
 test('normalizeDoc keeps a valid doc, drops unknown fields, and trims labels', () => {
   const data = { version: 1, projects: [{ repo: 'a/b', label: ' B ', extra: 1 }], queue: [{ ...entry('a/b', '1'), extra: 2 }], other: 3 };
   assert.deepEqual(normalizeDoc(data), { version: 1, projects: [{ repo: 'a/b', label: 'B' }], queue: [entry('a/b', '1')] });

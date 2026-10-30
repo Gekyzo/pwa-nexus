@@ -15,7 +15,7 @@
 | `src/roadmap.js` | The lossless model of a ROADMAP.md and its item operations | nothing |
 | `src/ideas.js` | The ideas of IDEAS.md: the file, the parts, the idea operations | `roadmap` |
 | `src/github.js` | The GitHub Contents API client: get and put a file, typed errors | nothing |
-| `src/queue.js` | The action queue, the roadmap as the screen shows it, and the sync of one repository | `roadmap` |
+| `src/queue.js` | The action queue, the roadmap as the screen shows it, and the sync of one repository | `roadmap`, `ideas` |
 | `src/projects.js` | The doc: the projects, the queue, their operations and validation | `config`, `queue` |
 | `src/cache.js` | The last roadmap read from each repository | `config` |
 | `src/particles.js` | The particles of a picture and their place in time (optional) | nothing |

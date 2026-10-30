@@ -21,8 +21,11 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
 
 ## Queue and sync
 
-- **SYNC-1** Every action is first an entry of the queue, `{ id, repo, op, args, createdAt }`, in
-  the doc (PROJ-1). `op` is `add`, `edit`, `move` or `delete`. An entry that a sync could not apply has
+- **SYNC-1** Every action is first an entry of the queue, `{ id, repo, file, op, args, createdAt }`,
+  in the doc (PROJ-1). `file` is the path of the file of the action; an entry of `ROADMAP.md` has
+  no `file` (`fileOf`). `op` is `add`, `edit`, `move` or `delete` for an item, or `addIdea`,
+  `renameIdea`, `deleteIdea` or `restoreIdea` for an idea of `IDEAS.md` (IDEA-4). `pendingOf`
+  gives the entries of one repository and one file, so two files of one repository sync apart. An entry that a sync could not apply has
   `stale: true`. A stored entry whose arguments do not fit its `op` makes the doc not valid, and
   an action that throws fails like a missing item.
 - **SYNC-2** The screen shows the cached text of a repository with its queued actions applied on
@@ -31,7 +34,9 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   it applies the action, puts the file with the last sha, and the action leaves the queue. One
   action is one commit. An action that changes no byte leaves the queue with no commit.
 - **SYNC-4** The commit messages are `Add roadmap item: <title>`, `Edit roadmap item: <title>`,
-  `Move roadmap item to <path>: <title>` and `Delete roadmap item: <title>`. An edit or a move
+  `Move roadmap item to <path>: <title>` and `Delete roadmap item: <title>`. An item of `IDEAS.md`
+  is an `idea entry` in these messages. The actions of an idea are `Add idea: <name>`,
+  `Rename idea to <to>: <name>`, `Delete idea: <name>` and `Restore idea: <name>`. An edit or a move
   names the title before the action. The commit puts ` [pwa-nexus]` after this subject, and a
   body with the trailer `Via: pwa-nexus <version>`; with no known version, `Via: pwa-nexus`. The
   banner of UI-5 shows the subject with no tag.
@@ -64,7 +69,9 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   reached GitHub: the action stays in the queue marked `sent`, which the stored doc keeps. At the
   next sync, a `sent` action that no longer applies is done, with no commit, when the file already
   shows its result: the item added or edited as the action has it, the item moved to its new
-  section, or the deleted item gone with no item left that has its title or its body. Otherwise
+  section, or the deleted item gone with no item left that has its title or its body. For an
+  idea: the idea added or restored is there, the renamed one is there by its new name and not by
+  its old one, or the deleted one is gone. Otherwise
   it is stale as SYNC-6 says. The screen shows such an action as applied, not as failed. An
   action that is not `sent` keeps SYNC-6.
 
@@ -85,7 +92,8 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   A blank label is the name of the repository, and a label has at most 40 characters
   (`error.labelTooLong`). A stored doc that is not valid is kept under `pwa-nexus.doc.corrupt`,
   and the app starts with the defaults.
-- **PROJ-2** Removing a project drops its queued actions and its cache entry. If it has queued
+- **PROJ-2** Removing a project drops its queued actions of `ROADMAP.md` and its cache entry. The
+  actions of its `IDEAS.md` (IDEA-1) stay. If it has queued
   actions, the screen asks first, because they are lost. A project that is gone is
   `error.projectMissing`.
 - **PROJ-4** `defaults` lists the default projects that the doc was offered; a doc saved before

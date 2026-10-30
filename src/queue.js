@@ -1,23 +1,31 @@
 import { addItem, editItem, moveItem, deleteItem, itemOf, sectionsOf } from '#roadmap';
+import { addIdea, renameIdea, deleteIdea, restoreIdea, ideaText } from '#ideas';
 
 // Every action is an entry of the queue first (SYNC-1). A sync turns each entry into one commit.
 export const ROADMAP_PATH = 'ROADMAP.md';
-export const OPS = ['add', 'edit', 'move', 'delete'];
+export const OPS = ['add', 'edit', 'move', 'delete', 'addIdea', 'renameIdea', 'deleteIdea', 'restoreIdea'];
 const REPO = /^[\w.-]+\/[\w.-]+$/;
 const STOPS = ['auth', 'rateLimit', 'network'];
 
-export const makeEntry = (repo, op, args, { id = crypto.randomUUID(), now = Date.now() } = {}) => ({
+// An entry of a file other than ROADMAP.md names its file; one of ROADMAP.md does not, so a queue
+// stored before stays as it was (SYNC-1).
+export const makeEntry = (repo, op, args, { id = crypto.randomUUID(), now = Date.now(), file = ROADMAP_PATH } = {}) => ({
   id,
   repo,
+  ...(file === ROADMAP_PATH ? {} : { file }),
   op,
   args,
   createdAt: now,
 });
 
+export const fileOf = (entry) => entry.file ?? ROADMAP_PATH;
+
 const isObject = (value) => typeof value === 'object' && value !== null;
 const isRef = (ref) => isObject(ref) && typeof ref.path === 'string' && typeof ref.title === 'string';
 const isItem = (item) => isObject(item) && typeof item.title === 'string' && typeof item.body === 'string';
 const isBase = (base) => base === undefined || isItem(base);
+const isText = (value) => typeof value === 'string';
+const isTextBase = (base) => base === undefined || isText(base);
 
 // The arguments of each action: a stored queue that a screen cannot read must not load (SYNC-1).
 const ARGS = {
@@ -25,6 +33,10 @@ const ARGS = {
   edit: ({ ref, item, base }) => isRef(ref) && isItem(item) && isBase(base),
   move: ({ ref, to }) => isRef(ref) && typeof to === 'string',
   delete: ({ ref, base }) => isRef(ref) && isBase(base),
+  addIdea: ({ name }) => isText(name),
+  renameIdea: ({ name, to, base }) => isText(name) && isText(to) && isTextBase(base),
+  deleteIdea: ({ name, base }) => isText(name) && isTextBase(base),
+  restoreIdea: ({ name, lines }) => isText(name) && isText(lines),
 };
 
 export const isEntry = (value) =>
@@ -34,6 +46,7 @@ export const isEntry = (value) =>
   value.id !== '' &&
   typeof value.repo === 'string' &&
   REPO.test(value.repo) &&
+  (value.file === undefined || (typeof value.file === 'string' && value.file !== '')) &&
   OPS.includes(value.op) &&
   isObject(value.args) &&
   ARGS[value.op](value.args) &&
@@ -49,8 +62,20 @@ const changed = (md, { ref, base }) => {
   return now !== null && (now.title !== base.title || now.body !== base.body);
 };
 
+// A rename or a delete of an idea carries its lines as the phone saw them, for the same reason.
+const ideaChanged = (md, { name, base }) => {
+  if (base === undefined) return false;
+  const now = ideaText(md, name);
+  return now !== null && now !== base;
+};
+
 const run = (md, op, args) => {
   if ((op === 'edit' || op === 'delete') && changed(md, args)) return { text: md, error: { key: 'error.itemChanged' } };
+  if ((op === 'renameIdea' || op === 'deleteIdea') && ideaChanged(md, args)) return { text: md, error: { key: 'error.itemChanged' } };
+  if (op === 'addIdea') return addIdea(md, args.name);
+  if (op === 'renameIdea') return renameIdea(md, args.name, args.to);
+  if (op === 'deleteIdea') return deleteIdea(md, args.name);
+  if (op === 'restoreIdea') return restoreIdea(md, args.name, args.lines);
   if (op === 'add') return addItem(md, args.path, args.item);
   if (op === 'edit') return editItem(md, args.ref, args.item);
   if (op === 'move') return moveItem(md, args.ref, args.to);
@@ -66,11 +91,17 @@ export const applyEntry = (md, { op, args }) => {
   }
 };
 
-export const messageOf = ({ op, args }) => {
-  if (op === 'add') return `Add roadmap item: ${args.item.title}`;
-  if (op === 'edit') return `Edit roadmap item: ${args.ref.title}`;
-  if (op === 'move') return `Move roadmap item to ${args.to}: ${args.ref.title}`;
-  return `Delete roadmap item: ${args.ref.title}`;
+export const messageOf = (entry) => {
+  const { op, args } = entry;
+  if (op === 'addIdea') return `Add idea: ${args.name}`;
+  if (op === 'renameIdea') return `Rename idea to ${args.to}: ${args.name}`;
+  if (op === 'deleteIdea') return `Delete idea: ${args.name}`;
+  if (op === 'restoreIdea') return `Restore idea: ${args.name}`;
+  const noun = fileOf(entry) === ROADMAP_PATH ? 'roadmap item' : 'idea entry';
+  if (op === 'add') return `Add ${noun}: ${args.item.title}`;
+  if (op === 'edit') return `Edit ${noun}: ${args.ref.title}`;
+  if (op === 'move') return `Move ${noun} to ${args.to}: ${args.ref.title}`;
+  return `Delete ${noun}: ${args.ref.title}`;
 };
 
 // The commit of an action: its subject tagged `[pwa-nexus]`, and a `Via:` trailer with the
@@ -104,7 +135,7 @@ export const undoDeleteOf = (state, { id }, { maybeSent }) => {
 // A doc to go back to, without the entries that GitHub has now (UI-10).
 export const withoutEntries = (state, ids) => ({ ...state, queue: state.queue.filter((entry) => !ids.includes(entry.id)) });
 
-export const pendingOf = (state, repo) => state.queue.filter((entry) => entry.repo === repo);
+export const pendingOf = (state, repo, file = ROADMAP_PATH) => state.queue.filter((entry) => entry.repo === repo && fileOf(entry) === file);
 
 // `sent` holds the entries whose commit got no answer: GitHub may have them (SYNC-11).
 export const settleQueue = (state, { done, stale, sent = [] }) => ({
@@ -119,6 +150,9 @@ const sameItem = (found, item) => found !== null && found.title === item.title &
 
 // True when `md` already shows the result of the action: a commit whose answer was lost (SYNC-11).
 const isApplied = (md, { op, args }) => {
+  if (op === 'addIdea' || op === 'restoreIdea') return ideaText(md, args.name) !== null;
+  if (op === 'renameIdea') return ideaText(md, args.to) !== null && ideaText(md, args.name) === null;
+  if (op === 'deleteIdea') return ideaText(md, args.name) === null;
   if (op === 'add') return sameItem(itemOf(md, { path: args.path, title: args.item.title }), args.item);
   if (op === 'edit') {
     const renamed = args.item.title !== args.ref.title;

@@ -1,5 +1,5 @@
 import { APP_SLUG } from '#config';
-import { isEntry } from '#queue';
+import { isEntry, fileOf, ROADMAP_PATH } from '#queue';
 
 // The doc of the app: the projects and the queue of actions that wait for a sync (PROJ-1).
 const sameRepo = (a, b) => a.toLowerCase() === b.toLowerCase();
@@ -91,7 +91,8 @@ export const removeProject = (state, repo) => {
     state: {
       ...state,
       projects: state.projects.filter((project) => project.repo !== repo),
-      queue: state.queue.filter((entry) => entry.repo !== repo),
+      // The ideas of the repository are no part of its project: they stay (PROJ-2).
+      queue: state.queue.filter((entry) => entry.repo !== repo || fileOf(entry) !== ROADMAP_PATH),
     },
   };
 };
@@ -140,9 +141,10 @@ export const normalizeDoc = (data) => {
     data.projects.map(({ repo, label }) => ({ repo: renamed(repo), label: label.trim() })),
     (project) => project.repo,
   );
-  const queue = data.queue.map(({ id, repo, op, args, createdAt, stale, sent }) => ({
+  const queue = data.queue.map(({ id, repo, file, op, args, createdAt, stale, sent }) => ({
     id,
     repo: renamed(repo),
+    ...(file ? { file } : {}),
     op,
     args,
     createdAt,

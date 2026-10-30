@@ -22,7 +22,9 @@ import {
   undoDeleteOf,
   hasSection,
   checkEach,
+  fileOf,
 } from '#queue';
+import { ideaText } from '#ideas';
 
 const MD = '## Planned\n\n- **A.** one\n- **B.** two\n\n## Deferred\n';
 const entry = (op, args, id = op) => makeEntry('o/r', op, args, { id, now: 1 });
@@ -463,4 +465,101 @@ test('undoDeleteOf discards a delete that surely was not sent, and re-adds the i
   assert.deepEqual(undoDeleteOf({ ...state, queue: [{ ...del, sent: true }] }, del, { maybeSent: false }), { discard: true, readd: true });
   // Committed already: only the add.
   assert.deepEqual(undoDeleteOf({ ...state, queue: [] }, del, { maybeSent: false }), { discard: false, readd: true });
+});
+
+const IDEAS = '# Ideas\n\n## Car log\n\n### Features\n\n- **Fuel.**\n\n### Specs\n\n### Notes\n';
+const idea = (op, args, id = op) => makeEntry('o/r', op, args, { id, now: 1, file: 'IDEAS.md' });
+
+test('makeEntry puts the file on an entry only when it is not ROADMAP.md (SYNC-1)', () => {
+  assert.equal(idea('addIdea', { name: 'X' }).file, 'IDEAS.md');
+  assert.equal('file' in makeEntry('o/r', 'addIdea', { name: 'X' }, { file: ROADMAP_PATH }), false);
+  assert.equal(fileOf(idea('addIdea', { name: 'X' })), 'IDEAS.md');
+  assert.equal(fileOf(add('X')), ROADMAP_PATH);
+});
+
+test('isEntry accepts each idea op and refuses bad args (SYNC-1)', () => {
+  const good = [
+    idea('addIdea', { name: 'X' }),
+    idea('renameIdea', { name: 'X', to: 'Y', base: '## X' }),
+    idea('renameIdea', { name: 'X', to: 'Y' }),
+    idea('deleteIdea', { name: 'X', base: '## X' }),
+    idea('restoreIdea', { name: 'X', lines: '## X' }),
+  ];
+  for (const one of good) assert.equal(isEntry(one), true, JSON.stringify(one));
+  const bad = [
+    idea('addIdea', {}),
+    idea('renameIdea', { name: 'X' }),
+    idea('renameIdea', { name: 'X', to: 'Y', base: 3 }),
+    idea('deleteIdea', { base: '## X' }),
+    idea('restoreIdea', { name: 'X' }),
+    { ...idea('addIdea', { name: 'X' }), file: 3 },
+  ];
+  for (const one of bad) assert.equal(isEntry(one), false, JSON.stringify(one));
+});
+
+test('applyEntry runs the idea ops', () => {
+  assert.match(applyEntry(IDEAS, idea('addIdea', { name: 'Boat' })).text, /## Boat\n\n### Features/);
+  assert.match(applyEntry(IDEAS, idea('renameIdea', { name: 'Car log', to: 'Mileage', base: '## Car log\n\n### Features\n\n- **Fuel.**\n\n### Specs\n\n### Notes' })).text, /## Mileage\n/);
+  assert.equal(applyEntry(IDEAS, idea('deleteIdea', { name: 'Car log' })).text, '# Ideas\n');
+  assert.match(applyEntry('# Ideas\n', idea('restoreIdea', { name: 'Car log', lines: '## Car log\n\n### Notes' })).text, /## Car log\n\n### Notes\n$/);
+});
+
+test('renameIdea and deleteIdea with a changed base are error.itemChanged (SYNC-6)', () => {
+  for (const op of ['renameIdea', 'deleteIdea']) {
+    const result = applyEntry(IDEAS, idea(op, { name: 'Car log', to: 'Mileage', base: '## Car log' }));
+    assert.deepEqual(result, { text: IDEAS, error: { key: 'error.itemChanged' } }, op);
+  }
+});
+
+test('pendingOf keeps the files apart', () => {
+  const state = { version: 1, projects: [], queue: [add('C', '1'), idea('addIdea', { name: 'Boat' }, '2')] };
+  assert.deepEqual(pendingOf(state, 'o/r').map((e) => e.id), ['1']);
+  assert.deepEqual(pendingOf(state, 'o/r', ROADMAP_PATH).map((e) => e.id), ['1']);
+  assert.deepEqual(pendingOf(state, 'o/r', 'IDEAS.md').map((e) => e.id), ['2']);
+});
+
+test('messageOf names the idea ops (SYNC-4)', () => {
+  assert.equal(messageOf(idea('addIdea', { name: 'Boat' })), 'Add idea: Boat');
+  assert.equal(messageOf(idea('renameIdea', { name: 'Car log', to: 'Mileage' })), 'Rename idea to Mileage: Car log');
+  assert.equal(messageOf(idea('deleteIdea', { name: 'Car log' })), 'Delete idea: Car log');
+  assert.equal(messageOf(idea('restoreIdea', { name: 'Car log', lines: '## Car log' })), 'Restore idea: Car log');
+});
+
+test('messageOf says idea entry for an item of IDEAS.md (SYNC-4)', () => {
+  const ref = { path: 'Car log / Features', title: 'Fuel' };
+  assert.equal(messageOf(idea('add', { path: ref.path, item: { title: 'Tyres', body: '' } })), 'Add idea entry: Tyres');
+  assert.equal(messageOf(idea('edit', { ref, item: { title: 'Fuel2', body: '' } })), 'Edit idea entry: Fuel');
+  assert.equal(messageOf(idea('move', { ref, to: 'Car log / Notes' })), 'Move idea entry to Car log / Notes: Fuel');
+  assert.equal(messageOf(idea('delete', { ref })), 'Delete idea entry: Fuel');
+});
+
+test('a sent idea action that GitHub already has is done with no commit (SYNC-11)', async () => {
+  const cases = [
+    [idea('addIdea', { name: 'Car log' }, 'x'), IDEAS],
+    [idea('renameIdea', { name: 'Old', to: 'Car log', base: '## Old' }, 'x'), IDEAS],
+    [idea('deleteIdea', { name: 'Boat', base: '## Boat' }, 'x'), IDEAS],
+    [idea('restoreIdea', { name: 'Car log', lines: '## Car log' }, 'x'), IDEAS],
+  ];
+  for (const [one, text] of cases) {
+    const client = fakeClient(text);
+    const result = await syncRepo({ client, repo: 'o/r', path: 'IDEAS.md', entries: [{ ...one, sent: true }] });
+    assert.deepEqual(result.done, ['x'], one.op);
+    assert.equal(client.remote.calls.filter(([kind]) => kind === 'put').length, 0, one.op);
+  }
+});
+
+test('a sent renameIdea whose old name is still there is stale (SYNC-11)', async () => {
+  const text = `${IDEAS}\n## Old\n`;
+  const client = fakeClient(text);
+  const result = await syncRepo({ client, repo: 'o/r', path: 'IDEAS.md', entries: [{ ...idea('renameIdea', { name: 'Old', to: 'Car log', base: '## Old' }, 'x'), sent: true }] });
+  assert.deepEqual(result.stale, ['x']);
+});
+
+test('an add before a rename applies under the old name, then moves with the rename', () => {
+  const added = idea('add', { path: 'Car log / Features', item: { title: 'Tyres', body: '' } }, '1');
+  // The base is the idea as the screen shows it: with the waiting add on top (SYNC-2).
+  const base = ideaText(viewOf(IDEAS, [added]).text, 'Car log');
+  const { text, failed } = viewOf(IDEAS, [added, idea('renameIdea', { name: 'Car log', to: 'Mileage', base }, '2')]);
+  assert.deepEqual(failed, []);
+  assert.match(text, /## Mileage\n\n### Features\n\n- \*\*Fuel\.\*\*\n- \*\*Tyres\.\*\*/);
 });
