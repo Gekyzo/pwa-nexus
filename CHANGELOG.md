@@ -4,7 +4,7 @@ Technical changes, newest first. What a user sees of a version goes to `release-
 
 ## Unreleased
 
-No change.
+- The Ideas section (IDEA-1 … IDEA-10): `IDEAS.md` of `Gekyzo/pwa-nexus` in the shape of a ROADMAP.md, an idea an H2 with the parts `Features`, `Specs` and `Notes`. `src/ideas.js` adds, renames, deletes and restores an idea; `src/ui/ideas.js` lists the ideas and catches a new one by its name. A queue entry names its `file` when it is not ROADMAP.md (SYNC-1), the cache key of a second file is `<repo>:<file>` (CACHE-1), and the first action of a missing file creates it (`putFile` with no sha, `syncRepo` with `create`, GH-3, SYNC-3). The sync does IDEAS.md after the projects, as one more step (SYNC-9). Keys `nav.ideas`, `ideas.*`, `error.name*`, `error.idea*`; icon `bulb`.
 
 ## 0.1.20 - 2026-10-30
 

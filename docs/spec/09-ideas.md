@@ -38,3 +38,23 @@ The ideas of new apps that have no repository yet, kept in one `IDEAS.md`.
 - **IDEA-7** A `renameIdea` or a `deleteIdea` carries the lines of the idea as the phone saw them
   (`base`, from `ideaText`). If the idea on GitHub has other lines, the action is stale
   (`error.itemChanged`), as SYNC-6 says, so text written elsewhere is never lost.
+
+## Screen
+
+- **IDEA-8** Ideas is the second section (NAV-1), and the module `ideas` turns it off (MOD-1). It
+  lists the ideas of `ideasOf` in file order, as rows with the name and a count line: the counts of
+  the parts of `PARTS` that have entries, joined with ` · ` (`ideas.features`, `ideas.specs`,
+  `ideas.notes`), or `ideas.nameOnly`. A `duplicate` idea shows `ideas.duplicate` and does not
+  open. With `IDEAS.md` read and no idea, the list says `ideas.empty`, with the button
+  `ideas.new`. The actions of `IDEAS.md` that are stale or no longer apply show above the list as
+  the banners of UI-5.
+- **IDEA-9** **+** in Ideas, and `ideas.new`, open the name sheet (SHEET-1): its head, one field
+  (`ideas.name`, at most 80 characters) with the keyboard on it, and **Save**. Save checks the name
+  (IDEA-3, IDEA-4) against the ideas on the screen, queues an `addIdea` and starts a sync. The text
+  on the screen is the cached `IDEAS.md` with the waiting actions on top (SYNC-2); with no
+  `IDEAS.md` read on this device, it starts empty, and the list says `ideas.notLoaded` above the
+  ideas that wait. So an idea is caught offline before the first sync; a name that GitHub has
+  already makes the `addIdea` stale (SYNC-6). With no token, **+** and `ideas.new` are off (TOK-3).
+- **IDEA-10** A sync does `IDEAS.md` after the projects (SYNC-8), as one more step of its bar
+  (SYNC-9), with `create` (SYNC-3), also while the module `ideas` is off. A missing `IDEAS.md`
+  with no action is cached as `missing` and is no error.

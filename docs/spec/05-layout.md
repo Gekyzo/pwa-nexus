@@ -11,7 +11,7 @@ LAY-1 to LAY-4 of the design system (04-design-system). In this app the Projects
 
 ## Navigation
 
-- **NAV-1** The sections are `projects` and `settings`, in the order of `SECTIONS`. The navigation
+- **NAV-1** The sections are `projects`, `ideas` and `settings`, in the order of `SECTIONS`. The navigation
   shows one item for each section that is on (MOD-1): its icon and its name under it, as in
   pwa-shopping-list. The current one has `aria-current="page"`, and its title is the title of the
   header.
@@ -25,7 +25,7 @@ LAY-1 to LAY-4 of the design system (04-design-system). In this app the Projects
 ## Modules
 
 - **MOD-1** `MODULES` lists the parts that Settings turns off: `projects`, which shows the Projects
-  section. With a module off, its sections leave the navigation, and a view of one of them goes
+  section, and `ideas`, which shows the Ideas section. With a module off, its sections leave the navigation, and a view of one of them goes
   to the first section that is on.
 - **MOD-2** The modules that are off are a preference of the device under `pwa-nexus.modules`,
   not part of the doc. No module off removes the key.

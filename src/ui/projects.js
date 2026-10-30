@@ -103,7 +103,7 @@ const sectionNodes = (repo, section, nested = false) => {
 };
 
 // An action that no longer applies stays until the user discards it (SYNC-6, UI-5).
-const staleBanner = (entry) =>
+export const staleBanner = (entry) =>
   el('section', { className: 'banner' }, [
     el('strong', { textContent: t('sync.staleTitle') }),
     el('p', { className: 'banner-text', textContent: messageOf(entry) }),
@@ -150,7 +150,9 @@ export const renderProjects = () => {
   const stale = project ? pendingOf(state, project.repo).filter((entry) => entry.stale || failed.includes(entry.id)) : [];
   $('roadmap-stale').replaceChildren(...stale.map(staleBanner));
   $('roadmap-list').replaceChildren(...tree.flatMap((section) => sectionNodes(project.repo, section)));
-  $('fab').hidden = !visible || !project || roadmap.sections.length === 0 || ui.sheetOpen;
+  // The + of the app belongs to the section in view: Ideas sets it on its own (IDEA-9).
+  if (ui.view !== 'ideas') $('fab').setAttribute('aria-label', t('item.add'));
+  if (ui.view !== 'ideas') $('fab').hidden = !visible || !project || roadmap.sections.length === 0 || ui.sheetOpen;
 };
 
 export const bind = () => {

@@ -4,6 +4,7 @@ import { bind as bindNav, renderNav } from '#ui/nav';
 import { bind as bindProjects, renderProjects } from '#ui/projects';
 import { bind as bindSync, renderSync, syncAll } from '#ui/sync';
 import { bind as bindItem, renderItemSheet, closeItemSheet } from '#ui/item';
+import { bind as bindIdeas, renderIdeas, isNameOpen, closeNameSheet } from '#ui/ideas';
 import { bind as bindSettings, applyLanguage, renderSettings } from '#ui/settings';
 import { bind as bindInstall, renderInstall } from '#ui/install';
 import { readVersion, renderVersion, offerUpdate } from '#ui/update';
@@ -15,6 +16,7 @@ const renderAll = () => {
   const project = ui.view === 'projects' && ui.repo !== null ? findProject(state, ui.repo) : null;
   $('title').textContent = project?.label ?? t(`nav.${ui.view}`);
   renderProjects();
+  renderIdeas();
   renderSync();
   renderItemSheet();
   $('settings').hidden = ui.view !== 'settings';
@@ -32,6 +34,7 @@ bindNav();
 bindProjects();
 bindSync();
 bindItem();
+bindIdeas();
 bindSettings();
 bindInstall();
 bindOnboarding();
@@ -60,6 +63,7 @@ document.addEventListener('keydown', (event) => {
     return;
   }
   if (ui.sheetOpen) closeItemSheet();
+  else if (isNameOpen()) closeNameSheet();
   else if (ui.repo !== null) {
     ui.repo = null;
     render();

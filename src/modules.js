@@ -1,10 +1,10 @@
 import { SECTIONS } from '#sections';
 
 // The modules that the user can turn off in Settings, by id.
-export const MODULES = ['projects'];
+export const MODULES = ['projects', 'ideas'];
 
 // The sections that a module shows.
-const SECTIONS_OF = { projects: ['projects'] };
+const SECTIONS_OF = { projects: ['projects'], ideas: ['ideas'] };
 
 // The sections of the bottom bar, in their order, without the sections of the modules in `off`.
 export const visibleSections = (off) => {

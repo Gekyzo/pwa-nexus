@@ -52,6 +52,18 @@
         </article>
       </section>
 
+      <section id="ideas" class="pane" hidden>
+        <div class="pane-list">
+          <p id="ideas-note" class="empty-state inline" hidden></p>
+          <div id="ideas-stale"></div>
+          <ul id="idea-list" class="item-list"></ul>
+          <div id="ideas-empty" class="empty-state" hidden>
+            <p data-i18n="ideas.empty"></p>
+            <button id="ideas-add" class="button primary" type="button" data-i18n="ideas.new"></button>
+          </div>
+        </div>
+      </section>
+
       <section id="settings" class="settings" hidden>
         <h2 class="list-group-head" data-i18n="settings.github"></h2>
         <div class="list-group">
@@ -95,6 +107,7 @@
         <h2 class="list-group-head" data-i18n="settings.modules"></h2>
         <div class="list-group">
           <label class="switch"><span data-i18n="nav.projects"></span><input class="switch-input" type="checkbox" role="switch" data-module="projects"></label>
+          <label class="switch"><span data-i18n="nav.ideas"></span><input class="switch-input" type="checkbox" role="switch" data-module="ideas"></label>
         </div>
         <div id="install-group" hidden>
           <h2 class="list-group-head" data-i18n="settings.app"></h2>
@@ -120,6 +133,10 @@
       <button class="nav-item" type="button" data-view="projects">
         <svg class="icon" aria-hidden="true"><use href="icons.svg#note"/></svg>
         <span data-i18n="nav.projects"></span>
+      </button>
+      <button class="nav-item" type="button" data-view="ideas">
+        <svg class="icon" aria-hidden="true"><use href="icons.svg#bulb"/></svg>
+        <span data-i18n="nav.ideas"></span>
       </button>
       <button class="nav-item" type="button" data-view="settings">
         <svg class="icon" aria-hidden="true"><use href="icons.svg#settings"/></svg>
@@ -153,6 +170,20 @@
         <footer class="sheet-foot">
           <button id="item-delete" class="button outline danger" type="button"><svg class="icon small" aria-hidden="true"><use href="icons.svg#trash"/></svg><span data-i18n="item.delete"></span></button>
           <button class="button primary" type="submit" data-i18n="item.save"></button>
+        </footer>
+      </form>
+    </div>
+
+    <div id="name-sheet" class="sheet-layer" hidden>
+      <div id="name-veil" class="sheet-veil"></div>
+      <form id="name-form" class="sheet" role="dialog" aria-modal="true" aria-labelledby="name-sheet-title" autocomplete="off">
+        <div class="sheet-grab"></div>
+        <header class="sheet-head"><h2 id="name-sheet-title" class="sheet-title main"></h2><button id="name-close" class="button icon" type="button" data-i18n-attr="aria-label:ideas.close"><svg class="icon" aria-hidden="true"><use href="icons.svg#close"/></svg></button></header>
+        <div class="sheet-body">
+          <label class="field"><input id="name-input" class="input field-input" type="text" maxlength="80" required data-i18n-attr="placeholder:ideas.name"><span class="field-label" data-i18n="ideas.name"></span></label>
+        </div>
+        <footer class="sheet-foot">
+          <button class="button primary" type="submit" data-i18n="ideas.save"></button>
         </footer>
       </form>
     </div>
@@ -201,6 +232,7 @@
           "#ui/projects": "./src/ui/projects.js",
           "#ui/sync": "./src/ui/sync.js",
           "#ui/item": "./src/ui/item.js",
+          "#ui/ideas": "./src/ui/ideas.js",
           "#cache": "./src/cache.js",
           "#install": "./src/install.js",
           "#sections": "./src/sections.js",

@@ -101,13 +101,15 @@
 
 @layer screens {
   /* The tools above the project list keep off the screen edge, in line with the header title. */
-  .pane-list > .cluster {
+  .pane-list > .cluster,
+  .pane-list > .empty-state.inline {
     margin-inline: var(--space-4);
   }
 
   /* From 600px `main` pads both sides (LAY-4): the tools and the cards line up with the title. */
   @media (min-width: 600px) {
-    .pane-list > .cluster {
+    .pane-list > .cluster,
+    .pane-list > .empty-state.inline {
       margin-inline: 0;
     }
   }

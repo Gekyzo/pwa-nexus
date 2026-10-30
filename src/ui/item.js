@@ -139,7 +139,9 @@ export const renderItemSheet = () => {
 
 export const bind = () => {
   onItem(openItemSheet);
-  $('fab').addEventListener('click', () => openItemSheet());
+  $('fab').addEventListener('click', () => {
+    if (ui.view === 'projects') openItemSheet();
+  });
   $('item-veil').addEventListener('click', closeItemSheet);
   $('item-close').addEventListener('click', closeItemSheet);
   bindSheetDrag($('item-sheet'), { close: closeItemSheet });

@@ -4,7 +4,7 @@ Lo que cambia para ti en cada versión de la app. La versión más nueva va prim
 
 ## Unreleased
 
-No change.
+- **Ideas**, una sección nueva, guarda tus ideas de apps nuevas: pulsa **+**, escribe el nombre y queda guardada, también sin conexión. Cada idea tiene Funciones, Especificaciones y Notas, en `IDEAS.md` del repositorio de Nexus.
 
 ## 0.1.20 - 2026-10-30
 

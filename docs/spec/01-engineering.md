@@ -27,8 +27,9 @@
 | `src/ui/nav.js` | The navigation, the change and the slide of a section | `sections`, `modules`, `ui/context`, `ui/update`, `ui/dust` |
 | `src/ui/projects.js` | The Projects section: the project list and the roadmap of one project | `projects`, `roadmap`, `queue`, `i18n`, `ui/context`, `ui/nav`, `ui/sync` |
 | `src/ui/item.js` | The item sheet: add, edit, move and delete, and the undo of a delete | `ds/sheet`, `roadmap`, `queue`, `ui/context`, `ui/projects`, `ui/sync` |
-| `src/ui/sync.js` | The sync of all projects, its button and its state in the header | `github`, `queue`, `cache`, `ui/context` |
-| `src/ui/settings.js` | Settings, the token, the project editor, Delete all data (SET-2), and the text of the page in its language | `projects`, `cache`, `github`, `queue`, `storage`, `i18n`, `modules`, `ui/context`, `ui/controls`, `ui/sync`, `ui/update`, `ui/onboarding` |
+| `src/ui/ideas.js` | The Ideas section: the list of ideas, the name sheet and the detail of one idea | `ds/sheet`, `ideas`, `queue`, `cache`, `ui/context`, `ui/projects`, `ui/sync` |
+| `src/ui/sync.js` | The sync of all projects and of the ideas, its button and its state in the header | `github`, `queue`, `cache`, `ideas`, `ui/context` |
+| `src/ui/settings.js` | Settings, the token, the project editor, Delete all data (SET-2), and the text of the page in its language | `projects`, `cache`, `github`, `queue`, `ideas`, `storage`, `i18n`, `modules`, `ui/context`, `ui/controls`, `ui/sync`, `ui/update`, `ui/onboarding` |
 | `src/ui/dust.js` | The dust of a navigation item (optional) | `particles`, `ui/context`, `ui/controls` |
 | `src/ui/onboarding.js` | The walkthrough (optional) | `onboarding`, `sections`, `storage`, `ui/context`, `ui/controls` |
 | `src/ui/whatsnew.js` | The release notes sheet, its Settings row and the seen version | `whatsnew`, `onboarding`, `i18n`, `storage`, `ds/sheet`, `ui/context`, `ui/onboarding` |

@@ -1,6 +1,7 @@
 import { createClient } from '#github';
-import { syncRepo, settleQueue, pendingOf, stopsSync, syncShare } from '#queue';
-import { putEntry } from '#cache';
+import { ROADMAP_PATH, syncRepo, settleQueue, pendingOf, stopsSync, syncShare } from '#queue';
+import { putEntry, cacheKeyOf } from '#cache';
+import { IDEAS_REPO, IDEAS_PATH } from '#ideas';
 import { $, ui, state, cache, token, syncing, t, render, commit, setCache, setSyncing, showToast } from '#ui/context';
 
 const ERROR_KEYS = {
@@ -39,9 +40,33 @@ export const syncAll = async () => {
   }
   setSyncing(true);
   const { projects } = state;
-  Object.assign(ui, { syncError: null, syncProgress: { done: 0, total: projects.length } });
+  // The ideas are one more step after the projects (SYNC-9, IDEA-10).
+  Object.assign(ui, { syncError: null, syncProgress: { done: 0, total: projects.length + 1 } });
   render();
   const client = createClient({ token, fetch: (...args) => fetch(...args) });
+  const sync = (repo, path, create = false) =>
+    syncRepo({
+      client,
+      repo,
+      path,
+      create,
+      entries: pendingOf(state, repo, path),
+      version: ui.version.running?.version,
+      keep: inQueue,
+      onSend: (id) => {
+        if (id) maybeSent.add(id);
+      },
+    });
+  // Settled: a done entry left the queue, one with no answer is marked `sent`.
+  const settle = (result) => {
+    ui.syncProgress = { ...ui.syncProgress, done: ui.syncProgress.done + 1 };
+    result.done.forEach((id) => committed.add(id));
+    commit(settleQueue(state, result));
+    maybeSent.clear();
+    if (result.error && result.error.type !== 'notFound') ui.syncError = result.error.type;
+    return Boolean(result.error && stopsSync(result.error.type));
+  };
+  let stopped = false;
   try {
     for (const { repo } of projects) {
       // A project removed during the sync is not synced, and its cache entry is not written back (SYNC-10).
@@ -49,26 +74,21 @@ export const syncAll = async () => {
         ui.syncProgress = { ...ui.syncProgress, done: ui.syncProgress.done + 1 };
         continue;
       }
-      const result = await syncRepo({
-        client,
-        repo,
-        entries: pendingOf(state, repo),
-        version: ui.version.running?.version,
-        keep: inQueue,
-        onSend: (id) => {
-          if (id) maybeSent.add(id);
-        },
-      });
+      const result = await sync(repo, ROADMAP_PATH);
       // A project removed while its sync ran keeps no cache entry.
       if (listed(repo) && result.file) setCache(putEntry(cache, repo, { ...result.file, fetchedAt: Date.now() }));
       else if (listed(repo) && result.error?.type === 'notFound') setCache(putEntry(cache, repo, { missing: true, fetchedAt: Date.now() }));
-      ui.syncProgress = { ...ui.syncProgress, done: ui.syncProgress.done + 1 };
-      result.done.forEach((id) => committed.add(id));
-      commit(settleQueue(state, result));
-      // Settled: a done entry left the queue, one with no answer is marked `sent`.
-      maybeSent.clear();
-      if (result.error && result.error.type !== 'notFound') ui.syncError = result.error.type;
-      if (result.error && stopsSync(result.error.type)) break;
+      stopped = settle(result);
+      if (stopped) break;
+    }
+    // IDEAS.md syncs also with the module of Ideas off, so no action waits for ever. Its first
+    // action creates it (SYNC-3); with none, a missing file is no ideas yet, not an error.
+    if (!stopped) {
+      const result = await sync(IDEAS_REPO, IDEAS_PATH, true);
+      const key = cacheKeyOf(IDEAS_REPO, IDEAS_PATH);
+      if (result.file) setCache(putEntry(cache, key, { ...result.file, fetchedAt: Date.now() }));
+      else if (result.error?.type === 'notFound') setCache(putEntry(cache, key, { missing: true, fetchedAt: Date.now() }));
+      settle(result);
     }
   } finally {
     maybeSent.clear();

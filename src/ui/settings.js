@@ -5,6 +5,7 @@ import { ROADMAP_PATH, pendingOf, withoutEntries } from '#queue';
 import { exportJson, exportFilename, importJson, resetAll } from '#storage';
 import { LANGUAGES, LANGUAGE_NAMES } from '#i18n';
 import { switchModule } from '#modules';
+import { IDEAS_REPO, IDEAS_PATH } from '#ideas';
 import {
   $,
   el,
@@ -121,6 +122,13 @@ const testToken = async () => {
       }
     }),
   );
+  // IDEAS.md too; with no ideas yet the file is missing, and the token is fine (TOK-2).
+  try {
+    await client.getFile(IDEAS_REPO, IDEAS_PATH);
+    lines.push(`${t('nav.ideas')} ✓`);
+  } catch (error) {
+    lines.push(error.type === 'notFound' ? `${t('nav.ideas')} ✓` : `${t('nav.ideas')}: ${t(errorKey(error.type))}`);
+  }
   showToast(lines.join(' · '), { ms: 8000 });
 };
 

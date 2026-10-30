@@ -58,12 +58,12 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   the sync goes on with the next repository.
 - **SYNC-8** A sync runs when the app opens, once it has read its version (SYNC-4), on the
   `online` event and on the **Sync** button.
-  The repositories sync one after the other, never two at a time. A sync asked for while one
+  The repositories sync one after the other, never two at a time, then `IDEAS.md` (IDEA-10). A sync asked for while one
   runs runs once more at its end. With no token or no network, no sync runs.
 - **SYNC-9** While a sync runs, a bar on the bottom edge of the header (`sync-progress`, a
   `progressbar` named `sync.progress`) shows the part of the repositories that it has done,
   `syncShare` of `src/queue.js`: it starts empty and fills one step at the end of each
-  repository. The bar hides when the sync ends, also when an error stops it.
+  repository, and one more for `IDEAS.md`. The bar hides when the sync ends, also when an error stops it.
 - **SYNC-10** A sync reads the queue and the projects as they are at each step, not as they were
   when it started. Just before each commit it checks that the action is still in the queue: an
   action that the user discarded or undid, or whose project was removed, is not sent. A project
@@ -121,6 +121,7 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   on the listed repositories only. Settings and the README tell the user how to make it.
 - **TOK-2** The token is a preference of the device under `pwa-nexus.token`, not part of the doc.
   A blank token is no token. The field of Settings shows it masked. **Test the token**
-  (`settings.tokenTest`) reads `ROADMAP.md` of each project and names the result of each one.
+  (`settings.tokenTest`) reads `ROADMAP.md` of each project and `IDEAS.md` (IDEA-1), and names the
+  result of each one; a missing `IDEAS.md` is no ideas yet, and reads as ready.
 - **TOK-3** With no token, the app shows the cache read-only, the header says `sync.noToken`,
   and **Sync** is off.

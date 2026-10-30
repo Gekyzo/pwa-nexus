@@ -83,3 +83,23 @@ test('Help in Settings has the What\'s new row after the introduction, hidden un
 test('Backup ends with Delete all data, a danger row with no chevron (SET-2)', () => {
   assert.match(body, /<button id="import" class="settings-row" type="button">.*?<\/button>\s*<button id="reset" class="settings-row danger" type="button"><span class="settings-row-label" data-i18n="settings.reset"><\/span><\/button>\s*<\/div>/);
 });
+
+test('the ideas pane, its nav item and its module switch exist (IDEA-8, NAV-1, MOD-1)', () => {
+  assert.match(body, /<section id="ideas" class="pane" hidden>[\s\S]*<ul id="idea-list" class="item-list"><\/ul>[\s\S]*<div id="ideas-empty" class="empty-state" hidden>/);
+  assert.match(body, /<button class="nav-item" type="button" data-view="projects">[\s\S]*<button class="nav-item" type="button" data-view="ideas">\s*<svg class="icon" aria-hidden="true"><use href="icons.svg#bulb"\/><\/svg>\s*<span data-i18n="nav.ideas"><\/span>[\s\S]*data-view="settings"/);
+  assert.match(body, /data-module="projects"><\/label>\s*<label class="switch"><span data-i18n="nav.ideas"><\/span><input class="switch-input" type="checkbox" role="switch" data-module="ideas"><\/label>/);
+});
+
+test('the name sheet has a veil, a dialog with a head, one name field of at most 80 characters and Save (IDEA-9)', () => {
+  const [layer = ''] = body.match(/<div id="name-sheet" class="sheet-layer"[\s\S]*?<\/form>\s*<\/div>/) ?? [];
+  assert.match(layer, /<div id="name-veil" class="sheet-veil">/);
+  assert.match(layer, /<form id="name-form" class="sheet" role="dialog" aria-modal="true" aria-labelledby="name-sheet-title"/);
+  assert.match(layer, /<header class="sheet-head"><h2 id="name-sheet-title" class="sheet-title main"><\/h2><button id="name-close" class="button icon" type="button"/);
+  assert.match(layer, /<input id="name-input"[^>]*maxlength="80"[^>]*required/);
+  assert.match(layer, /<footer class="sheet-foot">\s*<button class="button primary" type="submit" data-i18n="ideas.save">/);
+});
+
+test('the sprite has the icon of the Ideas item', () => {
+  const sprite = readFileSync(new URL('../icons.svg', import.meta.url), 'utf8');
+  assert.match(sprite, /<symbol id="bulb"/);
+});

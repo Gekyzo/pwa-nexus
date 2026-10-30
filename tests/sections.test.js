@@ -6,7 +6,7 @@ import { SECTIONS, direction, pressSection, slideDirection, slideTo } from '#sec
 const FIVE = ['a', 'b', 'c', 'd', 'settings'];
 
 test('SECTIONS has the order of the navigation', () => {
-  assert.deepEqual(SECTIONS, ['projects', 'settings']);
+  assert.deepEqual(SECTIONS, ['projects', 'ideas', 'settings']);
 });
 
 test('slideDirection is 1 for a slide to the left and -1 for a slide to the right', () => {
@@ -29,8 +29,10 @@ test('slideDirection is 0 for a slide that is not horizontal', () => {
 });
 
 test('slideTo goes between the sections of the template', () => {
-  assert.equal(slideTo('projects', -80, 0), 'settings');
-  assert.equal(slideTo('settings', 80, 0), 'projects');
+  assert.equal(slideTo('projects', -80, 0), 'ideas');
+  assert.equal(slideTo('ideas', -80, 0), 'settings');
+  assert.equal(slideTo('settings', 80, 0), 'ideas');
+  assert.equal(slideTo('ideas', 80, 0), 'projects');
 });
 
 test('slideTo goes to the next section on a slide to the left', () => {
