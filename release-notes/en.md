@@ -4,7 +4,7 @@ What changes for you in each version of the app. The newest version is first.
 
 ## Unreleased
 
-No change.
+- What's new shows the bold words of the notes in bold, not between asterisks.
 
 ## 0.1.21 - 2026-10-31
 

@@ -4,7 +4,7 @@ Lo que cambia para ti en cada versión de la app. La versión más nueva va prim
 
 ## Unreleased
 
-No change.
+- Novedades muestra en negrita las palabras resaltadas de las notas, no entre asteriscos.
 
 ## 0.1.21 - 2026-10-31
 

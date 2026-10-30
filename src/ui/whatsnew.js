@@ -20,8 +20,9 @@ const loadNotes = async () => {
   return null;
 };
 
-// A note with its `name` spans, as the walkthrough shows them (VER-22).
-const noteItem = (note) => el('li', {}, textParts(note).map(keyNode));
+// A note with its `name` spans, as the walkthrough shows them, and its **bold** text (VER-22).
+const noteNode = (part) => (part.strong ? el('strong', {}, [keyNode(part)]) : keyNode(part));
+const noteItem = (note) => el('li', {}, textParts(note).map(noteNode));
 
 const entryNode = ({ version, date, notes }) => {
   const day = new Date(`${date}T12:00:00`).toLocaleDateString(intlTag(lang), { day: 'numeric', month: 'long', year: 'numeric' });
