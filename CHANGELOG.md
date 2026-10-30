@@ -4,6 +4,10 @@ Technical changes, newest first. What a user sees of a version goes to `release-
 
 ## Unreleased
 
+No change.
+
+## 0.1.20 - 2026-10-30
+
 - Bodega is `Gekyzo/pwa-shopping-list`, the name that GitHub gives the repository now (PROJ-6). The API followed the old name, but GitHub Pages does not, so the icon and the link of the app gave 404. `normalizeDoc` renames the old name in the projects, the queue and `defaults` of a stored or imported doc; the cache entry moves too (`renameEntries`).
 - **Delete all data** in Settings › Backup, as in pwa-shopping-list (SET-2): `resetAll` in `src/storage.js` removes each `localStorage` key of the app, `<slug>.*`, the token included, and no key of another app of the origin; the page loads again as a new install. Keys `settings.reset`, `reset.confirm`, `error.resetFailed`.
 - `Gekyzo/pwa-fittings` leaves the default projects (PROJ-1): a new install has ten. A stored doc keeps its list, so a device that has Fittings keeps it until the user removes it in Settings (PROJ-2).

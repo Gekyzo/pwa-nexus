@@ -4,6 +4,10 @@ What changes for you in each version of the app. The newest version is first.
 
 ## Unreleased
 
+No change.
+
+## 0.1.20 - 2026-10-30
+
 - Bodega shows its icon again, and its link opens the app.
 - **Delete all data** in Settings removes the projects, the GitHub token and the preferences from this device, and the app starts as new.
 - Fittings is no longer one of the starting projects. If your list has it, remove it in Settings.

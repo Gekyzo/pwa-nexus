@@ -4,6 +4,10 @@ Lo que cambia para ti en cada versión de la app. La versión más nueva va prim
 
 ## Unreleased
 
+No change.
+
+## 0.1.20 - 2026-10-30
+
 - Bodega vuelve a mostrar su icono, y su enlace abre la app.
 - **Borrar todos los datos** en Ajustes borra los proyectos, el token de GitHub y las preferencias de este dispositivo, y la app empieza como nueva.
 - Fittings ya no es uno de los proyectos iniciales. Si tu lista lo tiene, quítalo en Ajustes.
