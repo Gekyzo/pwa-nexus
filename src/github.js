@@ -67,8 +67,9 @@ export const createClient = ({ token, fetch }) => {
       const data = await call('GET', urlOf(repo, path));
       return { text: decodeBase64(data.content), sha: data.sha };
     },
+    // With no sha, the put creates the file (GH-3).
     putFile: async (repo, path, { text, sha, message }) => {
-      const data = await call('PUT', urlOf(repo, path), { message, content: encodeBase64(text), sha });
+      const data = await call('PUT', urlOf(repo, path), { message, content: encodeBase64(text), ...(sha ? { sha } : {}) });
       return data.content.sha;
     },
   };

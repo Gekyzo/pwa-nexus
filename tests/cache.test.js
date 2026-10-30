@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { APP_SLUG } from '#config';
-import { CACHE_KEY, emptyCache, normalizeCache, putEntry, dropEntry, renameEntries } from '#cache';
+import { CACHE_KEY, emptyCache, normalizeCache, putEntry, dropEntry, renameEntries, cacheKeyOf } from '#cache';
 
 const file = { text: '# R\n', sha: 's', fetchedAt: 1 };
 
@@ -37,4 +37,19 @@ test('renameEntries moves the entry of an old name to the new one, and keeps an 
   const newer = { ...file, fetchedAt: 2 };
   assert.deepEqual(renameEntries({ 'Gekyzo/shopping-list': file, 'Gekyzo/pwa-shopping-list': newer }, renamed), { 'Gekyzo/pwa-shopping-list': newer });
   assert.deepEqual(cache, { 'Gekyzo/Shopping-List': file, 'a/b': file });
+});
+
+test('cacheKeyOf keeps ROADMAP.md on the repo key, and puts another file after a colon (CACHE-1)', () => {
+  assert.equal(cacheKeyOf('o/r'), 'o/r');
+  assert.equal(cacheKeyOf('o/r', 'ROADMAP.md'), 'o/r');
+  assert.equal(cacheKeyOf('o/r', 'IDEAS.md'), 'o/r:IDEAS.md');
+  assert.deepEqual(normalizeCache({ 'o/r:IDEAS.md': file }), { 'o/r:IDEAS.md': file });
+});
+
+test('renameEntries moves a file key with its repo (PROJ-6)', () => {
+  const renamed = { 'gekyzo/shopping-list': 'Gekyzo/pwa-shopping-list' };
+  assert.deepEqual(renameEntries({ 'Gekyzo/shopping-list:IDEAS.md': file, 'Gekyzo/shopping-list': file }, renamed), {
+    'Gekyzo/pwa-shopping-list:IDEAS.md': file,
+    'Gekyzo/pwa-shopping-list': file,
+  });
 });

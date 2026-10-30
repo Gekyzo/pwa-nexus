@@ -563,3 +563,57 @@ test('an add before a rename applies under the old name, then moves with the ren
   assert.deepEqual(failed, []);
   assert.match(text, /## Mileage\n\n### Features\n\n- \*\*Fuel\.\*\*\n- \*\*Tyres\.\*\*/);
 });
+
+// A repository with no file at the path until a put creates it. A put with no sha on a file that
+// exists is a conflict, as on GitHub (422).
+const missingClient = ({ appears = null } = {}) => {
+  const remote = { text: null, sha: null, puts: [] };
+  return {
+    remote,
+    getFile: async () => {
+      if (remote.text === null) throw new GitHubError('notFound', 404);
+      return { text: remote.text, sha: remote.sha };
+    },
+    putFile: async (repo, path, { text, sha }) => {
+      remote.puts.push({ text, sha });
+      if (appears !== null && remote.text === null) {
+        remote.text = appears;
+        remote.sha = 'other';
+      }
+      if ((sha ?? null) !== remote.sha) throw new GitHubError('conflict', 422);
+      remote.text = text;
+      remote.sha = `s${remote.puts.length}`;
+      return remote.sha;
+    },
+  };
+};
+
+test('syncRepo with create writes a missing file (SYNC-3)', async () => {
+  const client = missingClient();
+  const result = await syncRepo({ client, repo: 'o/r', path: 'IDEAS.md', create: true, entries: [idea('addIdea', { name: 'Car log' }, '1')] });
+  assert.equal(result.error, null);
+  assert.deepEqual(result.done, ['1']);
+  assert.equal(client.remote.puts[0].sha, null);
+  assert.equal(client.remote.text, '# Ideas\n\n## Car log\n\n### Features\n\n### Specs\n\n### Notes\n');
+  assert.equal(result.file.text, client.remote.text);
+});
+
+test('syncRepo with create and no entries returns notFound', async () => {
+  const result = await syncRepo({ client: missingClient(), repo: 'o/r', path: 'IDEAS.md', create: true, entries: [] });
+  assert.deepEqual(result.error, { type: 'notFound' });
+  assert.equal(result.file, null);
+});
+
+test('syncRepo without create keeps notFound for a missing file', async () => {
+  const result = await syncRepo({ client: missingClient(), repo: 'o/r', path: 'IDEAS.md', entries: [idea('addIdea', { name: 'X' }, '1')] });
+  assert.deepEqual(result.error, { type: 'notFound' });
+  assert.deepEqual(result.done, []);
+});
+
+test('a create that meets a file made meanwhile retries on it (SYNC-5)', async () => {
+  const client = missingClient({ appears: '# Ideas\n\n## Boat\n' });
+  const result = await syncRepo({ client, repo: 'o/r', path: 'IDEAS.md', create: true, entries: [idea('addIdea', { name: 'Car log' }, '1')] });
+  assert.equal(result.error, null);
+  assert.deepEqual(result.done, ['1']);
+  assert.match(client.remote.text, /## Boat\n\n## Car log\n/);
+});

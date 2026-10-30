@@ -10,7 +10,7 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   HTTP cache and returns `{ text, sha }`. The base64 decode is UTF-8 safe (accents, emoji), and
   ignores the line breaks of the content.
 - **GH-3** `putFile(repo, path, { text, sha, message })` calls `PUT` on the same URL and returns
-  the new `sha`.
+  the new `sha`. With no `sha`, the body has no `sha` key, and the put creates the file.
 - **GH-4** The errors are a `GitHubError` with a type: `auth` (401), `forbidden` (403 for a
   repository that the token cannot reach or write), `notFound` (404), `conflict` (409, or 422
   for a stale sha), `rateLimit` (403 with `x-ratelimit-remaining: 0` or `retry-after`), and
@@ -32,7 +32,10 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   top, in their order. An action shows at once, online or offline.
 - **SYNC-3** `syncRepo` of `src/queue.js` gets the file, then for each queued action in order:
   it applies the action, puts the file with the last sha, and the action leaves the queue. One
-  action is one commit. An action that changes no byte leaves the queue with no commit.
+  action is one commit. An action that changes no byte leaves the queue with no commit. With
+  `create`, a file that GitHub does not have (`notFound`) starts empty when an action waits for
+  it, and its first commit makes it; with no action waiting, the sync returns `notFound`. A
+  file made meanwhile on another device is a conflict, and SYNC-5 retries on it.
 - **SYNC-4** The commit messages are `Add roadmap item: <title>`, `Edit roadmap item: <title>`,
   `Move roadmap item to <path>: <title>` and `Delete roadmap item: <title>`. An item of `IDEAS.md`
   is an `idea entry` in these messages. The actions of an idea are `Add idea: <name>`,
@@ -77,8 +80,10 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
 
 ## Cache, projects and token
 
-- **CACHE-1** `pwa-nexus.cache` holds `{ [repo]: { text, sha, fetchedAt } }`, or
-  `{ missing: true, fetchedAt }` for a repository with no `ROADMAP.md`. The app reads a roadmap
+- **CACHE-1** `pwa-nexus.cache` holds `{ [key]: { text, sha, fetchedAt } }`, or
+  `{ missing: true, fetchedAt }` for a repository with no `ROADMAP.md`. The key (`cacheKeyOf`) is the repository for its
+  `ROADMAP.md`, and `<repo>:<file>` for another file, such as `Gekyzo/pwa-nexus:IDEAS.md`; a rename
+  of PROJ-6 moves both. The app reads a roadmap
   offline from it, and a sync replaces the entry. A stored cache that is not valid is kept under
   `pwa-nexus.cache.corrupt`.
 - **PROJ-1** The doc `pwa-nexus.doc` is `{ version: 1, projects: [{ repo, label }], queue, defaults }`. A

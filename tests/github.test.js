@@ -43,6 +43,15 @@ test('putFile sends the message, the base64 text and the sha, and returns the ne
   assert.deepEqual(calls[0].body, { message: 'Add roadmap item: X', content: encodeBase64('Té'), sha: 'old' });
 });
 
+test('putFile with no sha sends no sha key: it creates the file (GH-3)', async () => {
+  const { fetch, calls } = fakeFetch(reply(201, { content: { sha: 'new' } }), reply(201, { content: { sha: 'new2' } }));
+  const client = createClient({ token: 't', fetch });
+  assert.equal(await client.putFile('o/r', 'IDEAS.md', { text: 'x', sha: null, message: 'Add idea: X' }), 'new');
+  await client.putFile('o/r', 'IDEAS.md', { text: 'x', message: 'Add idea: X' });
+  assert.equal('sha' in calls[0].body, false);
+  assert.equal('sha' in calls[1].body, false);
+});
+
 test('the errors of GitHub are typed (GH-4)', async () => {
   const cases = [
     [reply(401), 'auth'],

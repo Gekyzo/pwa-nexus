@@ -220,7 +220,8 @@ const failure = (error) => ({ type: error?.type ?? 'network' });
 // before each commit, whether the entry is still in the queue: one that the user discarded or
 // undid, or whose project was removed, during the sync is skipped (SYNC-10). `onSend` names the
 // entry whose commit is on its way, then null.
-export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH, version = null, keep = () => true, onSend = () => {} }) => {
+// With `create`, a missing file that has actions to send starts empty, and the first commit makes it.
+export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH, version = null, create = false, keep = () => true, onSend = () => {} }) => {
   const done = [];
   const stale = [];
   const sent = [];
@@ -229,7 +230,9 @@ export const syncRepo = async ({ client, repo, entries, path = ROADMAP_PATH, ver
   try {
     file = await client.getFile(repo, path);
   } catch (error) {
-    return result(null, failure(error));
+    const waiting = entries.some((one) => !one.stale);
+    if (!(create && waiting && error?.type === 'notFound')) return result(null, failure(error));
+    file = { text: '', sha: null };
   }
   for (const entry of entries.filter((one) => !one.stale)) {
     for (let attempt = 0; ; attempt += 1) {

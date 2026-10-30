@@ -29,10 +29,17 @@ export const normalizeCache = (data) => {
 export const renameEntries = (cache, renamed) =>
   Object.fromEntries(
     Object.entries(cache)
-      .map(([repo, entry]) => [renamed[repo.toLowerCase()], repo, entry])
+      .map(([key, entry]) => {
+        const [repo, ...file] = key.split(':');
+        const name = renamed[repo.toLowerCase()];
+        return [name && [name, ...file].join(':'), key, entry];
+      })
       .filter(([name]) => !name || !(name in cache))
       .map(([name, repo, entry]) => [name ?? repo, entry]),
   );
+
+// The key of a file of a repository: the repository for its ROADMAP.md, `<repo>:<file>` for another.
+export const cacheKeyOf = (repo, file = 'ROADMAP.md') => (file === 'ROADMAP.md' ? repo : `${repo}:${file}`);
 
 export const putEntry = (cache, repo, entry) => ({ ...cache, [repo]: entry });
 
