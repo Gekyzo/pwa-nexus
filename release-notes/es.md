@@ -4,6 +4,7 @@ Lo que cambia para ti en cada versión de la app. La versión más nueva va prim
 
 ## Unreleased
 
+- En una tableta o un ordenador, el menú está siempre a la izquierda y la app queda centrada en pantallas anchas. La hoja de ruta abierta es una tarjeta junto a los proyectos.
 - Los proyectos aparecen como tarjetas con el icono de cada app. Abre un proyecto para ver un enlace a su app.
 - LearnSWE y Routines se unen a los proyectos. Aparecen al final de tu lista tras la actualización.
 

@@ -23,6 +23,10 @@ const renderAll = () => {
   renderInstall();
 };
 setRender(renderAll);
+// The sheets with a head from 840px start below the header (DSV-5).
+new ResizeObserver(([entry]) => {
+  document.documentElement.style.setProperty('--header-height', `${Math.round(entry.borderBoxSize[0].blockSize)}px`);
+}).observe(document.querySelector('.app-header'));
 
 bindNav();
 bindProjects();

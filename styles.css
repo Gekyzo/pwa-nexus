@@ -22,15 +22,12 @@
     color: inherit;
   }
 
-  /* From 600px the rail stands at the side of the hand (LAY-2): the page pads that side. */
+  /* From 600px the rail stands at the start with either hand (LAY-2), and from 1024px the frame
+     leaves a margin at the end (LAY-1): the page pads both (LAY-4). */
   @media (min-width: 600px) {
     body {
-      padding-inline-end: calc(var(--rail-width) + env(safe-area-inset-right));
-    }
-
-    [data-hand="left"] body {
       padding-inline-start: calc(var(--rail-width) + env(safe-area-inset-left));
-      padding-inline-end: env(safe-area-inset-right);
+      padding-inline-end: calc(var(--frame-side) + env(safe-area-inset-right));
     }
   }
 }
@@ -108,6 +105,13 @@
     margin-inline: var(--space-4);
   }
 
+  /* From 600px `main` pads both sides (LAY-4): the tools and the cards line up with the title. */
+  @media (min-width: 600px) {
+    .pane-list > .cluster {
+      margin-inline: 0;
+    }
+  }
+
   /* @component project-cards
      @scope projects
      @summary The home of Projects: two columns of cards, each with the icon of the app, its label and the line of UI-1. A tap opens the project.
@@ -123,6 +127,12 @@
     margin: 0;
     padding: var(--space-3) var(--space-4);
     list-style: none;
+  }
+
+  @media (min-width: 600px) {
+    .project-cards {
+      padding-inline: 0;
+    }
   }
 
   .project-card {
@@ -217,6 +227,7 @@
      @part version-status-text  The text of the state. With a sign it stays for screen readers only.
      @example <span class="version-status" data-status="current" role="status"><svg data-for="current" class="icon small" aria-hidden="true"><use href="icons.svg#check-circle"/></svg><span class="version-status-text">Up to date</span></span> */
   .version-status {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--space-1);

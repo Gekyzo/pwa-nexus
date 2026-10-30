@@ -1,7 +1,7 @@
 # Design system
 
 The shared tokens, base rules, components, layouts and icon rules come from `pwa-design-system`.
-Its rules DS-1 to DS-8 are in its `docs/spec/01-design-system.md`, and LAY-1 to LAY-4 in its
+Its rules DS-1 to DS-8 are in its `docs/spec/01-design-system.md`, and LAY-1 to LAY-5 in its
 `docs/spec/02-layout.md`. `vendor/design-system/SOURCE.json` names the version and the commit that
 this app uses. `tests/design.test.js` runs each rule of `vendor/design-system/rules.js` over the
 files of the app, with no skip. `designs/index.html` shows each part, shared and own.
@@ -36,6 +36,15 @@ This document holds the rules of the app only.
   - `list-group`, in `settings`: the select of a row of Preferences lies over the row (SET-1).
 - **DSV-4** A change of a shared part is made in `pwa-design-system`, then `npm run ds` here.
   Nothing edits `vendor/` by hand, and `npm run init` copies it as it is (ENG-17).
+
+## Layout
+
+- **DSV-5** The app follows LAY-1 to LAY-5 with no exception: the rail at the start with either
+  hand from 600px, and from 1024px a centred frame with a sidebar. The `body` rule pads
+  `--rail-width` at the start and `--frame-side` at the end (LAY-4). `styles.css` has no version
+  of `nav-bar` or `app-header`. `src/app.js` writes the height of the header to
+  `--header-height` with a `ResizeObserver`, so that a sheet with a head stands below it from
+  840px (LAY-5).
 
 ## Parts of the app
 
