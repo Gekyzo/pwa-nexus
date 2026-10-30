@@ -2,12 +2,14 @@ import { APP_SLUG } from '#config';
 import { isEntry } from '#queue';
 
 // The doc of the app: the projects and the queue of actions that wait for a sync (PROJ-1).
+const sameRepo = (a, b) => a.toLowerCase() === b.toLowerCase();
+
 export const DOC_KEY = `${APP_SLUG}.doc`;
 export const MAX_LABEL = 40;
 export const REPO = /^[\w.-]+\/[\w.-]+$/;
 
 export const DEFAULT_PROJECTS = [
-  { repo: 'Gekyzo/shopping-list', label: 'Bodega' },
+  { repo: 'Gekyzo/pwa-shopping-list', label: 'Bodega' },
   { repo: 'Gekyzo/pwa-wardrobe', label: 'Attire' },
   { repo: 'Gekyzo/pwa-financial-calculator', label: 'Compound' },
   { repo: 'Gekyzo/pwa-shifts', label: 'Rota' },
@@ -20,7 +22,15 @@ export const DEFAULT_PROJECTS = [
 ];
 
 // The default projects that a doc saved before `defaults` existed was offered (PROJ-4).
-const FIRST_DEFAULTS = ['Gekyzo/shopping-list', 'Gekyzo/pwa-wardrobe', 'Gekyzo/pwa-financial-calculator'];
+const FIRST_DEFAULTS = ['Gekyzo/pwa-shopping-list', 'Gekyzo/pwa-wardrobe', 'Gekyzo/pwa-financial-calculator'];
+
+// The repositories that GitHub renamed: the old name, in lower case, to the new one (PROJ-6).
+export const RENAMED = { 'gekyzo/shopping-list': 'Gekyzo/pwa-shopping-list' };
+
+export const renamed = (repo) => RENAMED[repo.toLowerCase()] ?? repo;
+
+// The first of each repository, in any case: a doc with the old and the new name keeps one.
+const firstOfEach = (items, repoOf) => items.filter((item, index) => items.findIndex((other) => sameRepo(repoOf(other), repoOf(item))) === index);
 
 export const emptyDoc = () => ({
   version: 1,
@@ -42,7 +52,6 @@ export const iconUrl = (repo) => `${appUrl(repo)}icons/icon-192.png`;
 export const findProject =(state, repo) => state.projects.find((project) => project.repo === repo) ?? null;
 
 const missing = (state) => ({ state, error: { key: 'error.projectMissing' } });
-const sameRepo = (a, b) => a.toLowerCase() === b.toLowerCase();
 
 // A blank label is the name of the repository.
 const checkLabel = (label, repo) => {
@@ -60,7 +69,7 @@ const cleanRepo = (repo) =>
     .replace(/\/+$/, '');
 
 export const addProject = (state, repo, label = '') => {
-  const clean = cleanRepo(repo);
+  const clean = renamed(cleanRepo(repo));
   if (!REPO.test(clean)) return { state, error: { key: 'error.repoInvalid' } };
   if (state.projects.some((project) => sameRepo(project.repo, clean))) return { state, error: { key: 'error.repoTaken' } };
   const { clean: name, error } = checkLabel(label, clean);
@@ -126,16 +135,19 @@ export const normalizeDoc = (data) => {
   if (!data.projects.every(validProject) || !data.queue.every(isEntry)) return null;
   const { defaults } = data;
   if (defaults !== undefined && !(Array.isArray(defaults) && defaults.every((repo) => typeof repo === 'string' && REPO.test(repo)))) return null;
-  const projects = data.projects.map(({ repo, label }) => ({ repo, label: label.trim() }));
-  if (new Set(projects.map((project) => project.repo.toLowerCase())).size !== projects.length) return null;
+  if (new Set(data.projects.map((project) => project.repo.toLowerCase())).size !== data.projects.length) return null;
+  const projects = firstOfEach(
+    data.projects.map(({ repo, label }) => ({ repo: renamed(repo), label: label.trim() })),
+    (project) => project.repo,
+  );
   const queue = data.queue.map(({ id, repo, op, args, createdAt, stale, sent }) => ({
     id,
-    repo,
+    repo: renamed(repo),
     op,
     args,
     createdAt,
     ...(stale ? { stale } : {}),
     ...(sent ? { sent } : {}),
   }));
-  return { version: 1, projects, queue, ...(defaults ? { defaults: [...defaults] } : {}) };
+  return { version: 1, projects, queue, ...(defaults ? { defaults: firstOfEach(defaults.map(renamed), (repo) => repo) } : {}) };
 };

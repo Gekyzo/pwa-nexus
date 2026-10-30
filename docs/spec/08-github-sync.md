@@ -75,7 +75,7 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   offline from it, and a sync replaces the entry. A stored cache that is not valid is kept under
   `pwa-nexus.cache.corrupt`.
 - **PROJ-1** The doc `pwa-nexus.doc` is `{ version: 1, projects: [{ repo, label }], queue, defaults }`. A
-  new install gets the ten default projects: `Gekyzo/shopping-list`, `Gekyzo/pwa-wardrobe`,
+  new install gets the ten default projects: `Gekyzo/pwa-shopping-list`, `Gekyzo/pwa-wardrobe`,
   `Gekyzo/pwa-financial-calculator`, `Gekyzo/pwa-shifts`, `Gekyzo/pwa-nexus`, `Gekyzo/pwa-lists`,
   `Gekyzo/pwa-landlord`, `Gekyzo/pwa-tenant`, `Gekyzo/pwa-learning-swe` and
   `Gekyzo/pwa-training-routines`, labelled Bodega, Attire, Compound, Rota, Nexus, Stash,
@@ -96,6 +96,12 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   `https://<owner>.github.io/<name>/`, with the owner in lower case, or `https://<owner>.github.io/`
   for a repository named `<owner>.github.io`. Its icon (`iconUrl`) is `icons/icon-192.png` at
   that site, the path of each app made from `pwa-template`.
+- **PROJ-6** `RENAMED` maps a repository that GitHub renamed, by its old name in lower case, to
+  its new name: `Gekyzo/shopping-list` is `Gekyzo/pwa-shopping-list`. The API follows a rename,
+  but GitHub Pages does not (PROJ-5). `normalizeDoc` gives the new name to each project, queued
+  action and offered default, at each start and on import; if the doc has both names, the first
+  project stays, with the actions of both. The cache entry moves to the new name, and an entry of
+  the new name wins. `addProject` takes an old name as its new name.
 - **PROJ-3** Export and import carry the doc: the projects and the queue. They never carry the
   token or the cache.
 - **TOK-1** The token is a fine-grained personal access token with **Contents: read and write**

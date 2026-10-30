@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { APP_SLUG } from '#config';
 import { makeEntry } from '#queue';
-import { DOC_KEY, MAX_LABEL, DEFAULT_PROJECTS, emptyDoc, normalizeDoc, offerDefaults, findProject, addProject, renameProject, removeProject, restoreProject, appUrl, iconUrl } from '#projects';
+import { DOC_KEY, MAX_LABEL, DEFAULT_PROJECTS, emptyDoc, normalizeDoc, offerDefaults, findProject, addProject, renameProject, removeProject, restoreProject, appUrl, iconUrl, RENAMED } from '#projects';
 
 const entry = (repo, id) => makeEntry(repo, 'delete', { ref: { path: 'P', title: 'T' } }, { id, now: 1 });
 
@@ -13,7 +13,7 @@ test('the doc key has the slug (PROJ-1)', () => {
 test('a new doc has the ten default projects and no queue (PROJ-1)', () => {
   assert.deepEqual(emptyDoc(), { version: 1, projects: DEFAULT_PROJECTS, queue: [], defaults: DEFAULT_PROJECTS.map((p) => p.repo) });
   assert.deepEqual(DEFAULT_PROJECTS.map((p) => p.repo), [
-    'Gekyzo/shopping-list',
+    'Gekyzo/pwa-shopping-list',
     'Gekyzo/pwa-wardrobe',
     'Gekyzo/pwa-financial-calculator',
     'Gekyzo/pwa-shifts',
@@ -40,6 +40,9 @@ test('an invalid or taken repository, or a long label, is an error (PROJ-1)', ()
   assert.deepEqual(addProject(state, 'no-slash'), { state, error: { key: 'error.repoInvalid' } });
   assert.deepEqual(addProject(state, 'a/b/c'), { state, error: { key: 'error.repoInvalid' } });
   assert.deepEqual(addProject(state, 'gekyzo/SHOPPING-LIST'), { state, error: { key: 'error.repoTaken' } });
+  assert.deepEqual(addProject(state, 'Gekyzo/PWA-shopping-list'), { state, error: { key: 'error.repoTaken' } });
+  const empty = { version: 1, projects: [], queue: [] };
+  assert.deepEqual(addProject(empty, 'https://github.com/Gekyzo/shopping-list').state.projects, [{ repo: 'Gekyzo/pwa-shopping-list', label: 'pwa-shopping-list' }]);
   assert.deepEqual(addProject(state, 'x/y', 'l'.repeat(MAX_LABEL + 1)), { state, error: { key: 'error.labelTooLong', params: { max: MAX_LABEL } } });
 });
 
@@ -80,7 +83,7 @@ test('normalizeDoc refuses a doc that is not valid', () => {
 });
 
 const ALL = DEFAULT_PROJECTS.map((p) => p.repo);
-const FIRST = ['Gekyzo/shopping-list', 'Gekyzo/pwa-wardrobe', 'Gekyzo/pwa-financial-calculator'];
+const FIRST = ['Gekyzo/pwa-shopping-list', 'Gekyzo/pwa-wardrobe', 'Gekyzo/pwa-financial-calculator'];
 const docOf = (repos, defaults) => ({
   version: 1,
   projects: repos.map((repo) => ({ repo, label: repo.split('/')[1] })),
@@ -96,7 +99,7 @@ test('offerDefaults adds the new default projects once to a stored list (PROJ-4)
 });
 
 test('offerDefaults never adds back a default project that the user removed (PROJ-4)', () => {
-  const removedFirst = offerDefaults(docOf(['Gekyzo/shopping-list', 'Gekyzo/pwa-financial-calculator']));
+  const removedFirst = offerDefaults(docOf(['Gekyzo/pwa-shopping-list', 'Gekyzo/pwa-financial-calculator']));
   assert.equal(findProject(removedFirst, 'Gekyzo/pwa-wardrobe'), null);
   assert.ok(findProject(removedFirst, 'Gekyzo/pwa-shifts'));
   const removedNew = offerDefaults(docOf(FIRST, ALL));
@@ -155,4 +158,40 @@ test('a repository named <owner>.github.io is the root of its Pages site (PROJ-5
 
 test('iconUrl is the 192 px icon of the app at its Pages site (PROJ-5)', () => {
   assert.equal(iconUrl('Gekyzo/pwa-lists'), 'https://gekyzo.github.io/pwa-lists/icons/icon-192.png');
+});
+
+test('normalizeDoc gives a renamed repository its new name in the projects, the queue and the defaults (PROJ-6)', () => {
+  const doc = normalizeDoc({
+    version: 1,
+    projects: [{ repo: 'gekyzo/Shopping-List', label: 'Bodega' }, { repo: 'Gekyzo/pwa-wardrobe', label: 'Attire' }],
+    queue: [entry('Gekyzo/shopping-list', '1'), entry('Gekyzo/pwa-wardrobe', '2')],
+    defaults: ['Gekyzo/shopping-list', 'Gekyzo/pwa-wardrobe'],
+  });
+  assert.deepEqual(doc.projects, [{ repo: 'Gekyzo/pwa-shopping-list', label: 'Bodega' }, { repo: 'Gekyzo/pwa-wardrobe', label: 'Attire' }]);
+  assert.deepEqual(doc.queue.map((one) => one.repo), ['Gekyzo/pwa-shopping-list', 'Gekyzo/pwa-wardrobe']);
+  assert.deepEqual(doc.defaults, ['Gekyzo/pwa-shopping-list', 'Gekyzo/pwa-wardrobe']);
+});
+
+test('a doc with the old and the new name of a repository keeps the first project and both queues (PROJ-6)', () => {
+  const doc = normalizeDoc({
+    version: 1,
+    projects: [{ repo: 'Gekyzo/shopping-list', label: 'Bodega' }, { repo: 'Gekyzo/pwa-shopping-list', label: 'New' }],
+    queue: [entry('Gekyzo/shopping-list', '1'), entry('Gekyzo/pwa-shopping-list', '2')],
+    defaults: ['Gekyzo/shopping-list', 'Gekyzo/pwa-shopping-list'],
+  });
+  assert.deepEqual(doc.projects, [{ repo: 'Gekyzo/pwa-shopping-list', label: 'Bodega' }]);
+  assert.deepEqual(doc.queue.map((one) => one.repo), ['Gekyzo/pwa-shopping-list', 'Gekyzo/pwa-shopping-list']);
+  assert.deepEqual(doc.defaults, ['Gekyzo/pwa-shopping-list']);
+});
+
+test('a renamed doc gets no second Bodega from the defaults (PROJ-4, PROJ-6)', () => {
+  const old = { version: 1, projects: [{ repo: 'Gekyzo/shopping-list', label: 'Bodega' }], queue: [] };
+  const doc = offerDefaults(normalizeDoc(old));
+  assert.equal(doc.projects.filter((p) => p.repo === 'Gekyzo/pwa-shopping-list').length, 1);
+  const removed = offerDefaults(normalizeDoc({ ...old, projects: [] }));
+  assert.equal(findProject(removed, 'Gekyzo/pwa-shopping-list'), null);
+});
+
+test('RENAMED maps each old name, in lower case, to the new one (PROJ-6)', () => {
+  assert.deepEqual(RENAMED, { 'gekyzo/shopping-list': 'Gekyzo/pwa-shopping-list' });
 });

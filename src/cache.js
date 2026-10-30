@@ -24,6 +24,16 @@ export const normalizeCache = (data) => {
   );
 };
 
+// Moves the entry of each renamed repository to its new name; an entry of the new name wins
+// (PROJ-6). `renamed` maps the old name, in lower case, to the new one.
+export const renameEntries = (cache, renamed) =>
+  Object.fromEntries(
+    Object.entries(cache)
+      .map(([repo, entry]) => [renamed[repo.toLowerCase()], repo, entry])
+      .filter(([name]) => !name || !(name in cache))
+      .map(([name, repo, entry]) => [name ?? repo, entry]),
+  );
+
 export const putEntry = (cache, repo, entry) => ({ ...cache, [repo]: entry });
 
 export const dropEntry = (cache, repo) => Object.fromEntries(Object.entries(cache).filter(([key]) => key !== repo));

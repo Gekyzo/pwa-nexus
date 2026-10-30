@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { APP_SLUG } from '#config';
-import { CACHE_KEY, emptyCache, normalizeCache, putEntry, dropEntry } from '#cache';
+import { CACHE_KEY, emptyCache, normalizeCache, putEntry, dropEntry, renameEntries } from '#cache';
 
 const file = { text: '# R\n', sha: 's', fetchedAt: 1 };
 
@@ -28,4 +28,13 @@ test('normalizeCache refuses a cache that is not valid', () => {
   for (const data of [null, [], 'x', { 'a/b': { text: 'x', fetchedAt: 1 } }, { 'a/b': { text: 'x', sha: 's' } }]) {
     assert.equal(normalizeCache(data), null, JSON.stringify(data));
   }
+});
+
+test('renameEntries moves the entry of an old name to the new one, and keeps an entry of the new name (PROJ-6)', () => {
+  const renamed = { 'gekyzo/shopping-list': 'Gekyzo/pwa-shopping-list' };
+  const cache = { 'Gekyzo/Shopping-List': file, 'a/b': file };
+  assert.deepEqual(renameEntries(cache, renamed), { 'Gekyzo/pwa-shopping-list': file, 'a/b': file });
+  const newer = { ...file, fetchedAt: 2 };
+  assert.deepEqual(renameEntries({ 'Gekyzo/shopping-list': file, 'Gekyzo/pwa-shopping-list': newer }, renamed), { 'Gekyzo/pwa-shopping-list': newer });
+  assert.deepEqual(cache, { 'Gekyzo/Shopping-List': file, 'a/b': file });
 });

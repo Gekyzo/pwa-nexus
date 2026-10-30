@@ -4,6 +4,7 @@ Lo que cambia para ti en cada versión de la app. La versión más nueva va prim
 
 ## Unreleased
 
+- Bodega vuelve a mostrar su icono, y su enlace abre la app.
 - **Borrar todos los datos** en Ajustes borra los proyectos, el token de GitHub y las preferencias de este dispositivo, y la app empieza como nueva.
 - Fittings ya no es uno de los proyectos iniciales. Si tu lista lo tiene, quítalo en Ajustes.
 - En una tableta o un ordenador, el menú está siempre a la izquierda y la app queda centrada en pantallas anchas. La hoja de ruta abierta es una tarjeta junto a los proyectos.

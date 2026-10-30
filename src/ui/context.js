@@ -1,5 +1,5 @@
-import { DOC_KEY, emptyDoc, normalizeDoc, offerDefaults } from '#projects';
-import { CACHE_KEY, emptyCache, normalizeCache } from '#cache';
+import { DOC_KEY, RENAMED, emptyDoc, normalizeDoc, offerDefaults } from '#projects';
+import { CACHE_KEY, emptyCache, normalizeCache, renameEntries } from '#cache';
 import {
   loadDoc,
   saveDoc,
@@ -80,7 +80,12 @@ const DOC = { key: DOC_KEY, normalize: withDefaults, empty: emptyDoc };
 export let state = storage ? loadDoc(storage, DOC) : emptyDoc();
 
 // The last roadmap of each repository (CACHE-1).
-const CACHE = { key: CACHE_KEY, normalize: normalizeCache, empty: emptyCache };
+// The cache of a renamed repository moves to its new name, as the doc does (PROJ-6).
+const withNewNames = (data) => {
+  const clean = normalizeCache(data);
+  return clean && renameEntries(clean, RENAMED);
+};
+const CACHE = { key: CACHE_KEY, normalize: withNewNames, empty: emptyCache };
 export let cache = storage ? loadDoc(storage, CACHE) : emptyCache();
 
 // The GitHub token of this device, or null (TOK-2).
