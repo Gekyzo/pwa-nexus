@@ -108,6 +108,109 @@
     margin-inline: var(--space-4);
   }
 
+  /* @component project-cards
+     @scope projects
+     @summary The home of Projects: two columns of cards, each with the icon of the app, its label and the line of UI-1. A tap opens the project.
+     @part project-card       One card: a button across its cell.
+     @part project-card-name  The label of the project, cut with an ellipsis.
+     @part project-card-meta  The item count, the waiting actions and the last sync, muted.
+     @state aria-current      The project open beside the list, from 840px.
+     @example <ul class="project-cards"><li><button class="project-card" type="button"><span class="project-icon" aria-hidden="true"><span>A</span></span><span class="project-card-name">Attire</span><small class="project-card-meta">12 items · Not synced yet</small></button></li></ul> */
+  .project-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    list-style: none;
+  }
+
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+    inline-size: 100%;
+    block-size: 100%;
+    min-block-size: 120px;
+    padding: var(--space-3);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .project-card[aria-current='true'] {
+    border-color: var(--primary);
+  }
+
+  .project-card .project-icon {
+    margin-block-end: var(--space-1);
+  }
+
+  .project-card-name {
+    max-inline-size: 100%;
+    overflow: hidden;
+    font-weight: var(--weight-strong);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .project-card-meta {
+    color: var(--muted);
+    font-size: var(--text-s);
+  }
+
+  /* @component project-icon
+     @scope projects
+     @summary The icon of the app of a project, over the first letter of its label, which stays when the icon does not load.
+     @part project-icon-image  The icon of the app at its Pages site.
+     @example <span class="project-icon" aria-hidden="true"><span>N</span></span> */
+  .project-icon {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: 44px;
+    block-size: 44px;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+    background: var(--surface-2);
+    color: var(--muted);
+    font-weight: var(--weight-strong);
+  }
+
+  .project-icon-image {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  /* @component project-head
+     @scope projects
+     @summary The head of the project screen: the icon of the app, the repository and the link that opens the app.
+     @part project-head-repo  The repository, owner/name, muted.
+     @example <header class="project-head"><span><span class="project-icon" aria-hidden="true"><span>N</span></span></span><span class="project-head-repo">Gekyzo/pwa-nexus</span><a class="button outline" href="#">Open the app</a></header> */
+  .project-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-block-end: var(--space-4);
+  }
+
+  .project-head-repo {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: var(--muted);
+    font-size: var(--text-s);
+  }
+
   /* @component version-status
      @scope settings
      @summary The state of the installed version: a sign, and a text for the outdated state only.

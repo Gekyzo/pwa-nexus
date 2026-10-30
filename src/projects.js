@@ -30,7 +30,17 @@ export const emptyDoc = () => ({
   defaults: DEFAULT_PROJECTS.map((project) => project.repo),
 });
 
-export const findProject = (state, repo) => state.projects.find((project) => project.repo === repo) ?? null;
+// The GitHub Pages site of the repository; `<owner>.github.io` is the root of the site (PROJ-5).
+export const appUrl = (repo) => {
+  const [owner, name] = repo.split('/');
+  const host = `${owner.toLowerCase()}.github.io`;
+  return name.toLowerCase() === host ? `https://${host}/` : `https://${host}/${name}/`;
+};
+
+// Each app made from pwa-template serves its icon at this path (PROJ-5).
+export const iconUrl = (repo) => `${appUrl(repo)}icons/icon-192.png`;
+
+export const findProject =(state, repo) => state.projects.find((project) => project.repo === repo) ?? null;
 
 const missing = (state) => ({ state, error: { key: 'error.projectMissing' } });
 const sameRepo = (a, b) => a.toLowerCase() === b.toLowerCase();

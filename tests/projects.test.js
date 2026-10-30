@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { APP_SLUG } from '#config';
 import { makeEntry } from '#queue';
-import { DOC_KEY, MAX_LABEL, DEFAULT_PROJECTS, emptyDoc, normalizeDoc, offerDefaults, findProject, addProject, renameProject, removeProject, restoreProject } from '#projects';
+import { DOC_KEY, MAX_LABEL, DEFAULT_PROJECTS, emptyDoc, normalizeDoc, offerDefaults, findProject, addProject, renameProject, removeProject, restoreProject, appUrl, iconUrl } from '#projects';
 
 const entry = (repo, id) => makeEntry(repo, 'delete', { ref: { path: 'P', title: 'T' } }, { id, now: 1 });
 
@@ -142,4 +142,18 @@ test('normalizeDoc keeps the sent mark of an entry, so it outlives a restart (SY
   const doc = normalizeDoc({ version: 1, projects: [{ repo: 'o/a', label: 'A' }], queue: [sent, entry('o/a', '2')] });
   assert.equal(doc.queue[0].sent, true);
   assert.equal('sent' in doc.queue[1], false);
+});
+
+test('appUrl is the GitHub Pages site of the repository (PROJ-5)', () => {
+  assert.equal(appUrl('Gekyzo/pwa-wardrobe'), 'https://gekyzo.github.io/pwa-wardrobe/');
+  assert.equal(appUrl('Some.Owner/My.App'), 'https://some.owner.github.io/My.App/');
+});
+
+test('a repository named <owner>.github.io is the root of its Pages site (PROJ-5)', () => {
+  assert.equal(appUrl('Gekyzo/gekyzo.github.io'), 'https://gekyzo.github.io/');
+  assert.equal(appUrl('Gekyzo/Gekyzo.GitHub.io'), 'https://gekyzo.github.io/');
+});
+
+test('iconUrl is the 192 px icon of the app at its Pages site (PROJ-5)', () => {
+  assert.equal(iconUrl('Gekyzo/pwa-lists'), 'https://gekyzo.github.io/pwa-lists/icons/icon-192.png');
 });

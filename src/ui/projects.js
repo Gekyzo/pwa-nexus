@@ -1,4 +1,4 @@
-import { findProject } from '#projects';
+import { findProject, appUrl, iconUrl } from '#projects';
 import { treeOf, filterTree } from '#roadmap';
 import { roadmapView, pendingOf, discardEntry, restoreEntry, messageOf } from '#queue';
 import { intlTag } from '#i18n';
@@ -34,14 +34,34 @@ const metaOf = (project) => {
     .join(' · ');
 };
 
-const projectRow = (project) => {
-  const name = el('button', { className: 'item-row-name', type: 'button', onclick: () => openProject(project.repo) }, [
-    el('span', { textContent: project.label }),
-    el('small', { className: 'item-row-meta', textContent: metaOf(project) }),
-  ]);
-  const node = el('li', { className: 'item-row' }, [el('div', { className: 'item-row-body' }, [name])]);
-  if (ui.repo === project.repo) node.setAttribute('aria-current', 'true');
+// The icon of the app at its Pages site, over the first letter of the label, which stays when the
+// icon does not load (UI-12).
+const projectIcon = (project) => {
+  const image = el('img', { className: 'project-icon-image', src: iconUrl(project.repo), alt: '', decoding: 'async' });
+  image.addEventListener('error', () => image.remove());
+  const node = el('span', { className: 'project-icon' }, [el('span', { textContent: project.label.charAt(0).toUpperCase() }), image]);
+  node.setAttribute('aria-hidden', 'true');
   return node;
+};
+
+// A card of the home: the icon, the label and the line of UI-1. A tap opens the project.
+const projectCard = (project) => {
+  const button = el('button', { className: 'project-card', type: 'button', onclick: () => openProject(project.repo) }, [
+    projectIcon(project),
+    el('span', { className: 'project-card-name', textContent: project.label }),
+    el('small', { className: 'project-card-meta', textContent: metaOf(project) }),
+  ]);
+  if (ui.repo === project.repo) button.setAttribute('aria-current', 'true');
+  return el('li', {}, [button]);
+};
+
+// The head of the project screen: its icon, its repository and the link to its app (UI-12).
+const renderHead = (project) => {
+  $('project-head').hidden = !project;
+  if (!project) return;
+  $('project-head-icon').replaceChildren(projectIcon(project));
+  $('project-head-repo').textContent = project.repo;
+  $('project-link').href = appUrl(project.repo);
 };
 
 const keyOf = (repo, path) => `${repo}\n${path}`;
@@ -111,10 +131,11 @@ export const renderProjects = () => {
   const visible = ui.view === 'projects';
   $('projects').hidden = !visible;
   if (ui.repo !== null && !findProject(state, ui.repo)) ui.repo = null;
-  $('project-list').replaceChildren(...state.projects.map(projectRow));
+  $('project-list').replaceChildren(...state.projects.map(projectCard));
   $('projects-empty').hidden = state.projects.length > 0;
   const project = ui.repo === null ? null : findProject(state, ui.repo);
   const roadmap = project ? roadmapOf(project.repo) : { sections: [] };
+  renderHead(project);
   // The pane shows the roadmap alone below 840px, and beside the list from 840px (LAY-3).
   if (project) $('projects').dataset.detail = '';
   else delete $('projects').dataset.detail;

@@ -92,6 +92,10 @@ How the app reads each `ROADMAP.md` from GitHub and commits the actions of the u
   it existed was offered the first three. At each start, a default project that the doc was never
   offered joins the end of the list, once. A default that the user removed is not added again,
   and a repository already in the list, in any case, is not added twice.
+- **PROJ-5** The app of a project is the GitHub Pages site of its repository (`appUrl`):
+  `https://<owner>.github.io/<name>/`, with the owner in lower case, or `https://<owner>.github.io/`
+  for a repository named `<owner>.github.io`. Its icon (`iconUrl`) is `icons/icon-192.png` at
+  that site, the path of each app made from `pwa-template`.
 - **PROJ-3** Export and import carry the doc: the projects and the queue. They never carry the
   token or the cache.
 - **TOK-1** The token is a fine-grained personal access token with **Contents: read and write**

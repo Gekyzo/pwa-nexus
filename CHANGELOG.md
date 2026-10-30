@@ -4,6 +4,7 @@ Technical changes, newest first. What a user sees of a version goes to `release-
 
 ## Unreleased
 
+- The home of Projects is a grid of cards with the icon of each app (UI-1). The project screen starts with a head: the icon, the repository and a link to the app at its GitHub Pages site (UI-12). `appUrl` and `iconUrl` in `src/projects.js` derive both from the repository (PROJ-5).
 - `Gekyzo/pwa-learning-swe` and `Gekyzo/pwa-training-routines` join the default projects as LearnSWE and Routines (PROJ-1). A stored list gets them once at the next start (PROJ-4).
 
 ## 0.1.19 - 2026-10-28

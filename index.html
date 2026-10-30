@@ -32,7 +32,7 @@
           <div class="cluster">
             <button id="sync" class="button outline" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg><span data-i18n="sync.run"></span></button>
           </div>
-          <ul id="project-list" class="item-list"></ul>
+          <ul id="project-list" class="project-cards"></ul>
           <div id="projects-empty" class="empty-state" hidden>
             <p data-i18n="projects.empty"></p>
             <button id="projects-add" class="button primary" type="button" data-i18n="projects.add"></button>
@@ -40,6 +40,11 @@
         </div>
         <article id="roadmap" class="pane-detail">
           <button id="roadmap-back" class="button quiet pane-back" type="button" data-i18n="roadmap.back"></button>
+          <header id="project-head" class="project-head" hidden>
+            <span id="project-head-icon"></span>
+            <span id="project-head-repo" class="project-head-repo"></span>
+            <a id="project-link" class="button outline" target="_blank" rel="noopener" data-i18n="project.open"></a>
+          </header>
           <input id="roadmap-search" class="input raised filter" type="search" autocomplete="off" spellcheck="false" data-i18n-attr="placeholder:roadmap.search,aria-label:roadmap.search" hidden>
           <p id="roadmap-empty" class="empty-state inline"></p>
           <div id="roadmap-stale"></div>

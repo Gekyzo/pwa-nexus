@@ -4,6 +4,7 @@ Lo que cambia para ti en cada versión de la app. La versión más nueva va prim
 
 ## Unreleased
 
+- Los proyectos aparecen como tarjetas con el icono de cada app. Abre un proyecto para ver un enlace a su app.
 - LearnSWE y Routines se unen a los proyectos. Aparecen al final de tu lista tras la actualización.
 
 ## 0.1.19 - 2026-10-28

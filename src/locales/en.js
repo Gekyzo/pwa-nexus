@@ -13,6 +13,7 @@ export default {
   'projects.notLoaded': 'Not synced yet',
   'projects.noRoadmap': 'No ROADMAP.md',
   'projects.count': { one: '{count} project', other: '{count} projects' },
+  'project.open': 'Open the app',
   'roadmap.back': 'Back',
   'roadmap.notLoaded': 'Sync to load this roadmap.',
   'roadmap.missing': 'This repository has no ROADMAP.md.',

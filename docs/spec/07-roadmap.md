@@ -44,12 +44,17 @@ The model of a project's `ROADMAP.md` and the screen that shows it.
 
 ## Screen
 
-- **UI-1** Projects is the first section. It lists one row for each project, with its label and
-  one line: its item count, its waiting actions (`projects.pending`) and the time of its last
-  sync, or `projects.notLoaded` / `projects.noRoadmap`. A tap opens its roadmap in the pane
-  (LAY-3), and the header shows the label of the project. With no project, the list shows
+- **UI-1** Projects is the first section. It shows one card for each project, in two columns,
+  with the icon of its app (UI-12), its label and one line: its item count, its waiting actions
+  (`projects.pending`) and the time of its last sync, or `projects.notLoaded` /
+  `projects.noRoadmap`. A tap opens the screen of the project in the pane (LAY-3), and the header
+  shows the label of the project. With no project, the list shows
   `projects.empty` and the button `projects.add`, which opens Settings with the focus in the
   repository field.
+- **UI-12** The screen of a project starts with a head: the icon of its app, its repository and
+  the link `project.open` to its app (PROJ-5), which opens in a new tab. The icon is `iconUrl`;
+  while it does not load, the first letter of the label shows in its place. Below the head is the
+  roadmap.
 - **UI-2** The roadmap shows the sections as a tree in file order (ROAD-10): an H2 head with its
   path and its `total`, its items, then each H3 head, one level in, with its title and its item
   count. A tap on a head folds the section; a folded H2 also hides its H3 sections. The items are rows with their title and body.

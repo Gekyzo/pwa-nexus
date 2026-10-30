@@ -13,6 +13,7 @@ export default {
   'projects.notLoaded': 'Sin sincronizar',
   'projects.noRoadmap': 'Sin ROADMAP.md',
   'projects.count': { one: '{count} proyecto', other: '{count} proyectos' },
+  'project.open': 'Abrir la app',
   'roadmap.back': 'Volver',
   'roadmap.notLoaded': 'Sincroniza para cargar esta hoja de ruta.',
   'roadmap.missing': 'Este repositorio no tiene ROADMAP.md.',
